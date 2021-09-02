@@ -19,6 +19,7 @@ def cleanUpNanAndInf(value):
 
 
 # TODO: Work on parameterJSON info more to work on parsing the relevant modules
+# TODO: Update so modules are truly being used
 # TODO: Make the input for this command shorter by creating an array which contains relevant into
 # TODO: Run an parameter JSON parse function to obtain info such as session id
 # TODO: Fix linting issues 
@@ -282,7 +283,7 @@ def runModules(parameterJSON, input_list):
 # TODO: Fix some formatting for Linting
 # NOTE: Ths goal is to have this function be as general as possible and handle
 # NOTE: Changes in the runModules function specifically
-def createEcephys(output_directory, row, intputJSON, output_file, last_unit_id,
+def createEcephysJSON(output_directory, row, intputJSON, output_file, last_unit_id,
                   probe_list):
 
     session_id = str(row.session_id)
@@ -359,4 +360,5 @@ def createEcephys(output_directory, row, intputJSON, output_file, last_unit_id,
         f.write(json.dumps(dictionary, ensure_ascii=False, sort_keys=True,
                            indent=4))
 
+    # TODO: Update appropriately 
     return dictionary, last_unit_id
