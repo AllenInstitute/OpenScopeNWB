@@ -48,26 +48,26 @@ def runModules(parameterJSON, input_list):
                     'lfp_sampling_rate' : 2500.,
                     'barcode_channel_states_path' : join(input_list.events_directory, 'channel_states.npy'),
                     'barcode_timestamps_path' : join(input_list.events_directory, 'event_timestamps.npy'),
-                    'mappable_timestamp_files' : timestamp_files,
+                    'mappable_timestamp_files' : input_list.timestamp_files,
                 }
 
-                probes.append(probe_dict)
+                input_list.probes.append(probe_dict)
         elif module == 'allensdk.brain_observatory.ecephys.lfp_subsampling':
 
             probe_dict = {
                 'name' : input_list.probe_name,
                 'lfp_sampling_rate' : 2500.,
-                'lfp_input_file_path' : join(lfp_directory, 'continuous.dat'),
-                'lfp_timestamps_input_path' : join(lfp_directory, 'lfp_timestamps_master_clock.npy'),
+                'lfp_input_file_path' : join(input_list.lfp_directory, 'continuous.dat'),
+                'lfp_timestamps_input_path' : join(input_list.lfp_directory, 'lfp_timestamps_master_clock.npy'),
                 'lfp_data_path' : join('S:\\DV_NWB\\LFP\\', session_id + '_' + input_list.probe_name + '_lfp.dat'),
                 'lfp_timestamps_path' : join('S:\\DV_NWB\\LFP\\', session_id + '_' + input_list.probe_name + '_timestamps.npy'),
                 'lfp_channel_info_path' : join('S:\\DV_NWB\\LFP\\', session_id + '_' + input_list.probe_name + '_channels.npy'),
-                'surface_channel' : probe_info['surface_channel'],
+                'surface_channel' : input_list.probe_info['surface_channel'],
                 'reference_channels' : [191]
 
             }
 
-            probes.append(probe_dict)
+            input_list.probes.append(probe_dict)
 
 
         # NOTE: This is using the file path I used when generating files on my machine
@@ -101,9 +101,9 @@ def runModules(parameterJSON, input_list):
                     #     cortical_layer = 'none'
 
                     channel_dict = {
-                        'id' : idx + probe_idx * 1000,
+                        'id' : idx + input_list.probe_idx * 1000,
                         'valid_data' : True, #channel_row['is_valid'],
-                        'probe_id' : probe_idx,
+                        'probe_id' : input_list.probe_idx,
                         'local_index' : idx,
                         'probe_vertical_position' : -1, #channel_row['vertical_position'],
                         'probe_horizontal_position' : -1, #channel_row['horizontal_position'],
@@ -133,8 +133,8 @@ def runModules(parameterJSON, input_list):
                         spike_count = np.sum(spike_clusters == unit_row['cluster_id'])
 
                         unit_dict = {
-                            'id' : last_unit_id,
-                            'peak_channel_id' : unit_row['peak_channel'] + probe_idx * 1000,
+                            'id' : input_list.last_unit_id,
+                            'peak_channel_id' : unit_row['peak_channel'] + input_list.probe_idx * 1000,
                             'local_index' : idx,
                             'cluster_id' : unit_row['cluster_id'],
                             'quality' : unit_row['quality'],
@@ -162,15 +162,15 @@ def runModules(parameterJSON, input_list):
                             'velocity_below' : cleanUpNanAndInf(unit_row['velocity_below'])
                         }
 
-                        spike_times_index += spike_count
-                        spike_amplitudes_index += spike_count
+                        input_list.spike_times_index += spike_count
+                        input_list.spike_amplitudes_index += spike_count
 
                         units.append(unit_dict)
                         
-                        last_unit_id += 1
+                        input_list.last_unit_id += 1
 
                 probe_dict = {
-                    'id' : probe_idx,
+                    'id' : input_list.probe_idx,
                     'name' : input_list.probe_name,
                     'spike_times_path' : join(input_list.probe_directory, 'spike_times_master_clock.npy'),
                     'spike_clusters_file' : join(input_list.probe_directory, 'spike_clusters.npy'),
@@ -184,15 +184,15 @@ def runModules(parameterJSON, input_list):
                     'lfp' : None #lfp_dict
                 }
 
-                probes.append(probe_dict)
+                input_list.probes.append(probe_dict)
 
 
     if module == 'allensdk.brain_observatory.ecephys.align_timestamps':
 
         dictionary = \
         {
-            'sync_h5_path' : glob(join(directory, '*.sync'))[0],
-            "probes" : probes,
+            'sync_h5_path' : glob(join(input_list.directory, '*.sync'))[0],
+            "probes" : input_list.probes,
         }
 
     elif module == 'allensdk.brain_observatory.ecephys.stimulus_table':
@@ -205,10 +205,10 @@ def runModules(parameterJSON, input_list):
         dictionary = \
         {
 
-            'stimulus_pkl_path' : glob(join(directory, '*.stim.pkl'))[0],
-            'sync_h5_path' : glob(join(directory, '*.sync'))[0],
-            'output_stimulus_table_path' : os.path.join(directory, 'stim_table_allensdk.csv'),
-            'output_frame_times_path' : os.path.join(directory, 'frame_times.npy'),
+            'stimulus_pkl_path' : glob(join(input_list.directory, '*.stim.pkl'))[0],
+            'sync_h5_path' : glob(join(input_list.directory, '*.sync'))[0],
+            'output_stimulus_table_path' : os.path.join(input_list.directory, 'stim_table_allensdk.csv'),
+            'output_frame_times_path' : os.path.join(input_list.directory, 'frame_times.npy'),
             'trim_discontiguous_frame_times' : trim_discontiguous_frame_times,
 
             "log_level" : 'INFO'
@@ -223,10 +223,10 @@ def runModules(parameterJSON, input_list):
 
         dictionary = \
         {
-            'stimulus_pkl_path' : glob(join(directory, '*.stim.pkl'))[0],
-            'sync_h5_path' : glob(join(directory, '*.sync'))[0],
+            'stimulus_pkl_path' : glob(join(input_list.directory, '*.stim.pkl'))[0],
+            'sync_h5_path' : glob(join(input_list.directory, '*.sync'))[0],
 
-            'output_path' : join(directory, 'running_speed.h5'),
+            'output_path' : join(input_list.directory, 'running_speed.h5'),
             'trim_discontiguous_frame_times' : trim_discontiguous_frame_times,
 
             "log_level" : 'INFO'
@@ -237,16 +237,16 @@ def runModules(parameterJSON, input_list):
         dictionary = \
         {
             'lfp_subsampling' : {'temporal_subsampling_factor' : 2,},
-            "probes" : probes,
+            "probes" : input_list.probes,
         }
 
     elif module == 'allensdk.brain_observatory.ecephys.optotagging_table':
 
         dictionary = \
         {
-            'opto_pickle_path' : glob(join(directory, '*.opto.pkl'))[0],
-            'sync_h5_path' : glob(join(directory, '*.sync'))[0],
-            'output_opto_table_path' : join(directory, 'optotagging_table.csv')
+            'opto_pickle_path' : glob(join(input_list.directory, '*.opto.pkl'))[0],
+            'sync_h5_path' : glob(join(input_list.directory, '*.sync'))[0],
+            'output_opto_table_path' : join(input_list.directory, 'optotagging_table.csv')
         }
 
     elif module == 'allensdk.brain_observatory.ecephys.write_nwb':
@@ -264,15 +264,16 @@ def runModules(parameterJSON, input_list):
                                 'start_time' : 0.0,
                                 'end_time' : 0.0}, ],
             "log_level" : 'INFO',
-            "output_path" : nwb_output_path,
+            "output_path" : input_list.nwb_output_path,
             "session_id" : int(session_id),
             "session_start_time" : datetime.datetime(YYYY, MM, DD, 0, 0, 0).isoformat(),
-            "stimulus_table_path" : os.path.join(directory, 'stim_table_allensdk.csv'),
-            "probes" : probes,
-            "session_sync_path" : sync_file,
-            "running_speed_path" : join(directory, 'running_speed.h5')#,
+            "stimulus_table_path" : os.path.join(input_list.directory, 'stim_table_allensdk.csv'),
+            "probes" : input_list.probes,
+            "session_sync_path" : input_list.sync_file,
+            "running_speed_path" : join(input_list.directory, 'running_speed.h5')#,
             # "optotagging_table_path" : join(directory, 'optotagging_table.csv')
         }
+    return input_list
 
 
 
@@ -350,8 +351,9 @@ def createEcephys(output_directory, row, intputJSON, output_file, last_unit_id,
                                     'lfp_timestamps_master_clock.npy'),
             }
         )
+        dictionary = ''
         input_list = ''
-        dictionary = runModules(intputJSON, input_list)
+        input_list = runModules(intputJSON, input_list)
 
     with io.open(output_file, 'w', encoding='utf-8') as f:
         f.write(json.dumps(dictionary, ensure_ascii=False, sort_keys=True,
