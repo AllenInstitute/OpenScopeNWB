@@ -21,12 +21,12 @@ from utils import cleanUpNanAndInf
 # NOTE: Each project will have a unique create_input_JSON.py
 # NOTE: Will need to rework how the returned dictionaries are assigned to the createEcephys function
 # NOTE: Utils will have a function where the parameter JSON is parsed
-def runModules(parameterJSON, input_list):
+def runModules(input_list):
     # This is not being parsed currently
     # Included for demonstration on how functionality will work
     # TODO: Implement a python-based switch case for this
     session_id = input_list.session_Id
-    for module_name in parameterJSON:
+    for module_name in input_list.modules:
         module = module_name
         if module == 'allensdk.brain_observatory.ecephys.align_timestamps':
             try:
@@ -274,7 +274,7 @@ def runModules(parameterJSON, input_list):
 # TODO: Implement better log in method(?)
 # TODO: Fix some formatting for Linting
 # NOTE: Ths goal is to have this function be as general as possible and handle
-# NOTE: Changes in the runModules function specifically
+# CONT: changes in the runModules function specifically
 def createEcephysJSON(output_directory, row, intputJSON, output_file, last_unit_id,
                   probe_list):
 
@@ -319,7 +319,7 @@ def createEcephysJSON(output_directory, row, intputJSON, output_file, last_unit_
                                 'Neuropix*', 'TTL*'))[0]
 
         # We will only be using PXI moving forward but
-        # I will keep this for now for legacy purposes
+        # we will keep this for now for legacy purposes
         if probe_directory.find('PXI') > -1:
             probe_type = 'PXI'
         else:
@@ -346,7 +346,7 @@ def createEcephysJSON(output_directory, row, intputJSON, output_file, last_unit_
         )
         dictionary = ''
         input_list = ''
-        input_list = runModules(intputJSON, input_list)
+        input_list = runModules(input_list)
 
     with io.open(output_file, 'w', encoding='utf-8') as f:
         f.write(json.dumps(dictionary, ensure_ascii=False, sort_keys=True,
