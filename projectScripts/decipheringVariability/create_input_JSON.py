@@ -10,30 +10,22 @@ import datetime
 import re
 import allensdk
 
-# TODO: Move to utils
-def cleanUpNanAndInf(value):
-    if np.isnan(value) or np.isinf(value):
-        return -1
-    else:
-        return value
+from utils import cleanUpNanAndInf
 
 
 # TODO: Work on parameterJSON info more to work on parsing the relevant modules
-# TODO: Update so modules are truly being used
 # TODO: Make the input for this command shorter by creating an array which contains relevant into
-# TODO: Run an parameter JSON parse function to obtain info such as session id
 # TODO: Fix linting issues 
-# TODO: Implement a better way to store paths for files. Maybe in the parameter JSON?
 # NOTE: This example is based on the “deciphering variability” project example by Josh
 # NOTE: This will be refactored as this current code file should be project specific
 # NOTE: Each project will have a unique create_input_JSON.py
 # NOTE: Will need to rework how the returned dictionaries are assigned to the createEcephys function
+# NOTE: Utils will have a function where the parameter JSON is parsed
 def runModules(parameterJSON, input_list):
     # This is not being parsed currently
     # Included for demonstration on how functionality will work
     # TODO: Implement a python-based switch case for this
-    # TODO: Parse the session ID from the JSON
-    session_id = ''
+    session_id = input_list.session_Id
     for module_name in parameterJSON:
         module = module_name
         if module == 'allensdk.brain_observatory.ecephys.align_timestamps':

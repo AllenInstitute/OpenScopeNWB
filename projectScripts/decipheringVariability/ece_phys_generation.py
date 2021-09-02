@@ -12,6 +12,8 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
 
 # TODO: Generate info_list from parameter JSON
+# TODO: Clarify purpose of some code using comments
+# TODO: Implement function from util to parse parameter JSON
 info_list = ''
 directories = info_list.directories
 JSON_directory = info_list.JSON_directory
