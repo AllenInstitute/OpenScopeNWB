@@ -14,3 +14,9 @@ def getOutputDirectory(parameterJSON):
 
 def getJSONDirectory(parameterJSON):
     "Placeholder"
+
+def getLimsPath(parameterJSON):
+    "Placeholder"
+
+def getSavePath(parameterJSON):
+    "Placeholder"

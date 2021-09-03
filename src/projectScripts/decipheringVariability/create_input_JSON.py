@@ -275,7 +275,7 @@ def runModules(input_list):
 # TODO: Fix some formatting for Linting
 # NOTE: Ths goal is to have this function be as general as possible and handle
 # CONT: changes in the runModules function specifically
-def createEcephysJSON(output_directory, row, intputJSON, output_file, last_unit_id,
+def createEcephysJSON(output_directory, row, output_file, last_unit_id,
                   probe_list):
 
     session_id = str(row.session_id)
