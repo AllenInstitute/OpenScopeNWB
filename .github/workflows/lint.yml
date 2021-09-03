@@ -1,0 +1,17 @@
+name: Lint
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  lint:
+    name: Run Lint
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
