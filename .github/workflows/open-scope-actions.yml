@@ -1,4 +1,4 @@
-name: Lint
+name: OpenScope Actions
 on:
   # Trigger the workflow on pull request,
   # but only for the main branch
@@ -11,9 +11,25 @@ on:
   pull_request:
     branches:
       - main
+      
 jobs:
-  lint:
-    name: Run Lint
+  Test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e
+      - name: Test with pytest
+        run: pytest -vv
+  Lint:
+    name: Lint
     runs-on: "ubuntu-latest"
 
     steps:
