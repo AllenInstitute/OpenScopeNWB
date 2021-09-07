@@ -19,8 +19,11 @@ jobs:
     steps:
       - name: Checkout 
         uses: actions/checkout@v2
+        
+      - name: Install Python dependencies
+        run: pip install flake8
     
-      - name: Run linters
+      - name: Run Linter
         uses: wearerequired/lint-action@v1
         with: 
           flake8: true
