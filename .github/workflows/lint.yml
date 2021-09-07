@@ -1,10 +1,13 @@
 name: Lint
 on:
-  # Trigger the workflow on push or pull request,
+  # Trigger the workflow on pull request,
   # but only for the main branch
+  # Note that this currently uses flake8 instead of
+  # pep8 as there does not appear be actions support for pep8
   push:
     branches:
       - main
+      - runModules
   pull_request:
     branches:
       - main
@@ -12,10 +15,12 @@ jobs:
   lint:
     name: Run Lint
     runs-on: "ubuntu-latest"
+
     steps:
       - name: Checkout 
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
     
       - name: Run linters
         uses: wearerequired/lint-action@v1
-        with: Flake8
+        with: 
+          flake8: true
