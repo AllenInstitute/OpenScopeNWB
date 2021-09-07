@@ -156,7 +156,8 @@ def runModules(input_list):
 
                         spike_count = np.sum(spike_clusters ==
                                              unit_row['cluster_id'])
-
+                        for i in unit_row:
+                            unit_row[i] = cleanUpNanAndInf(i)
                         unit_dict = {
                             'id': input_list.last_unit_id,
                             'peak_channel_id': unit_row['peak_channel'] +
@@ -164,31 +165,30 @@ def runModules(input_list):
                             'local_index': idx,
                             'cluster_id': unit_row['cluster_id'],
                             'quality': unit_row['quality'],
-                            'firing_rate': cleanUpNanAndInf(unit_row
-                                                            ['firing_rate']),
-                            'snr': cleanUpNanAndInf(unit_row['snr']),
-                            'isi_violations': cleanUpNanAndInf(unit_row
-                                                               ['isi_viol']),
-                            'presence_ratio': cleanUpNanAndInf(unit_row
-                                                               ['presence_ratio']),
-                            'amplitude_cutoff': cleanUpNanAndInf(unit_row['amplitude_cutoff']),
-                            'isolation_distance': cleanUpNanAndInf(unit_row['isolation_distance']),
-                            'l_ratio': cleanUpNanAndInf(unit_row['l_ratio']),
-                            'd_prime': cleanUpNanAndInf(unit_row['d_prime']),
-                            'nn_hit_rate': cleanUpNanAndInf(unit_row['nn_hit_rate']),
-                            'nn_miss_rate': cleanUpNanAndInf(unit_row['nn_miss_rate']),
-                            'max_drift': cleanUpNanAndInf(unit_row['max_drift']),
-                            'cumulative_drift': cleanUpNanAndInf(unit_row['cumulative_drift']),
-                            'silhouette_score': cleanUpNanAndInf(unit_row['silhouette_score']),
-                            'waveform_duration': cleanUpNanAndInf(unit_row['duration']),
-                            'waveform_halfwidth': cleanUpNanAndInf(unit_row['halfwidth']),
-                            'PT_ratio': cleanUpNanAndInf(unit_row['PT_ratio']),
-                            'repolarization_slope': cleanUpNanAndInf(unit_row['repolarization_slope']),
-                            'recovery_slope': cleanUpNanAndInf(unit_row['recovery_slope']),
-                            'amplitude': cleanUpNanAndInf(unit_row['amplitude']),
-                            'spread': cleanUpNanAndInf(unit_row['spread']),
-                            'velocity_above': cleanUpNanAndInf(unit_row['velocity_above']),
-                            'velocity_below': cleanUpNanAndInf(unit_row['velocity_below'])
+                            'firing_rate': unit_row['firing_rate'],
+                            'snr': unit_row['snr'],
+                            'isi_violations': unit_row['isi_viol'],
+                            'presence_ratio': unit_row['presence_ratio'],
+                            'amplitude_cutoff': unit_row['amplitude_cutoff'],
+                            'isolation_distance': unit_row['isolation_ \
+                                                            distance'],
+                            'l_ratio': unit_row['l_ratio'],
+                            'd_prime': unit_row['d_prime'],
+                            'nn_hit_rate': unit_row['nn_hit_rate'],
+                            'nn_miss_rate': unit_row['nn_miss_rate'],
+                            'max_drift': unit_row['max_drift'],
+                            'cumulative_drift': unit_row['cumulative_drift'],
+                            'silhouette_score': unit_row['silhouette_score'],
+                            'waveform_duration': unit_row['duration'],
+                            'waveform_halfwidth': unit_row['halfwidth'],
+                            'PT_ratio': unit_row['PT_ratio'],
+                            'repolarization_slope': unit_row['repolarization_\
+                                                             slope'],
+                            'recovery_slope': unit_row['recovery_slope'],
+                            'amplitude': unit_row['amplitude'],
+                            'spread': unit_row['spread'],
+                            'velocity_above': unit_row['velocity_above'],
+                            'velocity_below': unit_row['velocity_below']
                         }
 
                         input_list.spike_times_index += spike_count
@@ -213,8 +213,10 @@ def runModules(input_list):
                                                  'spike_templates.npy'),
                     'templates_path': join(input_list.probe_directory,
                                            'templates.npy'),
-                    'inverse_whitening_matrix_path': join(input_list.probe_directory,
-                                                          'whitening_mat_inv.npy'),
+                    'inverse_whitening_matrix_path': {
+                        join(input_list.probe_directory,
+                             'whitening_mat_inv.npy')
+                    },
                     'channels': channels,
                     'units': units,
                     'lfp': None  # lfp_dict
@@ -269,8 +271,9 @@ def runModules(input_list):
                 'sync_h5_path': glob(join(input_list.directory, '*.sync'))[0],
 
                 'output_path': join(input_list.directory, 'running_speed.h5'),
-                'trim_discontiguous_frame_times': trim_discontiguous_frame_times,
-
+                'trim_discontiguous_frame_times': {
+                    trim_discontiguous_frame_times
+                },
                 "log_level": 'INFO'
             }
 
