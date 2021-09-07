@@ -42,4 +42,5 @@ jobs:
       - name: Run Linter
         uses: wearerequired/lint-action@v1
         with: 
+          flake8_extentions: py
           flake8: true
