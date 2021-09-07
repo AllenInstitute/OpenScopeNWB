@@ -1,5 +1,5 @@
 # A simple dummy test
 
-class TestClass:
-    def dummyTest():
+class Test_Class:
+    def test_dummy(self):
         pass
