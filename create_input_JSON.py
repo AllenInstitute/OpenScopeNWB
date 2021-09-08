@@ -1,3 +1,4 @@
+'''
 import io
 import json
 from os.path import join, basename
@@ -55,7 +56,7 @@ def createEphys(output_directory, row, intputJSON, output_file, last_unit_id,
     spike_times_index = 0
     spike_amplitudes_index = 0
 
-    for probe_name, probe_directory in zip(available_probes, probe_directories):
+    for probe_name, probe_directory in zip(available_probes, probe_directories)
 
         print(probe_name)
         probe_idx += 1
@@ -100,3 +101,4 @@ def createEphys(output_directory, row, intputJSON, output_file, last_unit_id,
                            indent=4))
 
     return dictionary, last_unit_id
+'''
