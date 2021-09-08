@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - gitActions
   pull_request:
     branches:
       - main
