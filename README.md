@@ -1,3 +1,3 @@
 # OpenScopeNWB
 
-[![Actions Status](https://github.com/AllenInstitute/OpenScopeNWB/workflows/ci/github-actions/badge.svg)](https://github.com/AllenInstitute/OpenScopeNWB/actions)
+[![Actions Status](https://github.com/AllenInstitute/OpenScopeNWB/actions/workflows/open-scope-actions.yml/badge.svg)](https://github.com/AllenInstitute/OpenScopeNWB/actions)
