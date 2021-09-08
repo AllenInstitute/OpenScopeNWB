@@ -1,0 +1,45 @@
+name: OpenScope Actions
+on:
+  # Trigger the workflow on pull request,
+  # but only for the main branch
+  # Note that this currently uses flake8 instead of
+  # pep8 as there does not appear be actions support for pep8
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[TEST]
+      - name: Test with pytest
+        run: pytest -vv
+  Lint:
+    name: Lint
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+        
+      - name: Install Python dependencies
+        run: pip install flake8
+    
+      - name: Run Linter
+        uses: wearerequired/lint-action@v1
+        with: 
+          flake8_extensions: py
+          flake8: true
