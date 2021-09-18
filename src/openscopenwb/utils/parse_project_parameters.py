@@ -1,6 +1,6 @@
 def parse_json(project_parameter_json):
     """Gets all relevant information from the parameter_json
-    
+
     Parameters
     ----------
     project_parameter_path: str
@@ -10,8 +10,8 @@ def parse_json(project_parameter_json):
     -------
     project_dict: dict
     """
-    
-    
+
+
 def get_session_ids(project_dict):
     """Gets the relevant session ids from the project_dict
 
