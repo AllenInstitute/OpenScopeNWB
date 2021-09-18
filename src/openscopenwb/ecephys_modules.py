@@ -7,7 +7,6 @@ def ecephys_write_nwb(session_parameters):
 
     Parameters
     ----------
-
     session_parameters: dict
     Session unique information, used by each module
 
@@ -22,10 +21,8 @@ def ecephys_optotagging_table(session_parameters):
 
     Parameters
     ----------
-
     session_parameters: dict
     Session unique information, used by each module
-
 
     Returns
     -------
@@ -48,12 +45,10 @@ def ecephys_lfp_subsampling(session_parameters):
 
     Parameters
     ----------
-
     session_parameters: dict
     Session unique information, used by each module
 
     Returns
     -------
-
     None
     """

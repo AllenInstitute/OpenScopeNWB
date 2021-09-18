@@ -3,7 +3,6 @@ def parse_json(project_parameter_json):
     
     Parameters
     ----------
-
     project_parameter_path: str
     The path for the parameter_json
 
