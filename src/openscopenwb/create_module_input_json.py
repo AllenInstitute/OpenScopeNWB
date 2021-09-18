@@ -20,17 +20,22 @@ def create_module_input(module, session_parameters, input_json_path):
     session_parameters: dict
     Session unique information, used by each module, updated by the module
     """
-    session_parameters, input_json_write_dict = run_module(module, session_parameters)
+    session_parameters, input_json_write_dict = run_module(module, 
+                                                           session_parameters)
 
     with io.open(input_json_path, 'w', encoding='utf-8') as file_handle:
-        file_handle.write(json.dumps(input_json_write_dict, ensure_ascii=False, sort_keys=True,
-                           indent=4))
+        file_handle.write(json.dumps(input_json_write_dict,
+                                     ensure_ascii=False,
+                                     sort_keys=True,
+                                     indent=4))
 
     return session_parameters
 
 
 def run_module(module, session_parameters):
-    """ Creates a dictionary for an input json with information that is used by each module
+    """ Creates a dictionary for an input json with information 
+    that is used by each module
+    
     Parameters
     ----------
 

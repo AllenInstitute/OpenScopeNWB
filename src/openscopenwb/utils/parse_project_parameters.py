@@ -10,6 +10,8 @@ def parse_json(project_parameter_json):
     -------
     project_dict: dict
     """
+    
+    
 def get_session_ids(project_dict):
     """Gets the relevant session ids from the project_dict
 
@@ -39,7 +41,8 @@ def get_modules(project_dict):
 
 
 def get_output_json_directory(project_dict):
-    """Gets the relevant write directory for output json files from the dictionary
+    """Gets the relevant write directory for output json files
+    from the dictionary
 
     Parameters
     ----------
@@ -53,7 +56,8 @@ def get_output_json_directory(project_dict):
 
 
 def get_input_json_directory(project_dict):
-    """Gets the relevant write directory for input json files from the project_dict
+    """Gets the relevant write directory for input json files
+    from the project_dict
 
     Parameters
     ----------
@@ -81,7 +85,8 @@ def get_lims_path(project_dict):
 
 
 def get_output_nwb_path(project_dict):
-    """Gets the relevant write directory for output nwb files from the project_dict
+    """Gets the relevant write directory for output nwb files
+    from the project_dict
 
     Parameters
     ----------
@@ -130,4 +135,3 @@ def generate_session_parameters(project_dict, session):
     }
 
     return session_parameters
-

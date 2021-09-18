@@ -16,6 +16,7 @@ def ecephys_write_nwb(session_parameters):
     None
     """
 
+
 def ecephys_optotagging_table(session_parameters):
     """ Writes the relevant optotagging information to the input json
 
@@ -52,3 +53,4 @@ def ecephys_lfp_subsampling(session_parameters):
     -------
     None
     """
+    
