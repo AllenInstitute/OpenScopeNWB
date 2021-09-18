@@ -6,13 +6,11 @@ def clean_up_nan_and_inf(value):
 
     Parameters
     ----------
-
     value: float
     A floating point value
 
     Returns
     -------
-
     value: float
     A floating point value, -1 if the original value was nan or inf
     """

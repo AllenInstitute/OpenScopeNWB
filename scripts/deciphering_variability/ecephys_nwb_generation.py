@@ -2,12 +2,11 @@ import os
 import subprocess
 import warnings
 import openscopenwb as osn
-from osn import utils.parse_project_parameters as ppp
-
+from openscopenwb.utils import parse_project_parameters as ppp
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
-
+project_parameter_json = "path to project file"
 project_parameters = ppp.parse_json(project_parameter_json)
 sessions = ppp.get_session_ids(project_parameters)
 modules = ppp.get_modules(project_parameters)
