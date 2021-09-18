@@ -53,4 +53,3 @@ def ecephys_lfp_subsampling(session_parameters):
     -------
     None
     """
-    
