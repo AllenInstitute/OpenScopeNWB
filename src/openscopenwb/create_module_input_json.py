@@ -8,10 +8,12 @@ def create_module_input(module, session_parameters, input_json_path):
 
     Parameters
     ----------
-    session_parameters: dict
-    Session unique information, used by each module
+    probes: list
+    A list of the probes for the experiment
     module: str
     The specific module that will be used
+    session_parameters: dict
+    Session unique information, used by each module
     input_json_path: str
     The path to write the input json to
 
@@ -20,8 +22,10 @@ def create_module_input(module, session_parameters, input_json_path):
     session_parameters: dict
     Session unique information, used by each module, updated by the module
     """
-    session_parameters, input_json_write_dict = run_module(module,
-                                                           session_parameters)
+    probes = session_parameters['probes']
+    for probe_name in probes:
+        session_parameters, input_json_write_dict = \
+            run_module(probe_name, module, session_parameters)
 
     with io.open(input_json_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(json.dumps(input_json_write_dict,
@@ -32,13 +36,15 @@ def create_module_input(module, session_parameters, input_json_path):
     return session_parameters
 
 
-def run_module(module, session_parameters):
+def run_module(probe_name, module, session_parameters):
     """ Creates a dictionary for an input json with information
     that is used by each module
 
     Parameters
     ----------
 
+    probe_name: str
+    The name of the probe currently being used
     module: str
     The specific module that will be used
     session_parameters: dict
@@ -51,6 +57,7 @@ def run_module(module, session_parameters):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
+    input_json_write_dict = {}
     if module == 'allensdk.brain_observatory.ecephys_optotagging_table':
         session_parameters, input_json_write_dict =  \
             ephys_mod.ecephys_optotagging_table(session_parameters)
@@ -60,4 +67,13 @@ def run_module(module, session_parameters):
     if module == 'allensdk.brain_observatory.ecephys_lfp_subsampling':
         session_parameters, input_json_write_dict = \
             ephys_mod.ecephys_lfp_subsampling(session_parameters)
+    if module == 'allensdk.brain_observatory.extract_running_speed':
+        session_parameters, input_json_write_dict = \
+            ephys_mod.extract_running_speed(session_parameters, False)
+    if module == 'allensdk.brain_observatory.ecephys.align_timestamps':
+        session_parameters, input_json_write_dict = \
+            ephys_mod.ecephys_align_timestamps(probe_name, session_parameters)
+    if module == 'allensdk.brain_observatory.ecephys.stimulus_table':
+        session_parameters, input_json_write_dict = \
+            ephys_mod.stimulus_table(session_parameters, False)    
     return session_parameters, input_json_write_dict
