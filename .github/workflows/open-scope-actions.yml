@@ -4,6 +4,7 @@ on:
   # but only for the main branch
   # Note that this currently uses flake8 instead of
   # pep8 as there does not appear be actions support for pep8
+  # We do code coverage on codecov.io
   push:
     branches:
       - main
