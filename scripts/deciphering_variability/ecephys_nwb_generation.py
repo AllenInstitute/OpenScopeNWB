@@ -20,25 +20,25 @@ modules = ['allensdk.brain_observatory.ecephys.align_timestamps',
            'allensdk.brain_observatory.extract_running_speed',
            'allensdk.brain_observatory.ecephys.write_nwb']
 for session in sessions:
-    # session_parameters = ppp.generate_session_parameters(project_parameters,
+    # session_params = ppp.generate_session_params(project_parameters,
     #                                                     session)
-    # Temporary session test parameters
-    session_parameters = {
+    session_params = {
         'session_id': '721123822',
         'base_directory': "S:\\721123822_NWB",
         'last_unit_id': 1,
         'probes': ['ProbeA', 'ProbeB', 'ProbeC', 'ProbeD', 'ProbeE', 'ProbeF'],
         'final_probe': 'ProbeF',
-        'probe_dict_list': [{}]
+        'probe_dict_list': [],
+        'trim': False
     }
     for module in modules:
         #json_directory = ppp.get_input_json_directory(project_parameters)
-        json_directory = session_parameters['base_directory'] + '\\JSON'
+        json_directory = session_params['base_directory'] + '\\JSON'
         input_json = os.path.join(json_directory, session + '-' + module
                                   + '-input.json')
         output_json = os.path.join(json_directory, session + '-' + module
                                    + '-output.json')
-        session_parameters = osnjson.create_module_input(module, session_parameters, input_json)
+        session_params = osnjson.create_module_input(module, session_params, input_json)
 
         command_string = ["python", "-W", "ignore", "-m", module,
                           "--input_json", input_json,

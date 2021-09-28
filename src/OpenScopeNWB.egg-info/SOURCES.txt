@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+src/OpenScopeNWB.egg-info/PKG-INFO
+src/OpenScopeNWB.egg-info/SOURCES.txt
+src/OpenScopeNWB.egg-info/dependency_links.txt
+src/OpenScopeNWB.egg-info/requires.txt
+src/OpenScopeNWB.egg-info/top_level.txt
+src/openscopenwb/__init__.py
+src/openscopenwb/create_module_input_json.py
+src/openscopenwb/ecephys_modules.py
+src/openscopenwb/utils/__init__.py
+src/openscopenwb/utils/clean_up_functions.py
+src/openscopenwb/utils/parse_project_parameters.py
