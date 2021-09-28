@@ -4,6 +4,7 @@ on:
   # but only for the main branch
   # Note that this currently uses flake8 instead of
   # pep8 as there does not appear be actions support for pep8
+  # We do code coverage on codecov.io
   push:
     branches:
       - main
@@ -25,21 +26,33 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .[TEST]
+          pip install pytest-cov
       - name: Test with pytest
-        run: pytest -vv
+        run: pytest -vv --cov=./ --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          verbose: true
   Lint:
     name: Lint
     runs-on: "ubuntu-latest"
 
     steps:
-      - name: Checkout 
+      - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Install Python dependencies
         run: pip install flake8
-    
+
       - name: Run Linter
         uses: wearerequired/lint-action@v1
-        with: 
+        with:
           flake8_extensions: py
           flake8: true
