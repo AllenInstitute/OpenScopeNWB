@@ -1,18 +1,3 @@
-# OpenScopeNWB
-
-[![Actions Status](https://github.com/AllenInstitute/OpenScopeNWB/actions/workflows/open-scope-actions.yml/badge.svg)](https://github.com/AllenInstitute/OpenScopeNWB/actions)
-
-OpenScopeNWB
-========================
-
-*OpenScopeNWB* is a Python library to create NWB files using the AllenSDK 
-modules. It operates with internal Allen Institute file storage and create 
-intermediary files and folders required to convert individual projects files
-into a NWB files
-
-License
-========================
-
 Allen Institute Software License – This software license is the 2-clause BSD 
 license plus clause a third clause that prohibits redistribution and use for 
 commercial purposes without further permission. 
