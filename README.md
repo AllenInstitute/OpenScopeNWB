@@ -10,6 +10,11 @@ modules. It operates with internal Allen Institute file storage system and
 creates intermediary files and folders required to convert individual projects 
 files into NWB files
 
+Level of support
+========================
+
+We are not currently supporting this code, but simply releasing it to the community AS IS but are not able to provide any guarantees of support. The community is welcome to submit issues, but you should not expect an active response.
+
 License
 ========================
 
