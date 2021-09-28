@@ -6,9 +6,9 @@ OpenScopeNWB
 ========================
 
 *OpenScopeNWB* is a Python library to create NWB files using the AllenSDK 
-modules. It operates with internal Allen Institute file storage and create 
-intermediary files and folders required to convert individual projects files
-into a NWB files
+modules. It operates with internal Allen Institute file storage system and 
+creates intermediary files and folders required to convert individual projects 
+files into NWB files
 
 License
 ========================
