@@ -63,10 +63,10 @@ def run_module(probe_name, module, session_params):
             ephys_mod.ecephys_optotagging_table(session_params)
     if module == 'allensdk.brain_observatory.ecephys_write_nwb':
         session_params, input_json_write_dict =  \
-            ephys_mod.ecephys_write_nwb(session_params)
+            ephys_mod.ecephys_write_nwb(probe_name, session_params)
     if module == 'allensdk.brain_observatory.ecephys_lfp_subsampling':
         session_params, input_json_write_dict = \
-            ephys_mod.ecephys_lfp_subsampling(session_params)
+            ephys_mod.ecephys_lfp_subsampling(probe_name, session_params)
     if module == 'allensdk.brain_observatory.extract_running_speed':
         session_params, input_json_write_dict = \
             ephys_mod.extract_running_speed(session_params)
@@ -75,5 +75,5 @@ def run_module(probe_name, module, session_params):
             ephys_mod.ecephys_align_timestamps(probe_name, session_params)
     if module == 'allensdk.brain_observatory.ecephys.stimulus_table':
         session_params, input_json_write_dict = \
-            ephys_mod.stimulus_table(session_params)    
+            ephys_mod.stimulus_table(session_params)
     return session_params, input_json_write_dict
