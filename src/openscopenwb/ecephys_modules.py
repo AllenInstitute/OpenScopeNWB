@@ -23,22 +23,22 @@ def stimulus_table(session_params):
     -------
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
-    """    
+    """
     trim_discontiguous_frame_times = session_params['trim']
 
     input_json_write_dict = \
         {
             'stimulus_pkl_path': glob(join(session_params['base_directory'],
-                                      "*.stim.pkl"))[0],
+                                           "*.stim.pkl"))[0],
             'sync_h5_path': glob(join(session_params['base_directory'],
-                                 "*.sync"))[0],
+                                      "*.sync"))[0],
             'output_stimulus_table_path':
                 os.path.join(session_params['base_directory'],
                              "stim_table_allensdk.csv"),
             'output_frame_times_path':
                 os.path.join(session_params['base_directory'],
                              "frame_times.npy"),
-            #'trim_discontiguous_frame_times': trim_discontiguous_frame_times,
+            # 'trim_discontiguous_frame_times': trim_discontiguous_frame_times,
             "log_level": 'INFO'
         }
     return session_params, input_json_write_dict
@@ -59,19 +59,22 @@ def ecephys_align_timestamps(probe_idx, session_params):
     -------
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
-    """  
+    """
     spike_times = []
-    base_directory = glob(os.path.join(session_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
-    events_directory = glob(os.path.join(base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
-    probe_directory = glob(os.path.join(base_directory, 'continuous', 'Neuropix*'))[0]
+    base_directory = glob(os.path.join(
+        session_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
+    events_directory = glob(os.path.join(
+        base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
+    probe_directory = glob(os.path.join(
+        base_directory, 'continuous', 'Neuropix*'))[0]
     print(probe_directory)
     timestamp_files = []
 
     timestamp_files.append({
-            'name': 'spike_timestamps',
-            'input_path': join(probe_directory,     'spike_times.npy'),
-            'output_path': join(probe_directory, 'spike_times_master_clock.npy')
-        }
+        'name': 'spike_timestamps',
+        'input_path': join(probe_directory,     'spike_times.npy'),
+        'output_path': join(probe_directory, 'spike_times_master_clock.npy')
+    }
     )
 
     try:
@@ -98,8 +101,8 @@ def ecephys_align_timestamps(probe_idx, session_params):
         else:
             dictionary = {
                 'sync_h5_path': glob(join(
-                               session_params['base_directory'],
-                                '*.sync'))[0],
+                    session_params['base_directory'],
+                    '*.sync'))[0],
                 "probes": session_params['probe_dict_list']
             }
             return session_params, dictionary
@@ -126,8 +129,8 @@ def ecephys_write_nwb(probe_idx, session_params):
 
     try:
         channel_info = pd.read_csv(join(probe_directory,
-                                   'ccf_regions.csv'),
-                                   index_col = 0)
+                                        'ccf_regions.csv'),
+                                   index_col=0)
     except FileNotFoundError:
         pass
 
@@ -151,16 +154,16 @@ def ecephys_write_nwb(probe_idx, session_params):
             channels.append(channel_dict)
 
             unit_info = pd.read_csv(join(probe_directory,
-                                    'metrics.csv'),
+                                         'metrics.csv'),
                                     index_col=0)
             quality_info = pd.read_csv(join(probe_directory,
-                                       'cluster_group.tsv.v2'),
+                                            'cluster_group.tsv.v2'),
                                        sep='\t',
                                        index_col=0)
 
             spike_clusters = np.load(join(probe_directory,
-                                     'spike_clusters.npy'))
-            
+                                          'spike_clusters.npy'))
+
             units = []
             spike_times_index = 0
             spike_amplitudes_index = 0
@@ -176,7 +179,7 @@ def ecephys_write_nwb(probe_idx, session_params):
                         'local_index': idx,
                         'cluster_id': unit_row['cluster_id'],
                         'quality': unit_row['quality'],
-                        'firing_rate': cuf.clean_up_nan_and_inf(unit_row['firing_rate']), 
+                        'firing_rate': cuf.clean_up_nan_and_inf(unit_row['firing_rate']),
                         'snr': cuf.clean_up_nan_and_inf(unit_row['snr']),
                         'isi_violations': cuf.clean_up_nan_and_inf(unit_row['isi_viol']),
                         'presence_ratio': cuf.clean_up_nan_and_inf(unit_row['presence_ratio']),
@@ -201,7 +204,7 @@ def ecephys_write_nwb(probe_idx, session_params):
                     }
                     spike_times_index += spike_count
                     spike_amplitudes_index += spike_count
-                    
+
                     units.append(unit_dict)
                     session_params['last_unit_id'] += 1
 
@@ -223,30 +226,31 @@ def ecephys_write_nwb(probe_idx, session_params):
         if probe_idx != session_params['final_probe']:
             return session_params
         else:
-            sync_file = glob(join(session_params['base_directory'], '*.sync'))[0]
-            YYYY = 2021 #int(session_string[17:21])
-            MM = 6 #int(session_string[21:23])
-            DD = 16 #int(session_string[23:25])
+            sync_file = glob(
+                join(session_params['base_directory'], '*.sync'))[0]
+            YYYY = 2021  # int(session_string[17:21])
+            MM = 6  # int(session_string[21:23])
+            DD = 16  # int(session_string[23:25])
 
             dictionary = \
-            {
-                'invalid_epochs': [{'id': 0,
-                                    'type': 'none',
-                                    'label': 'LABEL',
-                                    'start_time': 0.0,
-                                    'end_time': 0.0}, ],
-                "log_level": 'INFO',
-                "output_path": session_params['base_directory'],
-                "session_id": session_params['session_id'],
-                "session_start_time": datetime.datetime(YYYY, MM, DD, 0, 0, 0).isoformat(),
-                "stimulus_table_path": os.path.join(session_params['base_directory'],
-                                                    'stim_table_allensdk.csv'),
-                "probes": probes,
-                "session_sync_path": sync_file,
-                "running_speed_path": join(session_params['base_directory'],
-                                           'running_speed.h5')
-            }
-        return dictionary
+                {
+                    'invalid_epochs': [{'id': 0,
+                                        'type': 'none',
+                                        'label': 'LABEL',
+                                        'start_time': 0.0,
+                                        'end_time': 0.0}, ],
+                    "log_level": 'INFO',
+                    "output_path": session_params['base_directory'],
+                    "session_id": session_params['session_id'],
+                    "session_start_time": datetime.datetime(YYYY, MM, DD, 0, 0, 0).isoformat(),
+                    "stimulus_table_path": os.path.join(session_params['base_directory'],
+                                                        'stim_table_allensdk.csv'),
+                    "probes": probes,
+                    "session_sync_path": sync_file,
+                    "running_speed_path": join(session_params['base_directory'],
+                                               'running_speed.h5')
+                }
+        return session_params, dictionary
 
 
 def ecephys_optotagging_table(session_params):
@@ -269,7 +273,7 @@ def ecephys_optotagging_table(session_params):
             join(session_params['base_directory'], '*.sync'))[0],
         'output_opto_table_path': join(session_params['base_directory'],
                                        'optotagging_table.csv')
-        }
+    }
     return input_json_write_dict
 
 
@@ -307,12 +311,11 @@ def extract_running_speed(session_params):
     input_json_write_dict = \
         {
             'stimulus_pkl_path': glob(join(session_params['base_directory'],
-                                      "*.stim.pkl"))[0],
+                                           "*.stim.pkl"))[0],
             'sync_h5_path': glob(join(session_params['base_directory'],
                                       "*.sync"))[0],
             'output_path': join(session_params['base_directory'],
                                 "running_speed.h5"),
-            'trim_discontiguous_frame_times': trim_discontiguous_frame_times,
             "log_level": 'INFO'
         }
-    return input_json_write_dict, session_params
+    return session_params, input_json_write_dict
