@@ -3,14 +3,14 @@ import json
 import openscopenwb.ecephys_modules as ephys_mod
 
 
-def create_module_input(module, session_params, input_json_path):
+def create_module_input(module, module_params, input_json_path):
     """Writes an input json and calls the run_module based on the input module
 
     Parameters
     ----------
     module: str
     The specific module that will be used
-    session_params: dict
+    module_params: dict
     Session unique information, used by each module
     input_json_path: str
     The path to write the input json to
@@ -20,8 +20,9 @@ def create_module_input(module, session_params, input_json_path):
     session_params: dict
     Session unique information, used by each module, updated by the module
     """
-    session_params, input_json_write_dict = \
-        write_module_dict(module, session_params)
+    
+    module_params, input_json_write_dict = \
+        write_module_dict(module, module_params)
 
     with io.open(input_json_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(json.dumps(input_json_write_dict,
@@ -29,7 +30,7 @@ def create_module_input(module, session_params, input_json_path):
                                      sort_keys=True,
                                      indent=4))
 
-    return session_params
+    return module_params
 
 
 def write_module_dict(module, module_params):
