@@ -13,10 +13,11 @@
   ],
   "lims":[
   ],
-  "nwb_path": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\NWB",
+  "nwb_path": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\NWB\\spike_times.nwb",
   "input_json": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\JSON",
   "output_json": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\JSON",
-  "session": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo",
+  "session_dir": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\",
   "trim_discontiguous_frame_times": false,
+  "last_unit_id": 1,
   "string": "Hello World"
 }
