@@ -7,6 +7,9 @@ from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import parse_project_parameters as ppp
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+logging.basicConfig(filename="std.log",
+                    format='%(asctime)s %(message)s',
+                    filemode='w')
 
 project_parameter_json = r"\scripts\deciphering_variability\project_json"
 project_params = ppp.parse_json(project_parameter_json)

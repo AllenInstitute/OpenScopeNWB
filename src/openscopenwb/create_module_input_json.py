@@ -20,7 +20,7 @@ def create_module_input(module, module_params, input_json_path):
     session_params: dict
     Session unique information, used by each module, updated by the module
     """
-    
+
     module_params, input_json_write_dict = \
         write_module_dict(module, module_params)
 

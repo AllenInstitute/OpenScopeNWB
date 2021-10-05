@@ -234,7 +234,6 @@ def generate_all_session_params(project_dict):
     Parameters
     ----------
     project_dict: dict
- 
 
     Returns
     -------
