@@ -30,7 +30,9 @@ for session in sessions:
     # for module in session_modules
     # for module in probe_modules
     # session_params = ppp.generate_session_params(project_parameters,
-    #                                                     session)
+    #     
+    #                                                session)
+    
     session_params = {
         'session_id': '725254892',
         'base_directory': "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo",
@@ -40,6 +42,7 @@ for session in sessions:
         'probe_dict_list': [],
         'trim': False
     }
+    probes = session_params['probes']
     for module in session_modules:
         #json_directory = ppp.get_input_json_directory(project_parameters)
         json_directory = session_params['base_directory'] + '\\JSON'
@@ -48,7 +51,7 @@ for session in sessions:
         output_json = os.path.join(json_directory, session + '-' + module
                                    + '-output.json')
         session_params = osnjson.create_module_input(
-            module, session_params, input_json, False)
+            module, session_params, input_json)
 
         command_string = ["python", "-W", "ignore", "-m", module,
                           "--input_json", input_json,
@@ -57,6 +60,7 @@ for session in sessions:
         logging.debug("Starting Session Level Module")
         subprocess.check_call(command_string)
         logging.debug("Finished Session Level Module")
+
     for module in probe_modules:
         #json_directory = ppp.get_input_json_directory(project_parameters)
         json_directory = session_params['base_directory'] + '\\JSON'
@@ -64,8 +68,9 @@ for session in sessions:
                                   + '-input.json')
         output_json = os.path.join(json_directory, session + '-' + module
                                    + '-output.json')
-        session_params = osnjson.create_module_input(
-            module, session_params, input_json, True)
+        for probe in probes:
+            session_params = osnjson.create_module_input(
+                module, session_params, input_json)
         command_string = ["python", "-W", "ignore", "-m", module,
                           "--input_json", input_json,
                           "--output_json", output_json]
