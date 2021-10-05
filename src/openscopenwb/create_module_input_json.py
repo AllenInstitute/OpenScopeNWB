@@ -22,17 +22,8 @@ def create_module_input(module, session_params, input_json_path, probe_level):
     session_params: dict
     Session unique information, used by each module, updated by the module
     """
-    probes = session_params['probes']
-    if(probe_level):
-        for probe_name in probes:
-            module_params = session_params
-            module_params['current_probe'] = probe_name
-            session_params, input_json_write_dict = \
-                run_module(module, module_params)
-    else:
-        module_params = session_params
-        session_params, input_json_write_dict = \
-            run_module(module, module_params)
+    session_params, input_json_write_dict = \
+        run_module(module, session_params)
 
     with io.open(input_json_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(json.dumps(input_json_write_dict,
