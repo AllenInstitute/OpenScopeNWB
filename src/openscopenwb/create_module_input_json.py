@@ -23,7 +23,7 @@ def create_module_input(module, session_params, input_json_path, probe_level):
     Session unique information, used by each module, updated by the module
     """
     session_params, input_json_write_dict = \
-        run_module(module, session_params)
+        write_module_dict(module, session_params)
 
     with io.open(input_json_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(json.dumps(input_json_write_dict,
@@ -34,7 +34,7 @@ def create_module_input(module, session_params, input_json_path, probe_level):
     return session_params
 
 
-def run_module(module, module_params):
+def write_module_dict(module, module_params):
     """ Creates a dictionary for an input json with information
     that is used by each module
 
