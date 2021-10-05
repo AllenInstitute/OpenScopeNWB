@@ -3,13 +3,11 @@ import json
 import openscopenwb.ecephys_modules as ephys_mod
 
 
-def create_module_input(module, session_params, input_json_path, probe_level):
+def create_module_input(module, session_params, input_json_path):
     """Writes an input json and calls the run_module based on the input module
 
     Parameters
     ----------
-    probes: list
-    A list of the probes for the experiment
     module: str
     The specific module that will be used
     session_params: dict
@@ -41,11 +39,9 @@ def write_module_dict(module, module_params):
     Parameters
     ----------
 
-    probe_name: str
-    The name of the probe currently being used
     module: str
     The specific module that will be used
-    session_params: dict
+    module_params: dict
     Session unique information, used by each module
 
     Returns
