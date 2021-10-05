@@ -30,8 +30,9 @@ def create_module_input(module, session_params, input_json_path, probe_level):
             session_params, input_json_write_dict = \
                 run_module(module, module_params)
     else:
+        module_params = session_params
         session_params, input_json_write_dict = \
-            run_module(module, session_params)
+            run_module(module, module_params)
 
     with io.open(input_json_path, 'w', encoding='utf-8') as file_handle:
         file_handle.write(json.dumps(input_json_write_dict,
@@ -42,7 +43,7 @@ def create_module_input(module, session_params, input_json_path, probe_level):
     return session_params
 
 
-def run_module(module, session_params):
+def run_module(module, module_params):
     """ Creates a dictionary for an input json with information
     that is used by each module
 
@@ -66,20 +67,20 @@ def run_module(module, session_params):
     input_json_write_dict = {}
     if module == 'allensdk.brain_observatory.ecephys_optotagging_table':
         session_params, input_json_write_dict =  \
-            ephys_mod.ecephys_optotagging_table(session_params)
+            ephys_mod.ecephys_optotagging_table(module_params)
     if module == 'allensdk.brain_observatory.ecephys_write_nwb':
         session_params, input_json_write_dict =  \
-            ephys_mod.ecephys_write_nwb(session_params)
+            ephys_mod.ecephys_write_nwb(module_params)
     if module == 'allensdk.brain_observatory.ecephys_lfp_subsampling':
         session_params, input_json_write_dict = \
-            ephys_mod.ecephys_lfp_subsampling(session_params)
+            ephys_mod.ecephys_lfp_subsampling(module_params)
     if module == 'allensdk.brain_observatory.extract_running_speed':
         session_params, input_json_write_dict = \
-            ephys_mod.extract_running_speed(session_params)
+            ephys_mod.extract_running_speed(module_params)
     if module == 'allensdk.brain_observatory.ecephys.align_timestamps':
         session_params, input_json_write_dict = \
-            ephys_mod.ecephys_align_timestamps(session_params)
+            ephys_mod.ecephys_align_timestamps(module_params)
     if module == 'allensdk.brain_observatory.ecephys.stimulus_table':
         session_params, input_json_write_dict = \
-            ephys_mod.stimulus_table(session_params)
+            ephys_mod.stimulus_table(module_params)
     return session_params, input_json_write_dict
