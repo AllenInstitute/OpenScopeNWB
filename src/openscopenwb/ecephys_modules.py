@@ -9,13 +9,13 @@ from os.path import join
 from glob import glob
 
 
-def stimulus_table(session_params):
+def stimulus_table(module_params):
     """Returns the dict for the stimulus path
 
     Parameters
     ----------
-    session_params: dict
-    Session unique information, used by each module
+    module_params: dict
+    Session or probe unique information, used by each module
     trim: bool
     Whether or not to trim values
 
@@ -24,35 +24,35 @@ def stimulus_table(session_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
-    trim_discontiguous_frame_times = session_params['trim']
+    trim_discontiguous_frame_times = module_params['trim']
 
     input_json_write_dict = \
         {
-            'stimulus_pkl_path': glob(join(session_params['base_directory'],
+            'stimulus_pkl_path': glob(join(module_params['base_directory'],
                                            "*.stim.pkl"))[0],
-            'sync_h5_path': glob(join(session_params['base_directory'],
+            'sync_h5_path': glob(join(module_params['base_directory'],
                                       "*.sync"))[0],
             'output_stimulus_table_path':
-                os.path.join(session_params['base_directory'],
+                os.path.join(module_params['base_directory'],
                              "stim_table_allensdk.csv"),
             'output_frame_times_path':
-                os.path.join(session_params['base_directory'],
+                os.path.join(module_params['base_directory'],
                              "frame_times.npy"),
             # 'trim_discontiguous_frame_times': trim_discontiguous_frame_times,
             "log_level": 'INFO'
         }
-    return session_params, input_json_write_dict
+    return module_params, input_json_write_dict
 
 
-def ecephys_align_timestamps(session_params):
+def ecephys_align_timestamps(module_params):
     """Returns the dict for the timestamps json
 
     Parameters
     ----------
     probe_idx: str
     The name/id of the current probe
-    session_params: dict
-    Session unique information, used by each module
+    module_params: dict
+    Session or probe unique information, used by each module
 
 
     Returns
@@ -61,9 +61,9 @@ def ecephys_align_timestamps(session_params):
     A dictionary representing the values that will be written to the input json
     """
     spike_times = []
-    probe_idx = session_params['current_probe']
+    probe_idx = module_params['current_probe']
     base_directory = glob(os.path.join(
-        session_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
+        module_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
     events_directory = glob(os.path.join(
         base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
     probe_directory = glob(os.path.join(
@@ -96,28 +96,28 @@ def ecephys_align_timestamps(session_params):
             'mappable_timestamp_files': timestamp_files,
         }
 
-        session_params['probe_dict_list'].append(probe_dict)
-        if probe_idx != session_params['final_probe']:
-            return session_params, probe_dict
+        module_params['probe_dict_list'].append(probe_dict)
+        if probe_idx != module_params['final_probe']:
+            return module_params, probe_dict
         else:
             dictionary = {
                 'sync_h5_path': glob(join(
-                    session_params['base_directory'],
+                    module_params['base_directory'],
                     '*.sync'))[0],
-                "probes": session_params['probe_dict_list']
+                "probes": module_params['probe_dict_list']
             }
-            return session_params, dictionary
+            return module_params, dictionary
 
 
-def ecephys_write_nwb(session_params):
+def ecephys_write_nwb(module_params):
     """Writes the input json for the nwb modules
 
     Parameters
     ----------
     probe_idx: str,
     The id of the current probe
-    session_params: dict
-    Session unique information, used by each module
+    module_params: dict
+    Session or probe unique information, used by each module
 
 
     Returns
@@ -125,8 +125,8 @@ def ecephys_write_nwb(session_params):
     None
     """
     probes = []
-    probe_idx = session_params['current_probe']
-    probe_directory = glob(os.path.join(session_params['base_directory'] + '\\' + probe_idx + '_sorted')[0],
+    probe_idx = module_params['current_probe']
+    probe_directory = glob(os.path.join(module_params['base_directory'] + '\\' + probe_idx + '_sorted')[0],
                            'continuous', 'Neuropix*')[0]
 
     try:
@@ -175,7 +175,7 @@ def ecephys_write_nwb(session_params):
                     spike_count = np.sum(spike_clusters ==
                                          unit_row['cluster_id'])
                     unit_dict = {
-                        'id': session_params['last_unit_id'],
+                        'id': module_params['last_unit_id'],
                         'peak_channel_id': unit_row['peak_channel'] +
                         probe_idx * 100,
                         'local_index': idx,
@@ -208,7 +208,7 @@ def ecephys_write_nwb(session_params):
                     spike_amplitudes_index += spike_count
 
                     units.append(unit_dict)
-                    session_params['last_unit_id'] += 1
+                    module_params['last_unit_id'] += 1
 
                 probe_dict = {
                     'id': probe_idx,
@@ -224,12 +224,12 @@ def ecephys_write_nwb(session_params):
                     'units': units,
                     'lfp': None
                 }
-                session_params['probe_dict_list'].append(probe_dict)
-        if probe_idx != session_params['final_probe']:
-            return session_params
+                module_params['probe_dict_list'].append(probe_dict)
+        if probe_idx != module_params['final_probe']:
+            return module_params
         else:
             sync_file = glob(
-                join(session_params['base_directory'], '*.sync'))[0]
+                join(module_params['base_directory'], '*.sync'))[0]
             YYYY = 2021  # int(session_string[17:21])
             MM = 6  # int(session_string[21:23])
             DD = 16  # int(session_string[23:25])
@@ -242,26 +242,26 @@ def ecephys_write_nwb(session_params):
                                         'start_time': 0.0,
                                         'end_time': 0.0}, ],
                     "log_level": 'INFO',
-                    "output_path": session_params['base_directory'],
-                    "session_id": session_params['session_id'],
+                    "output_path": module_params['base_directory'],
+                    "session_id": module_params['session_id'],
                     "session_start_time": datetime.datetime(YYYY, MM, DD, 0, 0, 0).isoformat(),
-                    "stimulus_table_path": os.path.join(session_params['base_directory'],
+                    "stimulus_table_path": os.path.join(module_params['base_directory'],
                                                         'stim_table_allensdk.csv'),
                     "probes": probes,
                     "session_sync_path": sync_file,
-                    "running_speed_path": join(session_params['base_directory'],
+                    "running_speed_path": join(module_params['base_directory'],
                                                'running_speed.h5')
                 }
-        return session_params, dictionary
+        return module_params, dictionary
 
 
-def ecephys_optotagging_table(session_params):
+def ecephys_optotagging_table(module_params):
     """ Writes the relevant optotagging information to the input json
 
     Parameters
     ----------
-    session_params: dict
-    Session unique information, used by each module
+    module_params: dict
+    Session or probe unique information, used by each module
 
     Returns
     -------
@@ -270,22 +270,22 @@ def ecephys_optotagging_table(session_params):
     """
     input_json_write_dict = {
         'opto_pickle_path': glob(
-            join(session_params['base_directory'], '*.opto.pkl'))[0],
+            join(module_params['base_directory'], '*.opto.pkl'))[0],
         'sync_h5_path': glob(
-            join(session_params['base_directory'], '*.sync'))[0],
-        'output_opto_table_path': join(session_params['base_directory'],
+            join(module_params['base_directory'], '*.sync'))[0],
+        'output_opto_table_path': join(module_params['base_directory'],
                                        'optotagging_table.csv')
     }
     return input_json_write_dict
 
 
-def ecephys_lfp_subsampling(session_params):
+def ecephys_lfp_subsampling(module_params):
     """ Writes the lfp sampling information to the input json
 
     Parameters
     ----------
-    session_params: dict
-    Session unique information, used by each module
+    module_params: dict
+    Session or probe unique information, used by each module
 
     Returns
     -------
@@ -294,13 +294,13 @@ def ecephys_lfp_subsampling(session_params):
     """
 
 
-def extract_running_speed(session_params):
+def extract_running_speed(module_params):
     """Writes the stimulus and pkl paths to the input json
 
     Parameters
     ----------
-    session_params: dict
-    Session unique information, used by each module
+    module_params: dict
+    Session or probe unique information, used by each module
 
     Returns
     -------
@@ -308,16 +308,16 @@ def extract_running_speed(session_params):
     A dictionary representing the values that will be written to the input json
     """
 
-    trim_discontiguous_frame_times = session_params['trim']
+    trim_discontiguous_frame_times = module_params['trim']
 
     input_json_write_dict = \
         {
-            'stimulus_pkl_path': glob(join(session_params['base_directory'],
+            'stimulus_pkl_path': glob(join(module_params['base_directory'],
                                            "*.stim.pkl"))[0],
-            'sync_h5_path': glob(join(session_params['base_directory'],
+            'sync_h5_path': glob(join(module_params['base_directory'],
                                       "*.sync"))[0],
-            'output_path': join(session_params['base_directory'],
+            'output_path': join(module_params['base_directory'],
                                 "running_speed.h5"),
             "log_level": 'INFO'
         }
-    return session_params, input_json_write_dict
+    return module_params, input_json_write_dict
