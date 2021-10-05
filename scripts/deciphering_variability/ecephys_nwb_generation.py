@@ -29,7 +29,11 @@ for session_params in session_param_list:
             module_params = osnjson.create_module_input(
                 module, module_params, input_json)
 
-            command_string = sf.generate_command_string
+            command_string = sf.generate_module_cmd(
+                                module,
+                                input_json,
+                                output_json
+            )
             logging.debug("Starting Session Level Module")
             subprocess.check_call(command_string)
             logging.debug("Finished Session Level Module")
@@ -39,7 +43,7 @@ for session_params in session_param_list:
                 module_params['current_probe'] = probe
                 module_params = osnjson.create_module_input(
                     module, module_params, input_json)
-                command_string = sf.generate_command_string(
+                command_string = sf.generate_module_cmd(
                                     module,
                                     input_json,
                                     output_json

@@ -1,4 +1,4 @@
-def generate_command_string(module, input_json, output_json):
+def generate_module_cmd(module, input_json, output_json):
     """Generates a command string to use for subprocess calling
 
     Parameters
@@ -15,7 +15,7 @@ def generate_command_string(module, input_json, output_json):
     command_string: str
     a string of the command string that will be used by the subprocess
     """
-    command_string = ["python", "-W", "ignore", "-m", module,
-                      "--input_json", input_json,
-                      "--output_json", output_json]
-    return command_string
+    module_cmd = ["python", "-W", "ignore", "-m", module,
+                  "--input_json", input_json,
+                  "--output_json", output_json]
+    return module_cmd
