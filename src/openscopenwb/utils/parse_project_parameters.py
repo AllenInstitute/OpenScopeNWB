@@ -155,6 +155,18 @@ def get_trim(project_dict):
     return trim
 
 
+def get_module_types(project_dict):
+    session_modules = []
+    probe_modules = []
+    for module in get_modules(project_dict):
+        if module == 'allensdk.brain_observatory.ecephys.align_timestamps':
+            session_modules.append(module)
+        elif module == 'allensdk.brain_observatory.extract_running_speed':
+            session_modules.append(module)
+        else:
+            probe_modules.append(module)
+    return session_modules, probe_modules
+
 def generate_session_params(project_dict, session, probe_count):
     """Generates a single session parameters using the project dict
 
