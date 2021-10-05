@@ -44,7 +44,7 @@ def stimulus_table(session_params):
     return session_params, input_json_write_dict
 
 
-def ecephys_align_timestamps(probe_idx, session_params):
+def ecephys_align_timestamps(session_params):
     """Returns the dict for the timestamps json
 
     Parameters
@@ -61,6 +61,7 @@ def ecephys_align_timestamps(probe_idx, session_params):
     A dictionary representing the values that will be written to the input json
     """
     spike_times = []
+    probe_idx = session_params['current_probe']
     base_directory = glob(os.path.join(
         session_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
     events_directory = glob(os.path.join(
@@ -108,7 +109,7 @@ def ecephys_align_timestamps(probe_idx, session_params):
             return session_params, dictionary
 
 
-def ecephys_write_nwb(probe_idx, session_params):
+def ecephys_write_nwb(session_params):
     """Writes the input json for the nwb modules
 
     Parameters
@@ -124,6 +125,7 @@ def ecephys_write_nwb(probe_idx, session_params):
     None
     """
     probes = []
+    probe_idx = session_params['current_probe']
     probe_directory = glob(os.path.join(session_params['base_directory'] + '\\' + probe_idx + '_sorted')[0],
                            'continuous', 'Neuropix*')[0]
 
