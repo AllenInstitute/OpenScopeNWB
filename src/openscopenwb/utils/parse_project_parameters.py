@@ -143,7 +143,7 @@ def get_session_dir(project_dict):
 
     Returns
     -------
-    session_base_dir
+    session_base_dir: str
     a string of the session specific paths used by the project
     """
     session_base_dir = project_dict['session_dir']
@@ -151,11 +151,35 @@ def get_session_dir(project_dict):
 
 
 def get_trim(project_dict):
+    """Determines whether to trim frame times based on project dict
+
+    Parameters
+    ----------
+    project_dict: dict
+
+    Returns
+    -------
+    trim: bool
+    Whether to trim discontiguous frame times
+    """
     trim = project_dict['trim_discontiguous_frame_times']
     return trim
 
 
 def get_module_types(project_dict):
+    """Creates a list of modules, sorted by project or session level
+
+    Parameters
+    ----------
+    project_dict: dict
+
+    Returns
+    -------
+    session_modules: list
+    a list of the session level modules used by the project
+    probe_modules: list
+    a list of the probe level modules used by the project
+    """
     session_modules = []
     probe_modules = []
     for module in get_modules(project_dict):
@@ -166,6 +190,7 @@ def get_module_types(project_dict):
         else:
             probe_modules.append(module)
     return session_modules, probe_modules
+
 
 def generate_session_params(project_dict, session, probe_count):
     """Generates a single session parameters using the project dict
@@ -188,6 +213,7 @@ def generate_session_params(project_dict, session, probe_count):
     probes = get_probes(project_dict)
     final_probe = probes[-1]
     trim = get_trim(project_dict)
+    session_modules, probe_modules = get_module_types(project_dict)
     session_parameters = {
         'session_id': session,
         'base_directory': session_paths,
@@ -195,7 +221,9 @@ def generate_session_params(project_dict, session, probe_count):
         'probes': probes,
         'final_probe': final_probe,
         'probe_dict_list': {},
-        'trim': trim
+        'trim': trim,
+        'session_modules': session_modules,
+        'probe_modules': probe_modules
     }
     return session_parameters
 
