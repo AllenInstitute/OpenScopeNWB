@@ -1,3 +1,5 @@
+import json
+
 def parse_json(project_parameter_json):
     """Gets all relevant information from the parameter_json
 
@@ -10,6 +12,10 @@ def parse_json(project_parameter_json):
     -------
     project_dict: dict
     """
+    param_file = open(project_parameter_json)
+    project_dict = json.load(param_file)
+    param_file.close()
+    return project_dict
 
 
 def get_session_ids(project_dict):
@@ -24,6 +30,8 @@ def get_session_ids(project_dict):
     session_id_list: list
     a list of the session ids used by the project
     """
+    session_id_list = project_dict['sessions']
+    return session_id_list
 
 
 def get_modules(project_dict):
@@ -38,6 +46,8 @@ def get_modules(project_dict):
     module_list: list
     a list of the modules used by the project
     """
+    module_list = project_dict['modules']
+    return module_list
 
 
 def get_output_json_directory(project_dict):
@@ -50,9 +60,11 @@ def get_output_json_directory(project_dict):
 
     Returns
     -------
-    output_json_directory: str
+    output_json_dir: str
     a string of the output json directory used by the project
     """
+    output_json_dir = project_dict['output_json']
+    return output_json_dir
 
 
 def get_input_json_directory(project_dict):
@@ -65,9 +77,11 @@ def get_input_json_directory(project_dict):
 
     Returns
     -------
-    input_json_directory: str
+    input_json_dir: str
     a string of the inputput json directory used by the project
     """
+    input_json_dir = project_dict['input_json']
+    return input_json_dir
 
 
 def get_lims_path(project_dict):
@@ -79,9 +93,11 @@ def get_lims_path(project_dict):
 
     Returns
     -------
-    lims_directory: str
+    lims_dir: str
     a string of the output lims directory used by the project
     """
+    lims_dir = project_dict['lims']
+    return lims_dir
 
 
 def get_output_nwb_path(project_dict):
@@ -94,12 +110,14 @@ def get_output_nwb_path(project_dict):
 
     Returns
     -------
-    output_nwb_directory: str
+    output_nwb_dir: str
     a string of the output nwb directory used by the project
     """
+    output_nwb_dir = project_dict['nwb_path']
+    return output_nwb_dir
 
 
-def get_session_paths(project_dict):
+def get_session_dir(project_dict):
     """Gets the session directory to read from the project_dict
 
     Parameters
@@ -108,9 +126,11 @@ def get_session_paths(project_dict):
 
     Returns
     -------
-    session_path_list
+    session_base_dir
     a string of the session specific paths used by the project
     """
+    session_base_dir = project_dict['session_dir']
+    return session_base_dir
 
 
 def generate_session_parameters(project_dict, session):
@@ -128,7 +148,7 @@ def generate_session_parameters(project_dict, session):
     Session level parameters such as the base directory, session id, etc
     """
     session_parameters = {}
-    session_paths = get_session_paths(project_dict)
+    session_paths = get_session_dir(project_dict)
     session_parameters = {
         'session_id': session,
         'base_directory': session_paths[session]
