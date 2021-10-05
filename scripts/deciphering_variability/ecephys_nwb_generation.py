@@ -2,8 +2,10 @@ import os
 import subprocess
 import warnings
 import openscopenwb as osn
+import logging
 import openscopenwb.create_module_input_json as osnjson
 from openscopenwb.utils import parse_project_parameters as ppp
+from pynwb import NWBHDF5IO
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
@@ -14,17 +16,24 @@ project_parameter_json = "path to project file"
 
 
 # Settings, currently being used for testing
-sessions = ['721123822']
+sessions = ['725254892']
 modules = ['allensdk.brain_observatory.ecephys.align_timestamps',
            'allensdk.brain_observatory.ecephys.stimulus_table',
            'allensdk.brain_observatory.extract_running_speed',
            'allensdk.brain_observatory.ecephys.write_nwb']
+
+session_modules = ['allensdk.brain_observatory.ecephys.align_timestamps']
+probe_modules = ['allensdk.brain_observatory.ecephys.stimulus_table',
+                 'allensdk.brain_observatory.extract_running_speed',
+                 'allensdk.brain_observatory.ecephys.write_nwb']
 for session in sessions:
+    # for module in session_modules
+    # for module in probe_modules
     # session_params = ppp.generate_session_params(project_parameters,
     #                                                     session)
     session_params = {
-        'session_id': '721123822',
-        'base_directory': "/Users/jeromel/Documents/Work documents/Allen Institute/Projects/OpenScope/Sub projects/NWB_conversion/ephys_session_725254892_demo",
+        'session_id': '725254892',
+        'base_directory': "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo",
         'last_unit_id': 1,
         'probes': ['probeA'],
         'final_probe': 'probeA',
@@ -33,7 +42,7 @@ for session in sessions:
     }
     for module in modules:
         #json_directory = ppp.get_input_json_directory(project_parameters)
-        json_directory = session_params['base_directory'] + '/JSON'
+        json_directory = session_params['base_directory'] + '\\JSON'
         input_json = os.path.join(json_directory, session + '-' + module
                                   + '-input.json')
         output_json = os.path.join(json_directory, session + '-' + module
@@ -45,4 +54,6 @@ for session in sessions:
                           "--input_json", input_json,
                           "--output_json", output_json]
 
+        logging.debug("Starting Module")
         subprocess.check_call(command_string)
+        logging.debug("Finished Module")
