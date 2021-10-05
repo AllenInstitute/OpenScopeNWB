@@ -8,7 +8,7 @@ from openscopenwb.utils import parse_project_parameters as ppp
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
-project_parameter_json = "path to project file"
+project_parameter_json = r"C:\Users\ahad.bawany\Documents\OpenScopeNWB-test_NWB_Generation\scripts\deciphering_variability\project_json"
 project_params = ppp.parse_json(project_parameter_json)
 sessions = ppp.get_session_ids(project_params)
 session_param_list = ppp.generate_all_session_params(project_params)
