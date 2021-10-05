@@ -5,17 +5,18 @@ import openscopenwb as osn
 import logging
 import openscopenwb.create_module_input_json as osnjson
 from openscopenwb.utils import parse_project_parameters as ppp
-from pynwb import NWBHDF5IO
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
 project_parameter_json = "path to project file"
-# project_parameters = ppp.parse_json(project_parameter_json)
-# sessions = ppp.get_session_ids(project_parameters)
-# modules = ppp.get_modules(project_parameters)
+project_params = ppp.parse_json(project_parameter_json)
+sessions = ppp.get_session_ids(project_params)
+modules = ppp.get_modules(project_params)
+session_modules, probe_modules = ppp.get_module_types(project_params)
 
 
-# Settings, currently being used for testing
+'''
+Test Settings
 sessions = ['725254892']
 modules = ['allensdk.brain_observatory.ecephys.align_timestamps',
            'allensdk.brain_observatory.ecephys.stimulus_table',
@@ -26,10 +27,11 @@ session_modules = ['allensdk.brain_observatory.ecephys.align_timestamps']
 probe_modules = ['allensdk.brain_observatory.ecephys.stimulus_table',
                  'allensdk.brain_observatory.extract_running_speed',
                  'allensdk.brain_observatory.ecephys.write_nwb']
+'''
 for session in sessions:
     # for module in session_modules
     # for module in probe_modules
-    # session_params = ppp.generate_session_params(project_parameters,
+    # session_params = ppp.generate_session_params(project_params,
     #     
     #                                                session)
     
@@ -43,38 +45,30 @@ for session in sessions:
         'trim': False
     }
     probes = session_params['probes']
-    for module in session_modules:
-        #json_directory = ppp.get_input_json_directory(project_parameters)
-        json_directory = session_params['base_directory'] + '\\JSON'
+    for module in modules:
+        json_directory = ppp.get_input_json_directory(project_params)
         input_json = os.path.join(json_directory, session + '-' + module
-                                  + '-input.json')
+                                    + '-input.json')
         output_json = os.path.join(json_directory, session + '-' + module
-                                   + '-output.json')
-        session_params = osnjson.create_module_input(
-            module, session_params, input_json)
-
-        command_string = ["python", "-W", "ignore", "-m", module,
-                          "--input_json", input_json,
-                          "--output_json", output_json]
-
-        logging.debug("Starting Session Level Module")
-        subprocess.check_call(command_string)
-        logging.debug("Finished Session Level Module")
-
-    for module in probe_modules:
-        #json_directory = ppp.get_input_json_directory(project_parameters)
-        json_directory = session_params['base_directory'] + '\\JSON'
-        input_json = os.path.join(json_directory, session + '-' + module
-                                  + '-input.json')
-        output_json = os.path.join(json_directory, session + '-' + module
-                                   + '-output.json')
-        for probe in probes:
+                                    + '-output.json')
+        if module in session_modules:
             session_params = osnjson.create_module_input(
                 module, session_params, input_json)
-        command_string = ["python", "-W", "ignore", "-m", module,
-                          "--input_json", input_json,
-                          "--output_json", output_json]
 
-        logging.debug("Starting Probe Level Module")
-        subprocess.check_call(command_string)
-        logging.debug("Finished Probe Level Module")
+            command_string = ["python", "-W", "ignore", "-m", module,
+                              "--input_json", input_json,
+                              "--output_json", output_json]
+            logging.debug("Starting Session Level Module")
+            subprocess.check_call(command_string)
+            logging.debug("Finished Session Level Module")
+        elif module in probe_modules: 
+            for probe in probes:
+                session_params = osnjson.create_module_input(
+                    module, session_params, input_json)
+                command_string = ["python", "-W", "ignore", "-m", module,
+                                  "--input_json", input_json,
+                                  "--output_json", output_json]
+            logging.debug("Starting Probe Level Module")
+            subprocess.check_call(command_string)
+            logging.debug("Finished Probe Level Module")
+            
