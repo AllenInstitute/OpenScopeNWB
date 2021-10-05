@@ -16,11 +16,12 @@ def stimulus_table(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
-    trim: bool
-    Whether or not to trim values
+ 
 
     Returns
     -------
+    module_params: dict
+    Session or probe unique information, used by each module
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
@@ -49,14 +50,14 @@ def ecephys_align_timestamps(module_params):
 
     Parameters
     ----------
-    probe_idx: str
-    The name/id of the current probe
     module_params: dict
     Session or probe unique information, used by each module
-
+ 
 
     Returns
     -------
+    module_params: dict
+    Session or probe unique information, used by each module
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
@@ -100,13 +101,13 @@ def ecephys_align_timestamps(module_params):
         if probe_idx != module_params['final_probe']:
             return module_params, probe_dict
         else:
-            dictionary = {
+            input_json_write_dict = {
                 'sync_h5_path': glob(join(
                     module_params['base_directory'],
                     '*.sync'))[0],
                 "probes": module_params['probe_dict_list']
             }
-            return module_params, dictionary
+            return module_params, input_json_write_dict
 
 
 def ecephys_write_nwb(module_params):
@@ -114,15 +115,16 @@ def ecephys_write_nwb(module_params):
 
     Parameters
     ----------
-    probe_idx: str,
-    The id of the current probe
     module_params: dict
     Session or probe unique information, used by each module
-
+ 
 
     Returns
     -------
-    None
+    module_params: dict
+    Session or probe unique information, used by each module
+    input_json_write_dict: dict
+    A dictionary representing the values that will be written to the input json
     """
     probes = []
     probe_idx = module_params['current_probe']
@@ -234,7 +236,7 @@ def ecephys_write_nwb(module_params):
             MM = 6  # int(session_string[21:23])
             DD = 16  # int(session_string[23:25])
 
-            dictionary = \
+            input_json_write_dict = \
                 {
                     'invalid_epochs': [{'id': 0,
                                         'type': 'none',
@@ -252,7 +254,7 @@ def ecephys_write_nwb(module_params):
                     "running_speed_path": join(module_params['base_directory'],
                                                'running_speed.h5')
                 }
-        return module_params, dictionary
+        return module_params, input_json_write_dict
 
 
 def ecephys_optotagging_table(module_params):
@@ -262,9 +264,12 @@ def ecephys_optotagging_table(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
+ 
 
     Returns
     -------
+    module_params: dict
+    Session or probe unique information, used by each module
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
@@ -286,9 +291,12 @@ def ecephys_lfp_subsampling(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
+ 
 
     Returns
     -------
+    module_params: dict
+    Session or probe unique information, used by each module
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
@@ -301,9 +309,12 @@ def extract_running_speed(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
+ 
 
     Returns
     -------
+    module_params: dict
+    Session or probe unique information, used by each module
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
