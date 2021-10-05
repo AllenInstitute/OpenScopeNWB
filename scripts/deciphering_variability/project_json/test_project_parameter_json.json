@@ -1,0 +1,22 @@
+{
+  "probes": [
+    "probeA"
+  ],
+  "modules": [
+    "allensdk.brain_observatory.ecephys.align_timestamps",
+    "allensdk.brain_observatory.ecephys.stimulus_table",
+    "allensdk.brain_observatory.extract_running_speed",
+    "allensdk.brain_observatory.ecephys.write_nwb"
+  ],
+  "sessions":[
+    "725254892"  
+  ],
+  "lims":[
+  ],
+  "nwb_path": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\NWB",
+  "input_json": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\JSON",
+  "output_json": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo\\JSON",
+  "session": "C:\\Users\\ahad.bawany\\Documents\\ephys_session_725254892_demo\\ephys_session_725254892_demo",
+  "trim_discontiguous_frame_times": false,
+  "string": "Hello World"
+}
