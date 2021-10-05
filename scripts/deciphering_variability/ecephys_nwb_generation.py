@@ -10,7 +10,6 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
 project_parameter_json = r"\scripts\deciphering_variability\project_json"
 project_params = ppp.parse_json(project_parameter_json)
-sessions = ppp.get_session_ids(project_params)
 session_param_list = ppp.generate_all_session_params(project_params)
 modules = ppp.get_modules(project_params)
 session_modules, probe_modules = ppp.get_module_types(project_params)
