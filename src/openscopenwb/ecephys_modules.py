@@ -21,7 +21,6 @@ def stimulus_table(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
- 
 
     Returns
     -------
@@ -30,7 +29,7 @@ def stimulus_table(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
-    trim_discontiguous_frame_times = module_params['trim']
+    # trim_discontiguous_frame_times = module_params['trim']
 
     input_json_write_dict = \
         {
@@ -57,7 +56,6 @@ def ecephys_align_timestamps(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
- 
 
     Returns
     -------
@@ -66,7 +64,6 @@ def ecephys_align_timestamps(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
-    spike_times = []
     probe_idx = module_params['current_probe']
     base_directory = glob(os.path.join(
         module_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
@@ -85,11 +82,10 @@ def ecephys_align_timestamps(module_params):
     )
 
     try:
-        spike_times = np.load(join(probe_directory, 'spike_times.npy'))
+        np.load(join(probe_directory, 'spike_times.npy'))
     except FileNotFoundError:
         print(' Spikes not found for ' + probe_directory)
     else:
-
         probe_dict = {
             'name': probe_idx,
             'sampling_rate': 30000.,
@@ -123,7 +119,6 @@ def ecephys_write_nwb(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
- 
 
     Returns
     -------
@@ -136,7 +131,9 @@ def ecephys_write_nwb(module_params):
     probe_idx = module_params['current_probe']
     base_directory = glob(os.path.join(
         module_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
-    probe_directory = glob(os.path.join(base_directory, 'continuous', 'Neuropix*'))[0]
+    probe_directory = glob(os.path.join(base_directory,
+                                        'continuous',
+                                        'Neuropix*'))[0]
 
     try:
         channel_info = pd.read_csv(join(probe_directory,
@@ -166,15 +163,15 @@ def ecephys_write_nwb(module_params):
             channels.append(channel_dict)
 
         unit_info = pd.read_csv(join(probe_directory,
-                                        'metrics.csv'),
+                                     'metrics.csv'),
                                 index_col=0)
         quality_info = pd.read_csv(join(probe_directory,
                                         'cluster_group.tsv'),
-                                    sep='\t',
-                                    index_col=0)
+                                   sep='\t',
+                                   index_col=0)
 
         spike_clusters = np.load(join(probe_directory,
-                                        'spike_clusters.npy'))
+                                      'spike_clusters.npy'))
 
         units = []
         spike_times_index = 0
@@ -183,7 +180,7 @@ def ecephys_write_nwb(module_params):
         for idx, unit_row in unit_info.iterrows():
             if quality_info.loc[unit_row.cluster_id].group == 'good':
                 spike_count = np.sum(spike_clusters ==
-                                        unit_row['cluster_id'])
+                                     unit_row['cluster_id'])
                 unit_dict = {
                     'id': module_params['last_unit_id'],
                     'peak_channel_id': unit_row['peak_channel'] +
@@ -191,28 +188,49 @@ def ecephys_write_nwb(module_params):
                     'local_index': idx,
                     'cluster_id': unit_row['cluster_id'],
                     'quality': unit_row['quality'],
-                    'firing_rate': cuf.clean_up_nan_and_inf(unit_row['firing_rate']),
+                    'firing_rate': cuf.clean_up_nan_and_inf(
+                                   unit_row['firing_rate']),
                     'snr': cuf.clean_up_nan_and_inf(unit_row['snr']),
-                    'isi_violations': cuf.clean_up_nan_and_inf(unit_row['isi_viol']),
-                    'presence_ratio': cuf.clean_up_nan_and_inf(unit_row['presence_ratio']),
-                    'amplitude_cutoff': cuf.clean_up_nan_and_inf(unit_row['amplitude_cutoff']),
-                    'isolation_distance': cuf.clean_up_nan_and_inf(unit_row['isolation_distance']),
-                    'l_ratio': cuf.clean_up_nan_and_inf(unit_row['l_ratio']),
-                    'd_prime': cuf.clean_up_nan_and_inf(unit_row['d_prime']),
-                    'nn_hit_rate': cuf.clean_up_nan_and_inf(unit_row['nn_hit_rate']),
-                    'nn_miss_rate': cuf.clean_up_nan_and_inf(unit_row['nn_miss_rate']),
-                    'max_drift': cuf.clean_up_nan_and_inf(unit_row['max_drift']),
-                    'cumulative_drift': cuf.clean_up_nan_and_inf(unit_row['cumulative_drift']),
-                    'silhouette_score': cuf.clean_up_nan_and_inf(unit_row['silhouette_score']),
-                    'waveform_duration': cuf.clean_up_nan_and_inf(unit_row['duration']),
-                    'waveform_halfwidth': cuf.clean_up_nan_and_inf(unit_row['halfwidth']),
-                    'PT_ratio': cuf.clean_up_nan_and_inf(unit_row['PT_ratio']),
-                    'repolarization_slope': cuf.clean_up_nan_and_inf(unit_row['repolarization_slope']),
-                    'recovery_slope': cuf.clean_up_nan_and_inf(unit_row['recovery_slope']),
-                    'amplitude': cuf.clean_up_nan_and_inf(unit_row['amplitude']),
-                    'spread': cuf.clean_up_nan_and_inf(unit_row['spread']),
-                    'velocity_above': cuf.clean_up_nan_and_inf(unit_row['velocity_above']),
-                    'velocity_below': cuf.clean_up_nan_and_inf(unit_row['velocity_below'])
+                    'isi_violations': cuf.clean_up_nan_and_inf(
+                                      unit_row['isi_viol']),
+                    'presence_ratio': cuf.clean_up_nan_and_inf(
+                                      unit_row['presence_ratio']),
+                    'amplitude_cutoff': cuf.clean_up_nan_and_inf(
+                                        unit_row['amplitude_cutoff']),
+                    'isolation_distance': cuf.clean_up_nan_and_inf(
+                                          unit_row['isolation_distance']),
+                    'l_ratio': cuf.clean_up_nan_and_inf(
+                               unit_row['l_ratio']),
+                    'd_prime': cuf.clean_up_nan_and_inf(
+                               unit_row['d_prime']),
+                    'nn_hit_rate': cuf.clean_up_nan_and_inf(
+                                   unit_row['nn_hit_rate']),
+                    'nn_miss_rate': cuf.clean_up_nan_and_inf(
+                                    unit_row['nn_miss_rate']),
+                    'max_drift': cuf.clean_up_nan_and_inf(
+                                 unit_row['max_drift']),
+                    'cumulative_drift': cuf.clean_up_nan_and_inf(
+                                        unit_row['cumulative_drift']),
+                    'silhouette_score': cuf.clean_up_nan_and_inf(
+                                        unit_row['silhouette_score']),
+                    'waveform_duration': cuf.clean_up_nan_and_inf(
+                                         unit_row['duration']),
+                    'waveform_halfwidth': cuf.clean_up_nan_and_inf(
+                                          unit_row['halfwidth']),
+                    'PT_ratio': cuf.clean_up_nan_and_inf(
+                                    unit_row['PT_ratio']),
+                    'repolarization_slope': cuf.clean_up_nan_and_inf(
+                                            unit_row['repolarization_slope']),
+                    'recovery_slope': cuf.clean_up_nan_and_inf(
+                                      unit_row['recovery_slope']),
+                    'amplitude': cuf.clean_up_nan_and_inf(
+                                 unit_row['amplitude']),
+                    'spread': cuf.clean_up_nan_and_inf(
+                              unit_row['spread']),
+                    'velocity_above': cuf.clean_up_nan_and_inf(
+                                      unit_row['velocity_above']),
+                    'velocity_below': cuf.clean_up_nan_and_inf(
+                                      unit_row['velocity_below'])
                 }
                 spike_times_index += spike_count
                 spike_amplitudes_index += spike_count
@@ -223,13 +241,16 @@ def ecephys_write_nwb(module_params):
         probe_dict = {
             'id': module_params['id'],
             'name': probe_idx,
-            'spike_times_path': join(probe_directory, 'spike_times_master_clock.npy'),
+            'spike_times_path': join(probe_directory,
+                                     'spike_times_master_clock.npy'),
             'spike_clusters_file': join(probe_directory, 'spike_clusters.npy'),
             'spike_amplitudes_path': join(probe_directory, 'amplitudes.npy'),
             'mean_waveforms_path': join(probe_directory, 'mean_waveforms.npy'),
-            'spike_templates_path': join(probe_directory, 'spike_templates.npy'),
+            'spike_templates_path': join(probe_directory,
+                                         'spike_templates.npy'),
             'templates_path': join(probe_directory, 'templates.npy'),
-            'inverse_whitening_matrix_path': join(probe_directory, 'whitening_mat_inv.npy'),
+            'inverse_whitening_matrix_path': join(probe_directory,
+                                                  'whitening_mat_inv.npy'),
             'channels': channels,
             'units': units,
             'lfp': None
@@ -254,9 +275,12 @@ def ecephys_write_nwb(module_params):
                     "log_level": 'INFO',
                     "output_path": module_params['nwb_path'],
                     "session_id": module_params['session_id'],
-                    "session_start_time": datetime.datetime(YYYY, MM, DD, 0, 0, 0).isoformat(),
-                    "stimulus_table_path": os.path.join(module_params['base_directory'],
-                                                        'stim_table_allensdk.csv'),
+                    "session_start_time": datetime.datetime(
+                                          YYYY, MM, DD,
+                                          0, 0, 0).isoformat(),
+                    "stimulus_table_path": os.path.join(
+                                           module_params['base_directory'],
+                                           'stim_table_allensdk.csv'),
                     "probes": probes,
                     "session_sync_path": sync_file,
                     "running_speed_path": join(module_params['base_directory'],
@@ -272,7 +296,6 @@ def ecephys_optotagging_table(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
- 
 
     Returns
     -------
@@ -299,7 +322,6 @@ def ecephys_lfp_subsampling(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
- 
 
     Returns
     -------
@@ -317,7 +339,6 @@ def extract_running_speed(module_params):
     ----------
     module_params: dict
     Session or probe unique information, used by each module
- 
 
     Returns
     -------
@@ -327,7 +348,7 @@ def extract_running_speed(module_params):
     A dictionary representing the values that will be written to the input json
     """
 
-    trim_discontiguous_frame_times = module_params['trim']
+    # trim_discontiguous_frame_times = module_params['trim']
 
     input_json_write_dict = \
         {
