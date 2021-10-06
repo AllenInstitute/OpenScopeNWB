@@ -7,16 +7,18 @@ from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import parse_project_parameters as ppp
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+
 logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
                     filemode='w')
 
-project_parameter_json = r"C:\Users\ahad.bawany\Documents\OpenScopeNWB-test_NWB_Generation\scripts\deciphering_variability\project_json\test_project_parameter_json.json"
+dir = os.path.dirname(__file__)
+project_parameter_json = os.path.join(dir, "project_json",
+                                      "test_project_parameter_json.json")
 project_params = ppp.parse_json(project_parameter_json)
 session_param_list = ppp.generate_all_session_params(project_params)
 modules = ppp.get_modules(project_params)
 session_modules, probe_modules = ppp.get_module_types(project_params)
-
 
 for session_params in session_param_list:
     session = session_params["session_id"]
