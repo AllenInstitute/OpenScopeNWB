@@ -25,6 +25,7 @@ def get_probes(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -41,6 +42,8 @@ def get_session_ids(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
+
 
     Returns
     -------
@@ -57,6 +60,7 @@ def get_modules(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -74,6 +78,7 @@ def get_output_json_directory(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -91,6 +96,7 @@ def get_input_json_directory(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -107,6 +113,7 @@ def get_lims_path(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -124,6 +131,7 @@ def get_output_nwb_path(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -140,6 +148,7 @@ def get_session_dir(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -156,6 +165,7 @@ def get_trim(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -172,6 +182,7 @@ def get_module_types(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
@@ -196,6 +207,8 @@ def generate_session_params(project_dict, session, probe_count):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
+
     session: string
     The specific session we are generating the parameters for
     probe_count: int
@@ -234,6 +247,7 @@ def generate_all_session_params(project_dict):
     Parameters
     ----------
     project_dict: dict
+    A dictionary containing all the project's json values
 
     Returns
     -------
