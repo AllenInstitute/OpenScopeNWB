@@ -1,12 +1,17 @@
 import datetime
 import pandas as pd
 import numpy as np
-from openscopenwb.utils import clean_up_functions as cuf
 import os
-
+import logging
+from openscopenwb.utils import clean_up_functions as cuf
 
 from os.path import join
 from glob import glob
+
+logging.basicConfig(filename="std.log",
+                    format='%(asctime)s %(message)s',
+                    level=logging.DEBUG,
+                    filemode='a')
 
 
 def stimulus_table(module_params):
@@ -69,7 +74,7 @@ def ecephys_align_timestamps(module_params):
         base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
     probe_directory = glob(os.path.join(
         base_directory, 'continuous', 'Neuropix*'))[0]
-    print(probe_directory)
+    logging.debug("Current directory is: " + probe_directory)
     timestamp_files = []
 
     timestamp_files.append({

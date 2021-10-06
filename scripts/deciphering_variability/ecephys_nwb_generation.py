@@ -10,7 +10,8 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
 logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
-                    filemode='w')
+                    level=logging.DEBUG,
+                    filemode='a')
 
 dir = os.path.dirname(__file__)
 project_parameter_json = os.path.join(dir, "project_json",
@@ -39,9 +40,9 @@ for session_params in session_param_list:
                                 input_json,
                                 output_json
             )
-            logging.debug("Starting Session Level Module")
+            logging.debug("Starting Session Level Module: " + module)
             subprocess.check_call(command_string)
-            logging.debug("Finished Session Level Module")
+            logging.debug("Finished Session Level Module: " + module)
         elif module in probe_modules:
             for probe in probes:
                 module_params = session_params
@@ -54,6 +55,6 @@ for session_params in session_param_list:
                                     input_json,
                                     output_json
                 )
-                logging.debug("Starting Probe Level Module")
+                logging.debug("Starting Probe Level Module:: " + module)
                 subprocess.check_call(command_string)
-                logging.debug("Finished Probe Level Module")
+                logging.debug("Finished Probe Level Module: " + module)
