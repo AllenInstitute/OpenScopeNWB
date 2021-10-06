@@ -49,7 +49,6 @@ def stimulus_table(module_params):
         }
     return module_params, input_json_write_dict
 
-def 
 
 def ecephys_align_timestamps(module_params):
     """Returns the dict for the timestamps json
@@ -350,12 +349,9 @@ def ecephys_lfp_subsampling(module_params):
         'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
         'lfp_timestamps_input_path': join(lfp_directory,
                                           'lfp_timestamps_master_clock.npy'),
-        'lfp_data_path': join('/mnt/ssd0/lfp_intermediate_files',
-                              session_id + '_' + probe_idx + '_lfp.dat'),
-        'lfp_timestamps_path': join('/mnt/ssd0/lfp_intermediate_files',
-                                    session_id + '_' + probe_idx + '_timestamps.npy'),
-        'lfp_channel_info_path': join('/mnt/ssd0/lfp_intermediate_files',
-                                      session_id + '_' + probe_idx + '_channels.npy'),
+        'lfp_data_path': join(base_directory + '_lfp.dat'),
+        'lfp_timestamps_path': join(base_directory + '_timestamps.npy'),
+        'lfp_channel_info_path': join(base_directory + '_channels.npy'),
         'surface_channel': probe_info['surface_channel'],
         'reference_channels': [191]
     }
