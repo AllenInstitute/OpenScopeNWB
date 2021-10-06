@@ -355,7 +355,16 @@ def ecephys_lfp_subsampling(module_params):
         'surface_channel': probe_info['surface_channel'],
         'reference_channels': [191]
     }
-
+    if probe_idx != module_params['final_probe']:
+        return module_params, input_json_write_dict
+    else:
+        probes = module_params['probe_dict_list']
+        input_json_write_dict = \
+            {
+                'lfp_subsampling': {'temporal_subsampling_factor': 2},
+                "probes": probes,
+            }
+        return module_params, input_json_write_dict
 
 def extract_running_speed(module_params):
     """Writes the stimulus and pkl paths to the input json
