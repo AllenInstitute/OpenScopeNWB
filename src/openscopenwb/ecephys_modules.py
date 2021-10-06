@@ -2,6 +2,7 @@ import datetime
 import pandas as pd
 import numpy as np
 import os
+import json
 import logging
 from openscopenwb.utils import clean_up_functions as cuf
 
@@ -48,6 +49,7 @@ def stimulus_table(module_params):
         }
     return module_params, input_json_write_dict
 
+def 
 
 def ecephys_align_timestamps(module_params):
     """Returns the dict for the timestamps json
@@ -312,7 +314,7 @@ def ecephys_optotagging_table(module_params):
         'output_opto_table_path': join(module_params['base_directory'],
                                        'optotagging_table.csv')
     }
-    return input_json_write_dict
+    return module_params, input_json_write_dict
 
 
 def ecephys_lfp_subsampling(module_params):
@@ -330,6 +332,33 @@ def ecephys_lfp_subsampling(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
+    session_id = module_params['session']
+    probe_idx = module_params['current_probe']
+    base_directory = glob(os.path.join(
+                          module_params['base_directory'], '*'
+                          + probe_idx + '*_sorted'))[0]
+    lfp_directory = glob(os.path.join(base_directory,
+                         'continuous',
+                         'Neuropix*100.1'))[0]
+    probe_info_file = join(base_directory, 'probe_info.json')
+
+    with open(probe_info_file) as probe_file:
+        probe_info = json.load(probe_file)             
+    input_json_write_dict = {
+        'name': module_params['current_probe'],
+        'lfp_sampling_rate': 2500.,                    
+        'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
+        'lfp_timestamps_input_path': join(lfp_directory,
+                                          'lfp_timestamps_master_clock.npy'),
+        'lfp_data_path': join('/mnt/ssd0/lfp_intermediate_files',
+                              session_id + '_' + probe_idx + '_lfp.dat'),
+        'lfp_timestamps_path': join('/mnt/ssd0/lfp_intermediate_files',
+                                    session_id + '_' + probe_idx + '_timestamps.npy'),
+        'lfp_channel_info_path': join('/mnt/ssd0/lfp_intermediate_files',
+                                      session_id + '_' + probe_idx + '_channels.npy'),
+        'surface_channel': probe_info['surface_channel'],
+        'reference_channels': [191]
+    }
 
 
 def extract_running_speed(module_params):
