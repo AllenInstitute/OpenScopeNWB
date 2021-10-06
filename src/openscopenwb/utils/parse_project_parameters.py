@@ -183,9 +183,7 @@ def get_module_types(project_dict):
     session_modules = []
     probe_modules = []
     for module in get_modules(project_dict):
-        if module == 'allensdk.brain_observatory.ecephys.align_timestamps':
-            session_modules.append(module)
-        elif module == 'allensdk.brain_observatory.extract_running_speed':
+        if module == 'allensdk.brain_observatory.extract_running_speed':
             session_modules.append(module)
         else:
             probe_modules.append(module)
@@ -210,6 +208,7 @@ def generate_session_params(project_dict, session, probe_count):
     """
     session_parameters = {}
     session_paths = get_session_dir(project_dict)
+    nwb_path = get_output_nwb_path(project_dict)
     probes = get_probes(project_dict)
     final_probe = probes[-1]
     trim = get_trim(project_dict)
@@ -217,10 +216,11 @@ def generate_session_params(project_dict, session, probe_count):
     session_parameters = {
         'session_id': session,
         'base_directory': session_paths,
+        'nwb_path': nwb_path,
         'last_unit_id': probe_count,
         'probes': probes,
         'final_probe': final_probe,
-        'probe_dict_list': {},
+        'probe_dict_list': [],
         'trim': trim,
         'session_modules': session_modules,
         'probe_modules': probe_modules
@@ -234,7 +234,6 @@ def generate_all_session_params(project_dict):
     Parameters
     ----------
     project_dict: dict
- 
 
     Returns
     -------
