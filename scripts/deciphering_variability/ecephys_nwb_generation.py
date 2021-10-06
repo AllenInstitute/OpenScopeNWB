@@ -44,6 +44,7 @@ for session_params in session_param_list:
             for probe in probes:
                 module_params = session_params
                 module_params['current_probe'] = probe
+                module_params['id'] = probes.index(probe)
                 module_params = osnjson.create_module_input(
                     module, module_params, input_json)
                 command_string = sf.generate_module_cmd(

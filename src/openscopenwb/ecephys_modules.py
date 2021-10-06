@@ -216,7 +216,7 @@ def ecephys_write_nwb(module_params):
                 module_params['last_unit_id'] += 1
 
         probe_dict = {
-            'id': 1,
+            'id': module_params['id'],
             'name': probe_idx,
             'spike_times_path': join(probe_directory, 'spike_times_master_clock.npy'),
             'spike_clusters_file': join(probe_directory, 'spike_clusters.npy'),
