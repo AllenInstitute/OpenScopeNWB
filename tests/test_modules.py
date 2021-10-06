@@ -2,6 +2,7 @@ import pytest
 import openscopenwb.ecephys_modules as ecephys_mod
 import os
 
+
 @pytest.fixture
 def session_param_prep(tmpdir):
     session_parameters = {
@@ -21,9 +22,12 @@ def session_param_prep(tmpdir):
 
 def test_ecephys_optotagging(session_param_prep, tmpdir):
     test_json = ecephys_mod.ecephys_optotagging_table(session_param_prep)
-    assert test_json['opto_pickle_path'] == os.path.join(session_param_prep['base_directory'],
-                                                         'test.opto.pkl')
-    assert test_json['sync_h5_path'] == os.path.join(session_param_prep['base_directory'],
-                                                     'test.sync')
-    assert test_json['output_opto_table_path'] == os.path.join(session_param_prep['base_directory'],
-                                                               'optotagging_table.csv')
+    assert test_json['opto_pickle_path'] == \
+        os.path.join(session_param_prep['base_directory'],
+                     'test.opto.pkl')
+    assert test_json['sync_h5_path'] == \
+        os.path.join(session_param_prep['base_directory'],
+                     'test.sync')
+    assert test_json['output_opto_table_path'] == \
+        os.path.join(session_param_prep['base_directory'],
+                     'optotagging_table.csv')
