@@ -258,7 +258,7 @@ def ecephys_write_nwb(module_params):
         }
         module_params['probe_dict_list'].append(probe_dict)
         if probe_idx != module_params['final_probe']:
-            return module_params
+            return module_params, module_params['probe_dict_list']
         else:
             sync_file = glob(
                 join(module_params['base_directory'], '*.sync'))[0]
@@ -331,21 +331,21 @@ def ecephys_lfp_subsampling(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
-    session_id = module_params['session']
     probe_idx = module_params['current_probe']
     base_directory = glob(os.path.join(
                           module_params['base_directory'], '*'
                           + probe_idx + '*_sorted'))[0]
-    lfp_directory = glob(os.path.join(base_directory,
+    lfp_directory = glob(os.path.join(
+                         base_directory,
                          'continuous',
                          'Neuropix*100.1'))[0]
     probe_info_file = join(base_directory, 'probe_info.json')
 
     with open(probe_info_file) as probe_file:
-        probe_info = json.load(probe_file)             
+        probe_info = json.load(probe_file)
     input_json_write_dict = {
         'name': module_params['current_probe'],
-        'lfp_sampling_rate': 2500.,                    
+        'lfp_sampling_rate': 2500.,
         'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
         'lfp_timestamps_input_path': join(lfp_directory,
                                           'lfp_timestamps_master_clock.npy'),
@@ -365,6 +365,7 @@ def ecephys_lfp_subsampling(module_params):
                 "probes": probes,
             }
         return module_params, input_json_write_dict
+
 
 def extract_running_speed(module_params):
     """Writes the stimulus and pkl paths to the input json
