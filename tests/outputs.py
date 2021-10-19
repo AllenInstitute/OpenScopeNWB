@@ -1,7 +1,6 @@
 import os
 import subprocess
 import warnings
-import logging
 import hashlib
 import sys
 
@@ -10,12 +9,6 @@ from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import parse_project_parameters as ppp
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
-
-logging.basicConfig(filename="std.log",
-                    format='%(asctime)s %(message)s',
-                    level=logging.DEBUG,
-                    filemode='a')
-
 
 def align_times(session_params, input_json, output_json):
     module = "allensdk.brain_observatory.ecephys.align_timestamps"
