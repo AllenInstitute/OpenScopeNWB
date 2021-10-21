@@ -1,4 +1,7 @@
 import json
+import os
+
+from prompt_toolkit import output
 
 
 def parse_json(project_parameter_json):
@@ -29,11 +32,11 @@ def get_probes(project_dict):
 
     Returns
     -------
-    probe_id_list: list
-    a list of the session ids used by the project
+    probe_id_list_dict: dict
+    a dictionary of lists of the session ids used by the project
     """
-    probe_id_list = project_dict['probes']
-    return probe_id_list
+    probe_id_list_dict = project_dict['probes']
+    return probe_id_list_dict
 
 
 def get_session_ids(project_dict):
@@ -47,11 +50,11 @@ def get_session_ids(project_dict):
 
     Returns
     -------
-    session_id_list: list
-    a list of the session ids used by the project
+    session_id_dict: dict
+    a dict of the session ids and directories used by the project
     """
-    session_id_list = project_dict['sessions']
-    return session_id_list
+    session_id_dict = project_dict['sessions']
+    return session_id_dict
 
 
 def get_modules(project_dict):
@@ -108,7 +111,7 @@ def get_input_json_directory(project_dict):
 
 
 def get_lims_path(project_dict):
-    """Gets the relevant read directory for LIMS files from the project_dict
+    """Gets whether there are LIMS files from the project_dict
 
     Parameters
     ----------
@@ -117,11 +120,29 @@ def get_lims_path(project_dict):
 
     Returns
     -------
-    lims_dir: str
-    a string of the output lims directory used by the project
+    lims_dir: bool
+    a bool of wether the directories used by the project are in LIMS
     """
     lims_dir = project_dict['lims']
     return lims_dir
+
+
+def get_output_path(project_dict):
+    """Gets the relevant write directory for output non-nwb files
+    from the project_dict
+
+    Parameters
+    ----------
+    project_dict: dict
+    A dictionary containing all the project's json values
+
+    Returns
+    -------
+    output_dir: str
+    a string of the output nwb directory used by the project
+    """ 
+    output_dir = project_dict['output_path']
+    return output_dir
 
 
 def get_output_nwb_path(project_dict):
@@ -201,7 +222,7 @@ def get_module_types(project_dict):
     return session_modules, probe_modules
 
 
-def generate_session_params(project_dict, session, probe_count):
+def generate_session_params(project_dict, session, session_dir):
     """Generates a single session parameters using the project dict
 
     Parameters
@@ -220,15 +241,27 @@ def generate_session_params(project_dict, session, probe_count):
     Session level parameters such as the base directory, session id, etc
     """
     session_parameters = {}
-    session_paths = get_session_dir(project_dict)
+    probe_count = len(get_probes(project_dict)[session])
+
+    if get_lims_path(project_dict):
+        session_paths = session_dir
+    else:
+        session_paths = get_session_dir(project_dict)
+
     nwb_path = get_output_nwb_path(project_dict)
-    probes = get_probes(project_dict)
+    nwb_path = os.path.join(nwb_path, session, "spike_times.nwb")
+
+    output_path = get_output_path(project_dict)
+    output_path = os.path.join(output_path, session)
+
+    probes = (get_probes(project_dict))[session]
     final_probe = probes[-1]
     trim = get_trim(project_dict)
     session_modules, probe_modules = get_module_types(project_dict)
     session_parameters = {
         'session_id': session,
         'base_directory': session_paths,
+        'output_path': output_path,
         'nwb_path': nwb_path,
         'last_unit_id': probe_count,
         'probes': probes,
@@ -236,7 +269,7 @@ def generate_session_params(project_dict, session, probe_count):
         'probe_dict_list': [],
         'trim': trim,
         'session_modules': session_modules,
-        'probe_modules': probe_modules
+        'probe_modules': probe_modules,
     }
     return session_parameters
 
@@ -255,9 +288,8 @@ def generate_all_session_params(project_dict):
     Session level parameters such as the base directory, session id, etc
     """
     sessions = get_session_ids(project_dict)
-    probe_count = len(get_probes(project_dict))
     session_parameters_list = []
     for session in sessions:
         session_parameters_list.append(generate_session_params(
-            project_dict, session, probe_count))
+            project_dict, session, sessions[session]))
     return session_parameters_list
