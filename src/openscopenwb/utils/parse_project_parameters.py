@@ -1,8 +1,6 @@
 import json
 import os
 
-from prompt_toolkit import output
-
 
 def parse_json(project_parameter_json):
     """Gets all relevant information from the parameter_json
@@ -140,7 +138,7 @@ def get_output_path(project_dict):
     -------
     output_dir: str
     a string of the output nwb directory used by the project
-    """ 
+    """
     output_dir = project_dict['output_path']
     return output_dir
 
