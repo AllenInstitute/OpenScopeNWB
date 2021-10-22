@@ -217,6 +217,7 @@ def ecephys_write_nwb(module_params):
     search_child = False
     search_queue = False
     region = ''
+    master_clock_path = ''
 
     try:
         channel_info = pd.read_csv(join(probe_directory,
@@ -265,6 +266,8 @@ def ecephys_write_nwb(module_params):
         probe_directory = probe_directory
         region = 'region'
         channels = []
+        master_clock_path = join(output_directory, probe_idx,
+                                 'spike_times_master_clock.npy')
     elif channel_in_child:
         probe_directory = glob(join(module_params['base_directory'],
                                     '*', "*" + probe_idx,
@@ -272,12 +275,16 @@ def ecephys_write_nwb(module_params):
                                     'Neuropix*',))[0]
         region = 'structure_acronym'
         channels = []
+        master_clock_path = join(output_directory, probe_idx,
+                                 'spike_times_master_clock.npy')
     elif channel_in_queue:
         probe_directory = glob(os.path.join(
                               base_directory, 'EUR_QUEUE*',
                               'continuous', 'Neuropix*'))[0]
         region = 'structure_acronym'
         channels = []
+        master_clock_path = join(output_directory, probe_idx,
+                                 'spike_times_master_clock.npy')
 
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
@@ -374,8 +381,7 @@ def ecephys_write_nwb(module_params):
     probe_dict = {
         'id': module_params['id'],
         'name': probe_idx,
-        'spike_times_path': join(probe_directory, probe_idx,
-                                 'spike_times_master_clock.npy'),
+        'spike_times_path': master_clock_path,
         'spike_clusters_file': join(probe_directory, 'spike_clusters.npy'),
         'spike_amplitudes_path': join(probe_directory, 'amplitudes.npy'),
         'mean_waveforms_path': join(probe_directory, 'mean_waveforms.npy'),
@@ -395,9 +401,10 @@ def ecephys_write_nwb(module_params):
     else:
         sync_file = glob(
             join(module_params['base_directory'], '*.sync'))[0]
-        YYYY = 2021  # int(session_string[17:21])
-        MM = 6  # int(session_string[21:23])
-        DD = 16  # int(session_string[23:25])
+        sync_string = os.path.basename(sync_file)
+        YYYY = int(sync_string[17:21])
+        MM = int(sync_string[21:23])
+        DD = int(sync_string[23:25])
         probes = module_params['probe_dict_list']
 
         input_json_write_dict = \
