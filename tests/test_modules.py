@@ -21,7 +21,7 @@ def session_param_prep(tmpdir):
 
 
 def test_ecephys_optotagging(session_param_prep, tmpdir):
-    test_json = ecephys_mod.ecephys_optotagging_table(session_param_prep)
+    _, test_json = ecephys_mod.ecephys_optotagging_table(session_param_prep)
     assert test_json['opto_pickle_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      'test.opto.pkl')
