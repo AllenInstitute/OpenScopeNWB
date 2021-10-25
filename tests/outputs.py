@@ -92,8 +92,8 @@ def check_hash(file, hash):
 
 def run_tests():
     dir = os.path.dirname(__file__)
-    project_parameter_json = os.path.join(dir, "project_json",
-                                        "test_project_parameter_json.json")
+    project_parameter_json = os.path.join(dir, "..", "samples",
+                                    "test_ephys_demo_project_parameter.json")
     project_params = ppp.parse_json(project_parameter_json)
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)
@@ -138,6 +138,7 @@ def run_tests():
                     write_nwb(session_params, input_json, output_json)
                 except Exception:
                     pass
+                
     assert check_hash(sha256sum(time_stamps_file), input_times_hash)
     assert check_hash(sha256sum(stimulus_file), input_stim_hash)
     assert check_hash(sha256sum(running_speed_file), input_running_hash)
