@@ -44,9 +44,8 @@ def project_param_json_path(tmpdir):
             "allensdk.brain_observatory.extract_running_speed",
             "allensdk.brain_observatory.ecephys.write_nwb"
         ],
-        "sessions": {"725254892" : os.path.join(os.path.dirname(__file__), 
-                        "../samples/ephys_session_725254892_demo/")
-        },
+        "sessions": {"725254892": os.path.join(os.path.dirname(__file__),
+                        "../samples/ephys_session_725254892_demo/")},
         "lims": ["test"],
         "output_path": str(tmpdir),
         "nwb_path": os.path.join(str(tmpdir), "spike_times.nwb"),
@@ -129,7 +128,8 @@ def sha256sum(file):
 def check_hash(file, hash):
     return file == hash
 
-def test_run_modules(project_param_json_path, tmpdir):  
+
+def test_run_modules(project_param_json_path, tmpdir):
 
     # This is to prepare the output folder
     try:

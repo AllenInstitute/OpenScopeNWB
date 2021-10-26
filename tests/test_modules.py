@@ -1,8 +1,6 @@
 import pytest
 import openscopenwb.ecephys_modules as ecephys_mod
 import os
-from glob import glob
-from os.path import join
 
 
 @pytest.fixture
