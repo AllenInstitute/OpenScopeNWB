@@ -2,17 +2,20 @@ import os
 import subprocess
 import warnings
 import hashlib
-import sys
-
 import openscopenwb.create_module_input_json as osnjson
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import parse_project_parameters as ppp
+import logging 
+import json
+import pytest 
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
+
 def align_times(session_params, input_json, output_json):
     module = "allensdk.brain_observatory.ecephys.align_timestamps"
-    probes = session_params['probe_list']
+    probes = session_params['probes']
+
     for probe in probes:
         module_params = session_params
         module_params['current_probe'] = probe
@@ -27,9 +30,45 @@ def align_times(session_params, input_json, output_json):
         subprocess.check_call(command_string)
 
 
+@pytest.fixture
+def project_param_json_path(tmpdir):
+    project_parameter_json = tmpdir.join("test_ephys_demo_project_parameter.json")
+    project_parameter = {
+        "probes": {
+            "725254892":  ["probeA"]
+        },
+        "modules": [
+            "allensdk.brain_observatory.ecephys.align_timestamps",
+            "allensdk.brain_observatory.ecephys.stimulus_table",
+            "allensdk.brain_observatory.extract_running_speed",
+            "allensdk.brain_observatory.ecephys.write_nwb"
+        ],
+        "sessions": {
+            "725254892": os.path.join(os.path.dirname(__file__), 
+                        "../samples/ephys_session_725254892_demo/")
+        },
+        "lims": ["test"],
+        "output_path": str(tmpdir),
+        "nwb_path": os.path.join(str(tmpdir), "spike_times.nwb"),
+        "input_json": str(tmpdir),
+        "output_json": str(tmpdir),
+        "session_dir": os.path.join(os.path.dirname(__file__), 
+                        "../samples/ephys_session_725254892_demo/"),
+        "trim_discontiguous_frame_times": False,
+        "last_unit_id": 1,
+        "string": "Hello World"
+        }
+    
+    print(project_parameter_json)
+    with open(project_parameter_json, 'w+') as file_handle:
+        json.dump(project_parameter, file_handle)
+    
+    return project_parameter_json
+
+
 def stimulus_table(session_params, input_json, output_json):
     module = "allensdk.brain_observatory.ecephys.stimulus_table"
-    probes = session_params['probe_list']
+    probes = session_params['probes']
     for probe in probes:
         module_params = session_params
         module_params['current_probe'] = probe
@@ -61,7 +100,7 @@ def running_speed(session_params, input_json, output_json):
 
 def write_nwb(session_params, input_json, output_json):
     module = "allensdk.brain_observatory.ecephys.write_nwb"
-    probes = session_params['probe_list']
+    probes = session_params['probes']
     for probe in probes:
         module_params = session_params
         module_params['current_probe'] = probe
@@ -73,6 +112,7 @@ def write_nwb(session_params, input_json, output_json):
                             input_json,
                             output_json
         )
+        
         subprocess.check_call(command_string)
 
 
@@ -89,12 +129,16 @@ def sha256sum(file):
 def check_hash(file, hash):
     return file == hash
 
-
-def run_tests():
-    dir = os.path.dirname(__file__)
-    project_parameter_json = os.path.join(dir, "..", "samples",
-                                    "test_ephys_demo_project_parameter.json")
-    project_params = ppp.parse_json(project_parameter_json)
+def test_run_modules(project_param_json_path, tmpdir):  
+    
+    # This is to prepare the output folder
+    try:
+        os.mkdir(tmpdir.join(str(725254892)))
+        os.mkdir(tmpdir.join(str(725254892), 'probeA'))
+    except:
+        logging.INFO('Output folders already created')
+              
+    project_params = ppp.parse_json(project_param_json_path)
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)
 
@@ -119,26 +163,14 @@ def run_tests():
             output_json = os.path.join(json_directory, session + '-' + module
                                        + '-output.json')
             if module == "allensdk.brain_observatory.ecephys.align_timestamps":
-                try:
-                    align_times(session_params, input_json, output_json)
-                except Exception:
-                    pass
+                align_times(session_params, input_json, output_json)
             elif module == "allensdk.brain_observatory.ecephys.stimulus_table":
-                try:
-                    stimulus_table(session_params, input_json, output_json)
-                except Exception:
-                    pass
+                stimulus_table(session_params, input_json, output_json)
             elif module == "allensdk.brain_observatory.extract_running_speed":
-                try:
-                    running_speed(session_params, input_json, output_json)
-                except Exception:
-                    pass
+                running_speed(session_params, input_json, output_json)
             elif module == "allensdk.brain_observatory.ecephys.write_nwb":
-                try:
-                    write_nwb(session_params, input_json, output_json)
-                except Exception:
-                    pass
-                
+                write_nwb(session_params, input_json, output_json)
+                    
     assert check_hash(sha256sum(time_stamps_file), input_times_hash)
     assert check_hash(sha256sum(stimulus_file), input_stim_hash)
     assert check_hash(sha256sum(running_speed_file), input_running_hash)

@@ -10,6 +10,8 @@ def session_param_prep(tmpdir):
     session_parameters = {
         'base_directory': tmpdir
     }
+    
+    session_parameters['output_path'] = tmpdir
     opto_pkl_path = os.path.join(session_parameters['base_directory'],
                                  'test.opto.pkl')
     sync_path = os.path.join(session_parameters['base_directory'],
