@@ -45,14 +45,14 @@ def project_param_json_path(tmpdir):
             "allensdk.brain_observatory.ecephys.write_nwb"
         ],
         "sessions": {"725254892": os.path.join(os.path.dirname(__file__),
-                                "../samples/ephys_session_725254892_demo/")},
+            "../samples/ephys_session_725254892_demo/")},
         "lims": ["test"],
         "output_path": str(tmpdir),
         "nwb_path": os.path.join(str(tmpdir), "spike_times.nwb"),
         "input_json": str(tmpdir),
         "output_json": str(tmpdir),
         "session_dir": os.path.join(os.path.dirname(__file__),
-                                "../samples/ephys_session_725254892_demo/"),
+            "../samples/ephys_session_725254892_demo/"),
         "trim_discontiguous_frame_times": False,
         "last_unit_id": 1,
         "string": "Hello World"
