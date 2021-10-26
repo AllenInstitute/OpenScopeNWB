@@ -5,9 +5,9 @@ import hashlib
 import openscopenwb.create_module_input_json as osnjson
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import parse_project_parameters as ppp
-import logging 
+import logging
 import json
-import pytest 
+import pytest
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
@@ -32,7 +32,8 @@ def align_times(session_params, input_json, output_json):
 
 @pytest.fixture
 def project_param_json_path(tmpdir):
-    project_parameter_json = tmpdir.join("test_ephys_demo_project_parameter.json")
+    project_parameter_json = \
+        tmpdir.join("test_ephys_demo_project_parameter.json")
     project_parameter = {
         "probes": {
             "725254892":  ["probeA"]
@@ -43,8 +44,7 @@ def project_param_json_path(tmpdir):
             "allensdk.brain_observatory.extract_running_speed",
             "allensdk.brain_observatory.ecephys.write_nwb"
         ],
-        "sessions": {
-            "725254892": os.path.join(os.path.dirname(__file__), 
+        "sessions": {"725254892" : os.path.join(os.path.dirname(__file__), 
                         "../samples/ephys_session_725254892_demo/")
         },
         "lims": ["test"],
@@ -52,17 +52,17 @@ def project_param_json_path(tmpdir):
         "nwb_path": os.path.join(str(tmpdir), "spike_times.nwb"),
         "input_json": str(tmpdir),
         "output_json": str(tmpdir),
-        "session_dir": os.path.join(os.path.dirname(__file__), 
+        "session_dir": os.path.join(os.path.dirname(__file__),
                         "../samples/ephys_session_725254892_demo/"),
         "trim_discontiguous_frame_times": False,
         "last_unit_id": 1,
         "string": "Hello World"
         }
-    
+
     print(project_parameter_json)
     with open(project_parameter_json, 'w+') as file_handle:
         json.dump(project_parameter, file_handle)
-    
+
     return project_parameter_json
 
 
@@ -112,7 +112,7 @@ def write_nwb(session_params, input_json, output_json):
                             input_json,
                             output_json
         )
-        
+
         subprocess.check_call(command_string)
 
 
@@ -130,14 +130,14 @@ def check_hash(file, hash):
     return file == hash
 
 def test_run_modules(project_param_json_path, tmpdir):  
-    
+
     # This is to prepare the output folder
     try:
         os.mkdir(tmpdir.join(str(725254892)))
         os.mkdir(tmpdir.join(str(725254892), 'probeA'))
     except:
         logging.INFO('Output folders already created')
-              
+
     project_params = ppp.parse_json(project_param_json_path)
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)
@@ -170,7 +170,7 @@ def test_run_modules(project_param_json_path, tmpdir):
                 running_speed(session_params, input_json, output_json)
             elif module == "allensdk.brain_observatory.ecephys.write_nwb":
                 write_nwb(session_params, input_json, output_json)
-                    
+
     assert check_hash(sha256sum(time_stamps_file), input_times_hash)
     assert check_hash(sha256sum(stimulus_file), input_stim_hash)
     assert check_hash(sha256sum(running_speed_file), input_running_hash)

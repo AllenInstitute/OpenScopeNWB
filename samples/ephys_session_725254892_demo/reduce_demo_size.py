@@ -20,7 +20,7 @@ for indiv_files in all_files:
         local_shape = local_array.shape
         index = np.where(np.array(local_shape) == nb_spike_times)
 
-        if len(index[0])>0:
+        if len(index[0]) > 0:
             index = index[0][0]
             local_array = local_array[0:max_nb_spikes_times, :]
             if replace:
