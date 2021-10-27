@@ -317,11 +317,77 @@ def ecephys_write_nwb(module_params):
     units = []
     spike_times_index = 0
     spike_amplitudes_index = 0
-
+    unit_keys = [
+        'peak_channel',
+        'cluster_id',
+        'quality',
+        'firing_rate',
+        'snr',
+        'isi_viol',
+        'presence_ratio',
+        'amplitude_cutoff',
+        'isolation_distance',
+        'l_ratio',
+        'd_prime',
+        'nn_hit_rate',
+        'nn_miss_rate',
+        'max_drift',
+        'cumulative_drift',
+        'silhouette_score',
+        'duration',
+        'halfwidth',
+        'PT_ratio',
+        'repolarization_slope',
+        'recovery_slope',
+        'amplitude',
+        'spread',
+        'velocity_above',
+        'velocity_below'
+    ]
+    for i in unit_keys:
+        move_on = False
+        try:
+            unit_info[i]
+        except Exception:
+            if i == 'peak_channel':
+                try:
+                    unit_info['peak_chan']
+                except Exception:
+                    pass
+                else:
+                    unit_info.rename(columns={'peak_chan':
+                                              'peak_channel'}, inplace=True)
+                    move_on = True
+            if i == 'cluster_id':
+                try:
+                    unit_info['cluster_ids']
+                except Exception:
+                    pass
+                else:
+                    unit_info.rename(columns={'cluster_ids':
+                                              'cluster_id'}, inplace=True)
+                    move_on = True
+            if i == 'quality':
+                try:
+                    unit_info['unit_quality']
+                except Exception:
+                    pass
+                else:
+                    unit_info.rename(columns={'unit_quality':
+                                              'quality'}, inplace=True)
+                    move_on = True
+            if not move_on:
+                row_count = unit_info.shape[0]
+                i_list = []
+                logging.debug("Adding a placeholder value for : " + i)
+                for x in range(row_count):
+                    i_list.append(-1)
+                unit_info[i] = i_list
     for idx, unit_row in unit_info.iterrows():
         if quality_info.loc[unit_row.cluster_id].group == 'good':
             spike_count = np.sum(spike_clusters ==
                                  unit_row['cluster_id'])
+
             unit_dict = {
                 'id': module_params['last_unit_id'],
                 'peak_channel_id': unit_row['peak_channel'] +
