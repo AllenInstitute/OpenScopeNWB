@@ -5,15 +5,11 @@ import os
 import json
 import logging
 from openscopenwb.utils import clean_up_functions as cuf
-from allensdk.brain_observatory.ecephys.ecephys_session import EcephysSession
 
 from os.path import join
 from glob import glob
 
-session = EcephysSession.from_nwb_path(r'C:\Users\ahad.bawany\Documents\773418906\spike_times.nwb')
 
-df = session.units
-print(df)
 logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
                     level=logging.DEBUG,
@@ -614,4 +610,3 @@ def extract_running_speed(module_params):
             "log_level": 'INFO'
         }
     return module_params, input_json_write_dict
- 
