@@ -5,10 +5,15 @@ import os
 import json
 import logging
 from openscopenwb.utils import clean_up_functions as cuf
+from allensdk.brain_observatory.ecephys.ecephys_session import EcephysSession
 
 from os.path import join
 from glob import glob
 
+session = EcephysSession.from_nwb_path(r'C:\Users\ahad.bawany\Documents\773418906\spike_times.nwb')
+
+df = session.units
+print(df)
 logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
                     level=logging.DEBUG,
@@ -205,6 +210,7 @@ def ecephys_write_nwb(module_params):
     """
     probes = []
     probe_idx = module_params['current_probe']
+    probe_id = module_params['probes'].index(probe_idx)
     base_directory = glob(os.path.join(
         module_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
     probe_directory = glob(os.path.join(base_directory,
@@ -289,9 +295,9 @@ def ecephys_write_nwb(module_params):
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
         channel_dict = {
-            'id': idx * 1000,
+            'id': idx + probe_id * 1000,
             'valid_data': True,
-            'probe_id': 1,
+            'probe_id': probe_id,
             'local_index': idx,
             'probe_vertical_position': -1,
             'probe_horizontal_position': -1,
@@ -344,7 +350,9 @@ def ecephys_write_nwb(module_params):
         'velocity_above',
         'velocity_below'
     ]
+    j = -1
     for i in unit_keys:
+        j += 1
         move_on = False
         try:
             unit_info[i]
@@ -382,6 +390,7 @@ def ecephys_write_nwb(module_params):
                 logging.debug("Adding a placeholder value for : " + i)
                 for x in range(row_count):
                     i_list.append(-1)
+                unit_info.insert(loc=j, column=i, value=i_list)
                 unit_info[i] = i_list
     for idx, unit_row in unit_info.iterrows():
         if quality_info.loc[unit_row.cluster_id].group == 'good':
@@ -391,7 +400,7 @@ def ecephys_write_nwb(module_params):
             unit_dict = {
                 'id': module_params['last_unit_id'],
                 'peak_channel_id': unit_row['peak_channel'] +
-                100,
+                probe_id * 1000,
                 'local_index': idx,
                 'cluster_id': unit_row['cluster_id'],
                 'quality': unit_row['quality'],
@@ -605,3 +614,4 @@ def extract_running_speed(module_params):
             "log_level": 'INFO'
         }
     return module_params, input_json_write_dict
+ 
