@@ -146,10 +146,14 @@ def test_run_modules(project_param_json_path, tmpdir):
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)
 
-    input_times_hash = "6365574537ad8f43c0d7fbd29787b597d9648a9b349e0f2a237d36ff57c01b07"
-    running_hash = "4aaca55714293a6c83e6f591ca5dfc13821053aa1329a37b180fe06bad1050e0"
-    stim_hash = "1a6e60d546e79576c5907a18b324bab400d61bb77c3362d683eb61231114fcc5"
-    nwb_hash = "5fa2a35efe881cb097ed513f4b1d74ad4b0a63ff63b3cdecdc2bcd6fbcf1acbb"
+    input_times_hash = \
+        "6365574537ad8f43c0d7fbd29787b597d9648a9b349e0f2a237d36ff57c01b07"
+    running_hash = \
+        "4aaca55714293a6c83e6f591ca5dfc13821053aa1329a37b180fe06bad1050e0"
+    stim_hash = \
+        "1a6e60d546e79576c5907a18b324bab400d61bb77c3362d683eb61231114fcc5"
+    nwb_hash = \
+        "5fa2a35efe881cb097ed513f4b1d74ad4b0a63ff63b3cdecdc2bcd6fbcf1acbb"
 
     for session_params in session_param_list:
         session = session_params["session_id"]
@@ -162,25 +166,27 @@ def test_run_modules(project_param_json_path, tmpdir):
             if module == "allensdk.brain_observatory.ecephys.align_timestamps":
                 align_times(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
-                time_stamps_file = data_out['probes'][0]['mappable_timestamp_files'][0]['output_path']
-                
+                time_stamps_file = \
+                    data_out['probes'][0]['mappable_timestamp_files']\
+                        [0]['output_path']
+
             elif module == "allensdk.brain_observatory.ecephys.stimulus_table":
                 stimulus_table(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
 
                 stimulus_file = data_out['output_stimulus_table_path']
-                
+
             elif module == "allensdk.brain_observatory.extract_running_speed":
                 running_speed(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
 
                 running_speed_file = data_out['output_path']
-                
+
             elif module == "allensdk.brain_observatory.ecephys.write_nwb":
                 path_nwb = write_nwb(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
                 path_nwb = data_out["output_path"]
-                
+
         assert check_hash(sha256sum(time_stamps_file), input_times_hash)
         assert check_hash(sha256sum(stimulus_file), stim_hash)
         assert check_hash(sha256sum(running_speed_file), running_hash)

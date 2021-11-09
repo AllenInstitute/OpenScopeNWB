@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import glob
 
 dir = os.path.dirname(__file__)
 
@@ -15,7 +14,7 @@ ind_clusters = np.load(os.path.join(path_folder, 'spike_clusters.npy'))
 replace = True
 max_nb_neuron_units = 10
 
-reduce_cluster_times = ind_clusters<max_nb_neuron_units
+reduce_cluster_times = ind_clusters < max_nb_neuron_units
 
 for indiv_files in all_files:
     local_path = os.path.join(path_folder, indiv_files)
@@ -30,8 +29,8 @@ for indiv_files in all_files:
             if replace:
                     new_file = indiv_files
             else:
-                new_file = indiv_files.split('.')[0]\
-                    + '_new.'+indiv_files.split('.')[1]
+                new_file = indiv_files.split('.')[0]+ '_new.'+\
+                    indiv_files.split('.')[1]
             new_path = os.path.join(path_folder, new_file)
             np.save(new_path, local_array)
         else:
@@ -51,14 +50,14 @@ for indiv_files in all_files:
                         + '_new.'+indiv_files.split('.')[1]
                 new_path = os.path.join(path_folder, new_file)
                 np.save(new_path, local_array)
-        
+
             index = np.where(np.array(local_shape) == nb_spike_times)
 
             if len(index[0]) > 0:
                 index = index[0][0]
                 try:
                     local_array = local_array[reduce_cluster_times, :]
-                except:
+                except Exception:
                     local_array = local_array[reduce_cluster_times]
 
                 if replace:
