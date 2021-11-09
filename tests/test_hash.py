@@ -166,8 +166,9 @@ def test_run_modules(project_param_json_path, tmpdir):
             if module == "allensdk.brain_observatory.ecephys.align_timestamps":
                 align_times(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
-                time_stamps_file = data_out['probes'][0]\
-['mappable_timestamp_files'][0]['output_path']
+                probes = data_out['probes'][0]
+                time_stamps_link = probes['mappable_timestamp_files'][0]
+                time_stamps_file = time_stamps_link['output_path']
 
             elif module == "allensdk.brain_observatory.ecephys.stimulus_table":
                 stimulus_table(session_params, input_json, output_json)
