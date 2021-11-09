@@ -27,9 +27,9 @@ for indiv_files in all_files:
             local_array = local_array[0:max_nb_neuron_units,
                                       0:max_nb_neuron_units]
             if replace:
-                    new_file = indiv_files
+                new_file = indiv_files
             else:
-                new_file = indiv_files.split('.')[0]+ '_new.' + indiv_files\
+                new_file = indiv_files.split('.')[0] + '_new.' + indiv_files\
                     .split('.')[1]
             new_path = os.path.join(path_folder, new_file)
             np.save(new_path, local_array)

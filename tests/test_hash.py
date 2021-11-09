@@ -167,7 +167,7 @@ def test_run_modules(project_param_json_path, tmpdir):
                 align_times(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
                 time_stamps_file = data_out['probes'][0]\
-                    ['mappable_timestamp_files'][0]['output_path']
+['mappable_timestamp_files'][0]['output_path']
 
             elif module == "allensdk.brain_observatory.ecephys.stimulus_table":
                 stimulus_table(session_params, input_json, output_json)
