@@ -2,17 +2,19 @@ import os
 import subprocess
 import warnings
 import logging
+import sys
+
 import openscopenwb.create_module_input_json as osnjson
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import parse_project_parameters as ppp
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
+sys.stdout = open('std.log', 'a')
 logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
                     level=logging.DEBUG,
                     filemode='a')
-
 dir = os.path.dirname(__file__)
 project_parameter_json = os.path.join(dir, "project_json",
                                       "test_project_parameter_json.json")
