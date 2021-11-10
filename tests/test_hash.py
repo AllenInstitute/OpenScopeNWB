@@ -196,14 +196,13 @@ def test_run_modules(project_param_json_path, tmpdir):
                 nwb_info = str(nwb_info.units['max_drift'][:])
 
         assert check_hash(sha256sum(time_stamps_file), input_times_hash)
-        print("timestamps successful")
+        logging.debug("timestamps successful")
         assert check_hash(sha256sum(stimulus_file), stim_hash)
-        print("stimulus succesful")
+        logging.debug("stimulus succesful")
         assert check_hash(hashlib.sha256(running_speed_info.encode('utf-8'))
                           .hexdigest(),
                           running_hash)
-        print("running speed check successful")
-        # assert check_hash(sha256sum(path_nwb), nwb_hash)
+        logging.debug("running speed check successful")
         assert check_hash(hashlib.sha256(nwb_info.encode('utf-8'))
                           .hexdigest(),
                           nwb_hash)
