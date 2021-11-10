@@ -152,7 +152,7 @@ def test_run_modules(project_param_json_path, tmpdir):
     input_times_hash = \
         "8822152955287f73018e61f3ecbcef6d8aaea80dd6440e4f7dab775c1fb5f0d2"
     stim_hash = \
-        "1a6e60d546e79576c5907a18b324bab400d61bb77c3362d683eb61231114fcc5
+        "1a6e60d546e79576c5907a18b324bab400d61bb77c3362d683eb61231114fcc5"
     running_hash = \
         "61e2a3c666e02340603a437fedf0d71c316ee530e422ddb0e442936318b13643"
     nwb_hash = \
