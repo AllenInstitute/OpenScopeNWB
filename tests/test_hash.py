@@ -2,12 +2,15 @@ import os
 import subprocess
 import warnings
 import hashlib
-import openscopenwb.create_module_input_json as osnjson
-from openscopenwb.utils import script_functions as sf
-from openscopenwb.utils import parse_project_parameters as ppp
 import logging
 import json
 import pytest
+import h5py
+import openscopenwb.create_module_input_json as osnjson
+
+from openscopenwb.utils import script_functions as sf
+from openscopenwb.utils import parse_project_parameters as ppp
+from pynwb import NWBHDF5IO
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
@@ -147,13 +150,13 @@ def test_run_modules(project_param_json_path, tmpdir):
     modules = ppp.get_modules(project_params)
 
     input_times_hash = \
-        "6365574537ad8f43c0d7fbd29787b597d9648a9b349e0f2a237d36ff57c01b07"
-    running_hash = \
-        "4aaca55714293a6c83e6f591ca5dfc13821053aa1329a37b180fe06bad1050e0"
+        "8822152955287f73018e61f3ecbcef6d8aaea80dd6440e4f7dab775c1fb5f0d2"
     stim_hash = \
-        "1a6e60d546e79576c5907a18b324bab400d61bb77c3362d683eb61231114fcc5"
+        "2d56cf8e5f9a9ec2db9fb457ec316a9996e1593ba4e1a67293839d26a8b8d8f2"
+    running_hash = \
+        "61e2a3c666e02340603a437fedf0d71c316ee530e422ddb0e442936318b13643"
     nwb_hash = \
-        "5fa2a35efe881cb097ed513f4b1d74ad4b0a63ff63b3cdecdc2bcd6fbcf1acbb"
+        "452459f1e5290248bee395b2912e0843517fa0d6adcc90cb9599db66fdb6d206"
 
     for session_params in session_param_list:
         session = session_params["session_id"]
@@ -181,13 +184,26 @@ def test_run_modules(project_param_json_path, tmpdir):
                 data_out = json.load(open(input_json, 'r'))
 
                 running_speed_file = data_out['output_path']
+                running_h5 = h5py.File(running_speed_file, "r")
+                running_speed_info = str(running_h5['running_speed'].values)
 
             elif module == "allensdk.brain_observatory.ecephys.write_nwb":
                 path_nwb = write_nwb(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
                 path_nwb = data_out["output_path"]
+                nwb_file = NWBHDF5IO(path_nwb, "r", load_namespaces=True)
+                nwb_info = nwb_file.read()
+                nwb_info = str(nwb_info.units['max_drift'][:])
 
         assert check_hash(sha256sum(time_stamps_file), input_times_hash)
+        print("timestamps successful")
         assert check_hash(sha256sum(stimulus_file), stim_hash)
-        assert check_hash(sha256sum(running_speed_file), running_hash)
-        assert check_hash(sha256sum(path_nwb), nwb_hash)
+        print("stimulus succesful")
+        assert check_hash(hashlib.sha256(running_speed_info.encode('utf-8'))
+                          .hexdigest(),
+                          running_hash)
+        print("running speed check successful")
+        # assert check_hash(sha256sum(path_nwb), nwb_hash)
+        assert check_hash(hashlib.sha256(nwb_info.encode('utf-8'))
+                          .hexdigest(),
+                          nwb_hash)
