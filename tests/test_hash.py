@@ -9,7 +9,7 @@ import h5py
 import openscopenwb.create_module_input_json as osnjson
 
 from openscopenwb.utils import script_functions as sf
-from openscopenwb.utils import parse_project_parameters as ppp
+from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from pynwb import NWBHDF5IO
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
