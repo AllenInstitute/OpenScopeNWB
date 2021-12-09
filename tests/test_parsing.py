@@ -1,7 +1,7 @@
 import pytest
 import os
 import json
-from openscopenwb.utils import parse_ophys_project_parameters as ppp
+from openscopenwb.utils import parse_ephys_project_parameters as ppp
 
 
 @pytest.fixture
