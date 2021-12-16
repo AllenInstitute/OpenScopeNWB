@@ -80,6 +80,7 @@ def write_trials_to_nwb(csv_path, nwb_path):
     stim_list = []
 
     csv_info = pd.read_csv(csv_path)
+    csv_info.replace(np.nan, 0)
 
     for i, row in csv_info.iterrows():
         input_nwb.add_trial(start_time=row['Start'],

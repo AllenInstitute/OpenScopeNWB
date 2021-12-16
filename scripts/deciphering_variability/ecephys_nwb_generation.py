@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import logging
@@ -12,16 +13,15 @@ import sys
 
 from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
-from openscopenwb.utils import parse_project_parameters as ppp
 
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
-sys.stdout = open('std.log', 'a')
 logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
                     level=logging.DEBUG,
                     filemode='a')
+
 dir = os.path.dirname(__file__)
 #project_parameter_json = os.path.join(dir, "project_json",
 #                                      "test_ephys_project_parameter_json.json")
@@ -81,6 +81,7 @@ for session_params in session_param_list:
     probes = session_params['probes']
     for module in modules:
         json_directory = ppp.get_input_json_directory(project_params)
+        json_directory = os.path.join(json_directory, session)
         input_json = os.path.join(json_directory, session + '-' + module
                                   + '-input.json')
         output_json = os.path.join(json_directory, session + '-' + module
@@ -100,6 +101,7 @@ for session_params in session_param_list:
             logging.debug("Finished Session Level Module: " + module)
         elif module in probe_modules:
             for probe in probes:
+                session_params['last_unit_id'] = old_last_unit + 1
                 module_params = session_params
                 module_params['current_probe'] = probe
                 module_params['id'] = probes.index(probe)
