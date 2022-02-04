@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ,region,structure_id,A/P,D/V,M/L,horizontal_position,vertical_position,is_valid,cortical_depth
 0,none,0,-1,-1,-1,43,20,TRUE,-1
 1,none,0,-1,-1,-1,11,20,TRUE,-1
@@ -8,4 +9,29 @@
 6,none,0,-1,-1,-1,59,80,TRUE,-1
 7,none,0,-1,-1,-1,27,80,TRUE,-1
 8,none,0,-1,-1,-1,43,100,TRUE,-1
+=======
+<<<<<<< HEAD
+,region,structure_id,A/P,D/V,M/L,horizontal_position,vertical_position,is_valid,cortical_depth
+0,none,0,-1,-1,-1,43,20,TRUE,-1
+1,none,0,-1,-1,-1,11,20,TRUE,-1
+2,none,0,-1,-1,-1,59,40,TRUE,-1
+3,none,0,-1,-1,-1,27,40,TRUE,-1
+4,none,0,-1,-1,-1,43,60,TRUE,-1
+5,none,0,-1,-1,-1,11,60,TRUE,-1
+6,none,0,-1,-1,-1,59,80,TRUE,-1
+7,none,0,-1,-1,-1,27,80,TRUE,-1
+8,none,0,-1,-1,-1,43,100,TRUE,-1
+=======
+,region,structure_id,A/P,D/V,M/L,horizontal_position,vertical_position,is_valid,cortical_depth
+0,none,0,-1,-1,-1,43,20,TRUE,-1
+1,none,0,-1,-1,-1,11,20,TRUE,-1
+2,none,0,-1,-1,-1,59,40,TRUE,-1
+3,none,0,-1,-1,-1,27,40,TRUE,-1
+4,none,0,-1,-1,-1,43,60,TRUE,-1
+5,none,0,-1,-1,-1,11,60,TRUE,-1
+6,none,0,-1,-1,-1,59,80,TRUE,-1
+7,none,0,-1,-1,-1,27,80,TRUE,-1
+8,none,0,-1,-1,-1,43,100,TRUE,-1
+>>>>>>> fd0d134d40757b1a6fd470fd87f278345f01b284
+>>>>>>> Stashed changes
 9,none,0,-1,-1,-1,11,100,TRUE,-1
