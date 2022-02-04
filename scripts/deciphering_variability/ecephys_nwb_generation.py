@@ -1,9 +1,9 @@
+#!/usr/bin/env python
 import logging
 import os
 import subprocess
-import logging
 import warnings
-import ecephys_nwb_trials
+# import ecephys_nwb_trials
 
 from glob import glob
 from os.path import join
@@ -23,11 +23,11 @@ logging.basicConfig(filename="std.log",
                     filemode='a')
 
 dir = os.path.dirname(__file__)
-#project_parameter_json = os.path.join(dir, "project_json",
+# project_parameter_json = os.path.join(dir, "project_json",
 #                                      "test_ephys_project_parameter_json.json")
-#project_params = ppp.parse_json(project_parameter_json)
+# project_params = ppp.parse_json(project_parameter_json)
 project_csv_json = os.path.join(dir, "project_json",
-                               "test_ecephys_csv_json.json")
+                                "test_ecephys_csv_json.json")
 project_params = ppp.parse_json(project_csv_json)
 session_param_list = ppp.generate_all_session_params(project_params)
 modules = ppp.get_modules(project_params)
@@ -37,30 +37,30 @@ old_last_unit = -1
 default_stimulus_renames = {
     "": "spontaneous",
 
-    "natural_movie_1" : "natural_movie_one",
-    "natural_movie_3" : "natural_movie_three",
+    "natural_movie_1": "natural_movie_one",
+    "natural_movie_3": "natural_movie_three",
     "Natural Images": "natural_scenes",
     "flash_250ms": "flashes",
     "gabor_20_deg_250ms": "gabors",
-    "drifting_gratings" : "drifting_gratings",
-    "static_gratings" : "static_gratings",
+    "drifting_gratings": "drifting_gratings",
+    "static_gratings": "static_gratings",
 
     "contrast_response": "drifting_gratings_contrast",
-    "natural_movie_1_more_repeats" : "natural_movie_one",
-    "natural_movie_shuffled" : "natural_movie_one_shuffled",
-    "motion_stimulus" : "dot_motion",
-    "drifting_gratings_more_repeats" : "drifting_gratings_75_repeats",
-    
+    "natural_movie_1_more_repeats": "natural_movie_one",
+    "natural_movie_shuffled": "natural_movie_one_shuffled",
+    "motion_stimulus": "dot_motion",
+    "drifting_gratings_more_repeats": "drifting_gratings_75_repeats",
+
     "signal_noise_test_0_200_repeats": "test_movie_one",
 
     "signal_noise_test_0": "test_movie_one",
-    "signal_noise_test_0": "test_movie_two",
-    "signal_noise_session_1" : "dense_movie_one",
-    "signal_noise_session_2" : "dense_movie_two",
-    "signal_noise_session_3" : "dense_movie_three",
-    "signal_noise_session_4" : "dense_movie_four",
-    "signal_noise_session_5" : "dense_movie_five",
-    "signal_noise_session_6" : "dense_movie_six",
+    "signal_noise_test_1": "test_movie_two",
+    "signal_noise_session_1": "dense_movie_one",
+    "signal_noise_session_2": "dense_movie_two",
+    "signal_noise_session_3": "dense_movie_three",
+    "signal_noise_session_4": "dense_movie_four",
+    "signal_noise_session_5": "dense_movie_five",
+    "signal_noise_session_6": "dense_movie_six",
 }
 
 default_column_renames = {
@@ -97,7 +97,7 @@ for session_params in session_param_list:
                                 output_json
             )
             logging.debug("Starting Session Level Module: " + module)
-            #subprocess.check_call(command_string)
+            subprocess.check_call(command_string)
             logging.debug("Finished Session Level Module: " + module)
         elif module in probe_modules:
             for probe in probes:
@@ -114,20 +114,23 @@ for session_params in session_param_list:
                 )
                 old_last_unit = module_params['last_unit_id']
             logging.debug("Starting Probe Level Module:: " + module)
-            #subprocess.check_call(command_string)
+            subprocess.check_call(command_string)
             logging.debug("Finished Probe Level Module: " + module)
 
             if module == 'allensdk.brain_observatory.ecephys.write_nwb':
                 stimulus_pkl_path = glob(join(module_params['base_directory'],
-                                            "*.stim.pkl"))[0]
+                                         "*.stim.pkl"))[0]
                 sync_h5_path = glob(join(module_params['base_directory'],
-                                            "*.sync"))[0]
-                output_stimulus_table_path = join(module_params['output_path'], "manual_stim_table_allensdk.csv")
+                                         "*.sync"))[0]
+                output_stimulus_table_path = join(
+                                             module_params['output_path'],
+                                             "manual_stim_table_allensdk.csv")
                 frame_time_strategy = "use_photodiode"
                 minimum_spontaneous_activity_duration = sys.float_info.epsilon
                 maximum_expected_spontaneous_activity_duration = 1225.02541
                 extract_const_params_from_repr = True
-                drop_const_params = ["name", "maskParams", "win", "autoLog", "autoDraw"]
+                drop_const_params = ["name", "maskParams", "win",
+                                     "autoLog", "autoDraw"]
                 fail_on_negative_duration = False
                 column_name_map = default_column_renames
                 stimulus_name_map = default_stimulus_renames
@@ -136,16 +139,20 @@ for session_params in session_param_list:
                 trial_params = {
                         "stimulus_pkl_path": stimulus_pkl_path,
                         "sync_h5_path": sync_h5_path,
-                        "output_stimulus_table_path": output_stimulus_table_path,
+                        "output_stimulus_table_path":
+                        output_stimulus_table_path,
                         "frame_time_strategy": frame_time_strategy,
-                        "minimum_spontaneous_activity_duration": minimum_spontaneous_activity_duration,
-                        "maximum_expected_spontaneous_activity_duration": maximum_expected_spontaneous_activity_duration,
-                        "extract_const_params_from_repr": extract_const_params_from_repr,
+                        "minimum_spontaneous_activity_duration":
+                        minimum_spontaneous_activity_duration,
+                        "maximum_expected_spontaneous_activity_duration":
+                        maximum_expected_spontaneous_activity_duration,
+                        "extract_const_params_from_repr":
+                        extract_const_params_from_repr,
                         "drop_const_params": drop_const_params,
                         "fail_on_negative_duration": fail_on_negative_duration,
                         "column_name_map": column_name_map,
                         "stimulus_name_map": stimulus_name_map,
-                        "output_nwb_path": output_nwb_path  
+                        "output_nwb_path": output_nwb_path
                 }
 
-                ecephys_nwb_trials.add_trials_to_nwb(trial_params)
+                # ecephys_nwb_trials.add_trials_to_nwb(trial_params)
