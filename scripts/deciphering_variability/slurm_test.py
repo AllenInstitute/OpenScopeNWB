@@ -1,16 +1,21 @@
 from simple_slurm import Slurm
 import os
 
-conda_environment = 'slurm_test'
+conda_environment = 'openscopenwb'
 
 python_path = os.path.join(
-    os.path.expanduser("~"),
-    'anaconda3',
-    'envs',
+    'allen',
+    'programs',
+    'mindscope',
+    'workgroups',
+    'openscope',
+    'ahad',
+    'Conda_env',
     conda_environment,
     'bin',
     'python'
 )
+
 slurm = Slurm(
     array=range(3, 4),
     cpus_per_task=6,
