@@ -1,6 +1,7 @@
 import datetime
 import pandas as pd
 import numpy as np
+import re
 import os
 import json
 import logging
@@ -68,6 +69,10 @@ def ecephys_align_timestamps(module_params):
     A dictionary representing the values that will be written to the input json
     """
     probe_idx = module_params['current_probe']
+    print(module_params['base_directory'])
+    print(probe_idx)
+    print(glob(os.path.join(
+        module_params['base_directory'], '*' + probe_idx + '*_sorted')))
     base_directory = glob(os.path.join(
         module_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
     events_directory = glob(os.path.join(
@@ -290,6 +295,11 @@ def ecephys_write_nwb(module_params):
 
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
+        numbers = re.findall(r'\d+', structure_acronym)
+
+        if (len(numbers) > 0):
+            structure_acronym = structure_acronym.split(numbers[0])[0]
+
         channel_dict = {
             'id': idx + probe_id * 1000,
             'valid_data': True,
@@ -297,7 +307,7 @@ def ecephys_write_nwb(module_params):
             'local_index': idx,
             'probe_vertical_position': -1,
             'probe_horizontal_position': -1,
-            'manual_structure_id': -1,
+            'manual_structure_id': channel_row['structure_id'],
             'manual_structure_acronym': structure_acronym,
             'anterior_posterior_ccf_coordinate': -1,
             'dorsal_ventral_ccf_coordinate': -1,
