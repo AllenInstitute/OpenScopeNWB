@@ -13,7 +13,7 @@ python_path = os.path.join(
 )
 slurm = Slurm(
     array=range(3, 4),
-    cpus_per_task=15,
+    cpus_per_task=6,
     job_name='openscope_test',
     dependency=dict(after=65541, afterok=34987),
     mem='8gb',
