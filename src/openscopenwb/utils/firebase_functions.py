@@ -1,3 +1,4 @@
+from curses import meta
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -34,6 +35,7 @@ def upload_session(project_id, session_id):
 
 def upload_project(project_id):
     "TODO: Add a new project to the firebase"
+    init_project(project_id)
     ref = db.reference('/Sessions')
     sessions = ref.get()
     # NOTE: Structure meta_dict in the manner we want to structure the realtime database
@@ -42,15 +44,15 @@ def upload_project(project_id):
         if key == project_id:
             for session in meta_dict['sessions']:
                 upload_session(project_id, session)
-    ref = db.reference('/Projects')
-    projects = ref.get()
-    for key in projects.items():
-        if key == project_id:
-            ref.child(key).update({meta_dict})
+
 
 
 def init_project(project_id):
     "TODO: Add the project id to the /Projects section of firebase"
+    ref = df.reference('/Projects')
+    projects = ref.get()
+    meta_dict = post_gres.get_proj_info(project_id)
+    ref.update({project_id: meta_dict})
 
 
 def init_session(project_id, session_id):
