@@ -1,4 +1,6 @@
 from curses import meta
+import postgres_functions as post_gres
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -15,23 +17,21 @@ def upload_session(project_id, session_id):
     "TODO: Upload information about a session to a project"
     ref = db.reference('/Sessions')
     sessions = ref.get()
-    # NOTE: Instead of numerical indices, might be a good idea to use a dictionary
     meta_dict = post_gres.get_sess_info(project_id, session_id)
 
     for key in sessions.items():
         if key == session_id:
             print("editing session info")
-            for i in meta_dict:
-                ref.child(key).update({i[0]: {
-                                   'session_date': i[8],
-                                   'session_mouse': i[1],
-                                   'session_notes': i[2], 
-                                   'session_pass': i[3],
-                                   'session_stimulus_type': i[4],
-                                   'session_img_depth': i[5],
-                                   'session_operator': i[6],
-                                   'session_equipment': i[7], 
-                                   'session_type': 'Ophys'}})
+            ref.child(key).update({project_id: {
+                                   'session_date': meta_dict['date'],
+                                   'session_mouse': meta_dict['mouse'],
+                                   'session_notes': meta_dict['notes'],
+                                   'session_pass': meta_dict['pass'],
+                                   'session_stimulus_type': meta_dict['stim'],
+                                   'session_img_depth': meta_dict['img'],
+                                   'session_operator': meta_dict['operator'],
+                                   'session_equipment': meta_dict['equip'],
+                                   'session_type': meta_dict['type']}})
 
 
 def upload_project(project_id):
@@ -39,13 +39,11 @@ def upload_project(project_id):
     init_project(project_id)
     ref = db.reference('/Sessions')
     sessions = ref.get()
-    # NOTE: Structure meta_dict in the manner we want to structure the realtime database
     meta_dict = post_gres.get_proj_info(project_id)
     for key in sessions.items():
         if key == project_id:
             for session in meta_dict['sessions']:
                 upload_session(project_id, session)
-
 
 
 def init_project(project_id):
@@ -63,13 +61,13 @@ def init_session(project_id, session_id):
 
 
 def update_project_status(project_id, status):
-    "TODO: Update the status of a project to represent its nwb conversion state"
+    "TODO: Update the status of a project to represent its conversion state"
     ref = db.reference('/Statuses')
     ref.update({project_id: {"Status": status}})
 
 
 def update_session_status(project_id, session_id, status):
-    "TODO: Update the status of a session to represent its nwb conversion state"
+    "TODO: Update the status of a session to represent its conversion state"
     ref = db.reference('/Statuses')
     ref.update({project_id: {session_id: {"Status": status}}})
 
@@ -87,7 +85,7 @@ def view_proj_sessions(project_id):
     sess_dict_list = []
     for session in ref:
         if session != "Metadata":
-            sess_dict_list.append(view_session(project_id,session))
+            sess_dict_list.append(view_session(project_id, session))
     return sess_dict_list
 
 
