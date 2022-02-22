@@ -14,7 +14,18 @@ def __init__(cred_path):
 
 
 def upload_session(project_id, session_id):
-    "TODO: Upload information about a session to a project"
+    """Uploads a specific session's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
     ref = db.reference('/Sessions')
     sessions = ref.get()
     meta_dict = post_gres.get_sess_info(project_id, session_id)
@@ -35,52 +46,121 @@ def upload_session(project_id, session_id):
 
 
 def upload_project(project_id):
-    "TODO: Add a new project to the firebase"
+    """Uploads a specific project's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
     init_project(project_id)
-    ref = db.reference('/Sessions')
-    sessions = ref.get()
     meta_dict = post_gres.get_proj_info(project_id)
-    for key in sessions.items():
-        if key == project_id:
-            for session in meta_dict['sessions']:
-                upload_session(project_id, session)
+    for session in meta_dict['sessions']:
+        upload_session(project_id, session)
 
 
 def init_project(project_id):
-    "TODO: Add the project id to the /Projects section of firebase"
+    """Initializes a specific project's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
     ref = db.reference('/Projects')
     meta_dict = post_gres.get_proj_info(project_id)
     ref.update({project_id: meta_dict})
 
 
 def init_session(project_id, session_id):
-    "TODO: Add the session id to the /Sessions section of firebase"
+    """Initializes a specific sessions's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
     ref = db.reference('/Sessions')
     meta_dict = post_gres.get_sess_info(session_id)
     ref.update({project_id: meta_dict})
 
 
 def update_project_status(project_id, status):
-    "TODO: Update the status of a project to represent its conversion state"
+    """Updates a project's conversion status
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
     ref = db.reference('/Statuses')
     ref.update({project_id: {"Status": status}})
 
 
 def update_session_status(project_id, session_id, status):
-    "TODO: Update the status of a session to represent its conversion state"
+    """Updates a session's conversion status
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
     ref = db.reference('/Statuses')
     ref.update({project_id: {session_id: {"Status": status}}})
 
 
 def view_session(project_id, session_id):
-    "TODO: Show all the associated metadata of a session"
+    """Returns all relevant metadata for a session
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    meta_dict: dict
+    A dict of all the metadata for the session
+    """
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = ref.get()
     return meta_dict
 
 
 def view_proj_sessions(project_id):
-    "TODO: Show all session(s) metadata for a project"
+    """Returns all relevant metadata for the sessions of a project
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    sess_dict_list: list
+    A list of dicts of all the metadata for the sessions
+    """
     ref = db.reference('/Sessions/' + project_id)
     sess_dict_list = []
     for session in ref:
@@ -90,14 +170,36 @@ def view_proj_sessions(project_id):
 
 
 def view_project(project_id):
-    "TODO: Show all the associated metadata of a project"
+    """Returns all relevant metadata of a project
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    meta_dict: dict
+    A dict of all the project's metadata
+    """
     ref = db.reference('/Sessions/' + project_id + '/' + 'Metadata')
     meta_dict = ref.get()
     return meta_dict
 
 
 def get_sessions(project_id):
-    "TODO: Get sessions associated with a project"
+    """Returns all sessions of a project
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    sess_list: list
+    A list of all the sessions
+    """
     ref = db.reference('/Sessions/' + project_id)
     sess_list = []
     for session in ref:
