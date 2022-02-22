@@ -22,7 +22,8 @@ def upload_session(project_id, session_id):
         if key == session_id:
             print("editing session info")
             for i in meta_dict:
-                ref.child(key).update({i[0]: {'session_date': i[8], 
+                ref.child(key).update({i[0]: {
+                                   'session_date': i[8],
                                    'session_mouse': i[1],
                                    'session_notes': i[2], 
                                    'session_pass': i[3],
@@ -49,48 +50,59 @@ def upload_project(project_id):
 
 def init_project(project_id):
     "TODO: Add the project id to the /Projects section of firebase"
-    ref = df.reference('/Projects')
-    projects = ref.get()
+    ref = db.reference('/Projects')
     meta_dict = post_gres.get_proj_info(project_id)
     ref.update({project_id: meta_dict})
 
 
 def init_session(project_id, session_id):
     "TODO: Add the session id to the /Sessions section of firebase"
+    ref = db.reference('/Sessions')
+    meta_dict = post_gres.get_sess_info(session_id)
+    ref.update({project_id: meta_dict})
 
 
-def update_project_status():
+def update_project_status(project_id, status):
     "TODO: Update the status of a project to represent its nwb conversion state"
+    ref = db.reference('/Statuses')
+    ref.update({project_id: {"Status": status}})
 
 
-
-def update_session_status():
+def update_session_status(project_id, session_id, status):
     "TODO: Update the status of a session to represent its nwb conversion state"
+    ref = db.reference('/Statuses')
+    ref.update({project_id: {session_id: {"Status": status}}})
 
 
-def view_session():
+def view_session(project_id, session_id):
     "TODO: Show all the associated metadata of a session"
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
+    meta_dict = ref.get()
+    return meta_dict
 
 
-def view_proj_sessions():
+def view_proj_sessions(project_id):
     "TODO: Show all session(s) metadata for a project"
+    ref = db.reference('/Sessions/' + project_id)
+    sess_dict_list = []
+    for session in ref:
+        if session != "Metadata":
+            sess_dict_list.append(view_session(project_id,session))
+    return sess_dict_list
 
 
-def view_project():
+def view_project(project_id):
     "TODO: Show all the associated metadata of a project"
+    ref = db.reference('/Sessions/' + project_id + '/' + 'Metadata')
+    meta_dict = ref.get()
+    return meta_dict
 
 
-def update_session():
-    "TODO: Update information for a session"
-
-
-def update_project():
-    "TODO: Update information for a project"
-
-
-def update_users():
-    "TODO: Updated the associated users for a project"
-
-
-def get_sessions():
+def get_sessions(project_id):
     "TODO: Get sessions associated with a project"
+    ref = db.reference('/Sessions/' + project_id)
+    sess_list = []
+    for session in ref:
+        if session != "Metadata":
+            sess_list.append(session)
+    return sess_list
