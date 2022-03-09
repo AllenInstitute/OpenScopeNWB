@@ -3,7 +3,7 @@ import logging
 import os
 import subprocess
 import warnings
-# import ecephys_nwb_trials
+import ecephys_nwb_trials
 
 from glob import glob
 from os.path import join
@@ -155,4 +155,4 @@ for session_params in session_param_list:
                         "output_nwb_path": output_nwb_path
                 }
 
-                # ecephys_nwb_trials.add_trials_to_nwb(trial_params)
+                ecephys_nwb_trials.add_trials_to_nwb(trial_params)

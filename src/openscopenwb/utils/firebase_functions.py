@@ -1,5 +1,4 @@
-from curses import meta
-import postgres_functions as post_gres
+from openscopenwb.utils import postgres_functions as post_gres
 
 import firebase_admin
 from firebase_admin import credentials
@@ -12,6 +11,11 @@ def __init__(cred_path):
         'databaseURL': 'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
     })
 
+def start(cred_path):
+    cred = credentials.Certificate(cred_path)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
+    })    
 
 def upload_session(project_id, session_id):
     """Uploads a specific session's information
@@ -28,7 +32,7 @@ def upload_session(project_id, session_id):
     """
     ref = db.reference('/Sessions')
     sessions = ref.get()
-    meta_dict = post_gres.get_sess_info(project_id, session_id)
+    meta_dict = post_gres.get_sess_info(session_id)
 
     for key in sessions.items():
         if key == session_id:
@@ -36,13 +40,10 @@ def upload_session(project_id, session_id):
             ref.child(key).update({project_id: {
                                    'session_date': meta_dict['date'],
                                    'session_mouse': meta_dict['mouse'],
-                                   'session_notes': meta_dict['notes'],
-                                   'session_pass': meta_dict['pass'],
                                    'session_stimulus_type': meta_dict['stim'],
                                    'session_img_depth': meta_dict['img'],
                                    'session_operator': meta_dict['operator'],
-                                   'session_equipment': meta_dict['equip'],
-                                   'session_type': meta_dict['type']}})
+                                   'session_equipment': meta_dict['equip']}})
 
 
 def upload_project(project_id):
@@ -143,7 +144,7 @@ def view_session(project_id, session_id):
     meta_dict: dict
     A dict of all the metadata for the session
     """
-    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
+    ref = db.reference('/Sessions/' + str(project_id) + '/' + str(session_id))
     meta_dict = ref.get()
     return meta_dict
 
