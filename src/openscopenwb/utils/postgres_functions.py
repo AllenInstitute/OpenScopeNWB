@@ -1,15 +1,20 @@
 from psycopg2 import connect
+import json
+import os
 
 
-def get_psql_cursor(
-    dbname="lims2", user="limsreader", host="limsdb2", password="limsro",
-    port=5432
-):
-    "TODO: Store this information in a JSON for security?"
+def get_cred_location():
+    dir = os.path.dirname(__file__)
+    cred_json = os.path.join(dir, "cred", "post_gres.json")
+    return cred_json
+
+def get_psql_cursor(cred_json):
     """Initializes a connection to the postgres database
 
     Parameters
     ----------
+    cred_json: str
+    A path to the credential json, which stores the following info:
     dbname: str
     The database name
     user: str
@@ -26,6 +31,12 @@ def get_psql_cursor(
     con: connect
     A connection to the postgres database
     """
+    cred_info = json.load(cred_json)
+    dbname = cred_info['dbname'],
+    user = cred_info['user'],
+    host = cred_info['host'],
+    password = cred_json['password'],
+    port = cred_json['port']
     con = connect(dbname=dbname, user=user, host=host, password=password,
                   port=port)
     con.set_session(readonly=True, autocommit=True)
@@ -57,7 +68,7 @@ def get_sess_info(session_id):
     FROM ophys_sessions os
     WHERE os.id = {}
     """
-    cur = get_psql_cursor()
+    cur = get_psql_cursor(get_cred_location)
     lims_query = OPHYS_SESSION_QRY.format(session_id)
     cur.execute(lims_query)
 
@@ -100,7 +111,7 @@ def get_proj_info(project_id):
         WHERE p.code =  '{}'
         AND os.workflow_state = 'uploaded'
     """
-    cur = get_psql_cursor()
+    cur = get_psql_cursor(get_cred_location)
     lims_query = LIST_OF_SESSION_QRY.format(project_id)
     cur.execute(lims_query)
 
