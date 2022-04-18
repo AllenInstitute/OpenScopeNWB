@@ -1,0 +1,7 @@
+{
+    "dbname": "lims2",
+    "user": "limsreader",
+    "host": "limsdb2",
+    "password": "limsro",
+    "port": "5432"
+  }
