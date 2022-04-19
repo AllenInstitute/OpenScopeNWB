@@ -46,6 +46,36 @@ def get_psql_cursor(cred_json):
     return con.cursor()
 
 
+def get_ses_all(session_id):
+    """Gets all info associated with an ophys sessions
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    info_list: str
+    The session's info
+    """
+    OPHYS_SESSION_QRY = """
+    SELECT *
+    FROM ophys_sessions os
+    WHERE os.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = OPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list
+
+
 def get_sess_directory(session_id):
     """Gets a specific session's filepath
 
@@ -64,7 +94,7 @@ def get_sess_directory(session_id):
     FROM ophys_sessions os
     WHERE os.id = {}
     """
-    cur = get_psql_cursor(get_cred_location)
+    cur = get_psql_cursor(get_cred_location())
     lims_query = OPHYS_SESSION_QRY.format(session_id)
     cur.execute(lims_query)
 
