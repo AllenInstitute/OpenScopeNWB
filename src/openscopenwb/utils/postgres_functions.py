@@ -90,7 +90,7 @@ def get_sess_directory(session_id):
     The session's file path
     """    
     OPHYS_SESSION_QRY = """
-    SELECT os.
+    SELECT os.storage_directory
     FROM ophys_sessions os
     WHERE os.id = {}
     """
