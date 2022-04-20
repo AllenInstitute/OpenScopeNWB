@@ -106,6 +106,93 @@ def get_sess_directory(session_id):
     return info_list
 
 
+
+
+def get_sess_probes(session_id):
+    """Gets a specific session's probes and workflow states
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    info_list: str
+    A list of the session's passing probes 
+    """      
+    EPHYS_PROBE_QRY = '''
+    SELECT es.workflow_state,
+        ARRAY_AGG(ep.id ORDER BY ep.id) AS ephys_probe_ids
+    FROM ecephys_sessions es
+        LEFT JOIN ecephys_probes ep ON ep.ecephys_session_id = es.id
+    WHERE es.id = {}
+    GROUP BY es.id
+    '''
+    PROBE_ID_QRY = '''
+    SELECT ep.name,
+        ep.workflow_state
+    FROM ecephys_probes ep
+        JOIN ecephys_sessions es ON es.id = ep.ecephys_session_id
+    WHERE ep.id = {}
+    '''
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = EPHYS_PROBE_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+        probes_list = []
+        probes_id_list = info_list[0][1]
+        for probe_id in probes_id_list:
+            probe_query = PROBE_ID_QRY.format(probe_id)
+            cur.execute(probe_query)
+            if cur.rowcount == 0:
+                raise Exception("No data was found for ID {}".format(session_id))
+            else:
+                probe_name_status = cur.fetchall()
+                probe_status = probe_name_status[0][1]
+                probe_name = probe_name_status[0][0]
+                if probe_status == 'passed':
+                    probes_list.append(probe_name)
+        return probes_list
+
+def get_sess_experiments(session_id):
+    """Gets a specific session's experiments and workflow states
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    info_list: str
+    A list of the session's passing experiments 
+    """    
+    OPHYS_SESSION_QRY = """
+    SELECT os.workflow_state,
+        ARRAY_AGG(oe.id ORDER BY oe.id) AS ophys_experiment_ids
+    FROM ophys_sessions os
+        LEFT JOIN ophys_experiments oe on oe.ophys_session_id = os.id 
+    WHERE os.id = {}
+    GROUP by os.id
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = OPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list
+
+
 def get_sess_info(session_id):
     """Gets a specific session's information
 
