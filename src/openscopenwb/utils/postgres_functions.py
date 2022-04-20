@@ -160,6 +160,7 @@ def get_sess_probes(session_id):
                     probes_list.append(probe_name)
         return probes_list
 
+
 def get_sess_experiments(session_id):
     """Gets a specific session's experiments and workflow states
 
@@ -190,6 +191,8 @@ def get_sess_experiments(session_id):
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
+        if info_list[0][0] == "uploaded" or info_list[0][1] == "passed":
+            info_list = info_list[0][1]
     return info_list
 
 
