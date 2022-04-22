@@ -258,6 +258,58 @@ def get_sess_experiments(session_id):
     return info_list
 
 
+def get_e_sess_info(session_id):
+    """Gets a specific session's information
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    meta_dict: dict
+    A dictionary including all relevant metadata
+    """
+    EPHYS_SESSION_QRY = """
+        SELECT es.name,
+        es.date_of_acquisition,
+        es.stimulus_name,
+        sp.external_specimen_name,
+        isi.id AS isi_experiment_id,
+        e.name AS rig
+    FROM ecephys_sessions es
+        JOIN specimens sp ON sp.id = es.specimen_id
+        LEFT JOIN isi_experiments isi ON isi.id = es.isi_experiment_id
+        LEFT JOIN equipment e ON e.id = es.equipment_id
+    WHERE es.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = EPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    tmp = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    for i in info_list:
+        for j in i:
+            tmp.append(j)
+    info_list = tmp
+    meta_dict = {}
+    meta_dict['name'] = info_list[0]
+    meta_dict['date'] = info_list[1]
+    meta_dict['stimulus'] = info_list[2]
+    meta_dict['mouse'] = info_list[3]
+    meta_dict['exp_id'] = info_list[4]
+    meta_dict['rig'] = info_list[5]
+    meta_dict['path'] = get_e_sess_directory(session_id)
+    meta_dict['type'] = 'ecephys'
+    return meta_dict
+
+
 def get_o_sess_info(session_id):
     """Gets a specific session's information
 
@@ -289,7 +341,6 @@ def get_o_sess_info(session_id):
 
     info_list = []
     tmp = []
-    counter = 0
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
@@ -309,6 +360,7 @@ def get_o_sess_info(session_id):
     meta_dict['equip'] = info_list[3]
     meta_dict['id'] = info_list[0]
     meta_dict['path'] = get_o_sess_directory(session_id)
+    meta_dict['type'] = 'ophys'
 
     return meta_dict
 
