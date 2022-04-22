@@ -46,7 +46,7 @@ def get_psql_cursor(cred_json):
     return con.cursor()
 
 
-def get_ses_all(session_id):
+def get_o_sess_all(session_id):
     """Gets all info associated with an ophys sessions
 
     Parameters
@@ -76,6 +76,37 @@ def get_ses_all(session_id):
     return info_list
 
 
+def get_e_sess_all(session_id):
+    """Gets all info associated with an ophys sessions
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    info_list: str
+    The session's info
+    """
+    EPHYS_SESSION_QRY = """
+    SELECT *
+    FROM ecephys_sessions es
+    WHERE es.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = EPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list
+
+
+
 def get_o_sess_directory(session_id):
     """Gets a specific session's filepath
 
@@ -102,6 +133,7 @@ def get_o_sess_directory(session_id):
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
+        info_list=cur.fetchall()
         path = info_list[0]
     return path
 
@@ -226,7 +258,7 @@ def get_sess_experiments(session_id):
     return info_list
 
 
-def get_sess_info(session_id):
+def get_o_sess_info(session_id):
     """Gets a specific session's information
 
     Parameters
@@ -256,12 +288,17 @@ def get_sess_info(session_id):
     cur.execute(lims_query)
 
     info_list = []
+    tmp = []
+    counter = 0
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
-        print(info_list)
 
+    for i in info_list:
+        for j in i:
+            tmp.append(j)
+    info_list = tmp
     meta_dict = {}
     meta_dict['name'] = info_list[1]
     meta_dict['date'] = info_list[5]
@@ -271,7 +308,7 @@ def get_sess_info(session_id):
     meta_dict['operator'] = info_list[6]
     meta_dict['equip'] = info_list[3]
     meta_dict['id'] = info_list[0]
-    meta_dict['path'] = get_sess_directory(session_id)
+    meta_dict['path'] = get_o_sess_directory(session_id)
 
     return meta_dict
 
