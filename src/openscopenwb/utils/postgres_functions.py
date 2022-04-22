@@ -76,7 +76,7 @@ def get_ses_all(session_id):
     return info_list
 
 
-def get_sess_directory(session_id):
+def get_o_sess_directory(session_id):
     """Gets a specific session's filepath
 
     Parameters
@@ -102,9 +102,39 @@ def get_sess_directory(session_id):
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
-        info_list = cur.fetchall()
-    return info_list
+        path = info_list[0]
+    return path
 
+
+def get_e_sess_directory(session_id):
+    """Gets a specific session's filepath
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    path: str
+    The session's file path
+    """    
+    EPHYS_SESSION_QRY = """
+    SELECT es.storage_directory
+    FROM ecephys_sessions es
+    WHERE es.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = EPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+        path = info_list[0]
+    return path
 
 
 
