@@ -1,10 +1,10 @@
+from re import S
 from openscopenwb.utils import postgres_functions as post_gres
 
 import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-
 
 def get_creds():
     dir = os.path.dirname(__file__)
@@ -95,7 +95,7 @@ def init_session(project_id, session_id):
     Returns
     -------
     """
-    ref = db.reference('/Sessions')
+    ref = db.reference('/Sessions/' + str(session_id))
     meta_dict = post_gres.get_sess_info(session_id)
     ref.update({project_id: meta_dict})
 
@@ -212,22 +212,26 @@ def get_sessions(project_id):
             sess_list.append(session)
     return sess_list
 
-
-def update_statuses():
-    """Updates all statuses within the entire firebase 
+def update_ephys_statuses():
+    """Updates all initalized statuses to converting 
 
     Parameters
     ----------
 
     Returns
     -------
+    session_list: list
+    A list of the sessions that need to be converted
     """
     fb = start(get_creds())
     ref = db.reference('/Sessions/')
+    session_list = []
     Projects = ref.get()
     for project, value in Projects.items():
         proj_ref = db.reference('/Sessions/'+project)
         proj = proj_ref.get()
         for session, value in proj.items():
-            if value['status']['status'] == "Initialized":
+            if value['status']['status'] == "Initialized" and value['session_type'] == "Ecephys":
                 update_session_status(project, session, "Converting")
+                session_list.append(session)
+    return session_list

@@ -36,12 +36,11 @@ def generate_ophys_nwb(session_id):
 
 '''
 
-
 def generate_ephys_nwb(session_id):
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
-        'allen',
+        '/allen',
         'programs',
         'mindscope',
         'workgroups',
@@ -52,6 +51,7 @@ def generate_ephys_nwb(session_id):
         'bin',
         'python'
     )
+    print(session_id)
 
     slurm = Slurm(
         array=range(3, 4),
@@ -61,7 +61,12 @@ def generate_ephys_nwb(session_id):
         mem='8gb',
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
+    dir = os.path.dirname(__file__)
+    print(dir)
 
-    slurm.sbatch(r'/allen/programs/mindscope/workgroups/openscope/ahad/' +
-                r'test_script/OpenScopeNWB-feature-ephys_write_stim/' +
-                r'scripts/deciphering_variability/ecephys_nwb_generation.py')
+    slurm.sbatch(python_path+
+                r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
+                r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
+                r'scripts/deciphering_variability/ecephys_nwb_generation.py'
+                ' --session_id {}'.format(session_id) )
+

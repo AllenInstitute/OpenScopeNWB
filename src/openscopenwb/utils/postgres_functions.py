@@ -166,7 +166,7 @@ def get_e_sess_directory(session_id):
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
         path = info_list[0]
-    return path
+    return path[0]
 
 
 
@@ -218,7 +218,7 @@ def get_sess_probes(session_id):
                 probe_name_status = cur.fetchall()
                 probe_status = probe_name_status[0][1]
                 probe_name = probe_name_status[0][0]
-                if probe_status == 'passed':
+                if probe_status == 'passed' or probe_status == 'created':
                     probes_list.append(probe_name)
         return probes_list
 
@@ -297,7 +297,7 @@ def get_e_sess_info(session_id):
     for i in info_list:
         for j in i:
             tmp.append(j)
-    info_list = tmp
+    info_list  = tmp
     meta_dict = {}
     meta_dict['name'] = info_list[0]
     meta_dict['date'] = info_list[1]
@@ -306,7 +306,7 @@ def get_e_sess_info(session_id):
     meta_dict['exp_id'] = info_list[4]
     meta_dict['rig'] = info_list[5]
     meta_dict['path'] = get_e_sess_directory(session_id)
-    meta_dict['type'] = 'ecephys'
+    meta_dict['type'] = 'Ecephys'
     return meta_dict
 
 
@@ -341,6 +341,7 @@ def get_o_sess_info(session_id):
 
     info_list = []
     tmp = []
+    counter = 0
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
@@ -360,7 +361,7 @@ def get_o_sess_info(session_id):
     meta_dict['equip'] = info_list[3]
     meta_dict['id'] = info_list[0]
     meta_dict['path'] = get_o_sess_directory(session_id)
-    meta_dict['type'] = 'ophys'
+    meta_dict['type'] = 'Ophys'
 
     return meta_dict
 

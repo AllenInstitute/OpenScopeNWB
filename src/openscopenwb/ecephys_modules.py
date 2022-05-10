@@ -34,13 +34,26 @@ def stimulus_table(module_params):
     """
     # trim_discontiguous_frame_times = module_params['trim']
     output_directory = module_params['output_path']
-
+    try:
+        pkl_path = glob(join(module_params['base_directory'],
+                                           "*.stim.pkl"))[0]
+    except IndexError:
+        pkl_path = glob(join(module_params['base_directory'], 
+                                           "**",
+                                           "*.stim.pkl"))[0]
+    try:
+        sync_path = glob(join(module_params['base_directory'],
+                                      "*.sync"))[0]
+    except IndexError:
+        sync_path = glob(join(module_params['base_directory'],
+                                      "**",
+                                      "*.sync"))[0]        
+    print(pkl_path)
+    print(sync_path)
     input_json_write_dict = \
         {
-            'stimulus_pkl_path': glob(join(module_params['base_directory'],
-                                           "*.stim.pkl"))[0],
-            'sync_h5_path': glob(join(module_params['base_directory'],
-                                      "*.sync"))[0],
+            'stimulus_pkl_path': pkl_path,
+            'sync_h5_path': sync_path,
             'output_stimulus_table_path':
                 os.path.join(output_directory,
                              "stim_table_allensdk.csv"),
@@ -68,17 +81,24 @@ def ecephys_align_timestamps(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
+    file_in_base_folder = False
     probe_idx = module_params['current_probe']
     print(module_params['base_directory'])
     print(probe_idx)
     print(glob(os.path.join(
         module_params['base_directory'], '*' + probe_idx + '*_sorted')))
     base_directory = glob(os.path.join(
-        module_params['base_directory'], '*' + probe_idx + '*_sorted'))[0]
-    events_directory = glob(os.path.join(
-        base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
-    probe_directory = glob(os.path.join(
-        base_directory, 'continuous', 'Neuropix*'))[0]
+        module_params['base_directory'], '*' + probe_idx + '*_sorted'))
+    queue_directory = []
+    if base_directory != []:
+        base_directory = base_directory[0]
+        events_directory = glob(os.path.join(
+            base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
+        probe_directory = glob(os.path.join(
+            base_directory, 'continuous', 'Neuropix*'))[0]
+        queue_directory = glob(os.path.join(
+            base_directory, 'EUR_QUEUE*', 'continuous', 'Neuropix*'))
+        file_in_base_folder = True
 
     alt_probe_directory = glob(join(module_params['base_directory'],
                                     '*', "*" + probe_idx,
@@ -87,27 +107,28 @@ def ecephys_align_timestamps(module_params):
     if alt_probe_directory != []:
         alt_probe_directory = alt_probe_directory[0]
 
-    queue_directory = glob(os.path.join(
-        base_directory, 'EUR_QUEUE*', 'continuous', 'Neuropix*'))
+
     if queue_directory != []:
         queue_directory = queue_directory[0]
 
     output_directory = module_params['output_path']
     spike_directory = ""
-    logging.debug("Current directory is: " + probe_directory)
+    if file_in_base_folder:
+        logging.debug("Current directory is: " + probe_directory)
     timestamp_files = []
 
     file_in_probe_folder = False
     file_in_parent_folder = False
     file_in_queue_folder = False
-    try:
-        np.load(join(probe_directory, 'spike_times.npy'))
-        file_found = True
-        file_in_probe_folder = True
-    except FileNotFoundError:
-        logging.debug(' Spikes not found for ' + probe_directory)
-        file_found = False
-        file_in_probe_folder = False
+    if file_in_base_folder:
+        try:
+            np.load(join(probe_directory, 'spike_times.npy'))
+            file_found = True
+            file_in_probe_folder = True
+        except FileNotFoundError:
+            logging.debug(' Spikes not found for ' + probe_directory)
+            file_found = False
+            file_in_probe_folder = False
 
     if alt_probe_directory != []:
         try:
@@ -116,6 +137,12 @@ def ecephys_align_timestamps(module_params):
             spike_directory = glob(join(
                                    alt_probe_directory,
                                    "spike_times.npy"))[0]
+            print(alt_probe_directory)
+            print(spike_directory)
+            events_directory = glob(join(module_params['base_directory'],
+                                    '*', "*" + probe_idx, 'events',
+                                    'Neuropix*', 'TTL*'))[0]
+            print(events_directory)
             file_found = True
             file_in_parent_folder = True
 
@@ -184,10 +211,28 @@ def ecephys_align_timestamps(module_params):
         if probe_idx != module_params['final_probe']:
             return module_params, probe_dict
         else:
-            input_json_write_dict = {
-                'sync_h5_path': glob(join(
+            print(module_params['base_directory'])
+            print(glob(join(
+                    module_params['base_directory'], '**',
+                    '*.sync')))
+            print(glob(join(
+                    module_params['base_directory'], '*',
+                    '*.sync')))
+            print(glob(join(
                     module_params['base_directory'],
-                    '*.sync'))[0],
+                    '*.sync')))
+            
+            
+            try:
+                sync_path = glob(join(
+                    module_params['base_directory'],
+                    '*.sync'))[0]
+            except IndexError:
+                sync_path = glob(join(
+                    module_params['base_directory'], '**',
+                    '*.sync'))[0]
+            input_json_write_dict = {
+                'sync_h5_path': sync_path,
                 "probes": module_params['probe_dict_list']
             }
             module_params['probe_dict_list'] = []
@@ -608,13 +653,24 @@ def extract_running_speed(module_params):
 
     # trim_discontiguous_frame_times = module_params['trim']
     output_path = module_params['output_path']
-
+    try:
+        pkl_path = glob(join(module_params['base_directory'],
+                                           "*.stim.pkl"))[0]
+    except IndexError:
+        pkl_path = glob(join(module_params['base_directory'], 
+                                           "**",
+                                           "*.stim.pkl"))[0]
+    try:
+        sync_path = glob(join(module_params['base_directory'],
+                                      "*.sync"))[0]
+    except IndexError:
+        sync_path = glob(join(module_params['base_directory'],
+                                      "**",
+                                      "*.sync"))[0]        
     input_json_write_dict = \
         {
-            'stimulus_pkl_path': glob(join(module_params['base_directory'],
-                                      "*.stim.pkl"))[0],
-            'sync_h5_path': glob(join(module_params['base_directory'],
-                                 "*.sync"))[0],
+            'stimulus_pkl_path': pkl_path,
+            'sync_h5_path': sync_path,
             'output_path': join(output_path,
                                 "running_speed.h5"),
             "log_level": 'INFO'

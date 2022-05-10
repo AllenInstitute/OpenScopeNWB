@@ -1,3 +1,6 @@
+import os 
+
+
 def generate_module_cmd(module, input_json, output_json):
     """Generates a command string to use for subprocess calling
 
@@ -15,7 +18,20 @@ def generate_module_cmd(module, input_json, output_json):
     command_string: str
     a string of the command string that will be used by the subprocess
     """
-    module_cmd = ["python", "-W", "ignore", "-m", module,
+    conda_environment = 'openscopenwb'
+    python_path = os.path.join(
+        '/allen',
+        'programs',
+        'mindscope',
+        'workgroups',
+        'openscope',
+        'ahad',
+        'Conda_env',
+        conda_environment,
+        'bin',
+        'python'
+    )
+    module_cmd = [python_path, "-W", "ignore", "-m", module,
                   "--input_json", input_json,
                   "--output_json", output_json]
     return module_cmd
