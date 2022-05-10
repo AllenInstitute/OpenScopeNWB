@@ -142,4 +142,4 @@ dmypy.json
 cython_debug/
 
 # ignore credentials for backend
-scripts/.cred/*
+src/openscopenwb/utils/.cred/*

@@ -5,10 +5,12 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import glob
 
 def get_creds():
     dir = os.path.dirname(__file__)
-    cred_json = os.path.join(dir, "cred", "openscopetest-d7614-firebase-adminsdk-bwzou-b9942c1cd6.json")
+    credential_file = glob.glob(os.path.join(dir, '.cred', 'firebase_backend_credentials.json'))
+    cred_json = credential_file[0]
     return cred_json
 
 
