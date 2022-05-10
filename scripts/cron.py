@@ -8,8 +8,7 @@ from openscopenwb.utils import postgres_functions as postgres
 
 
 dir = os.path.dirname(__file__)
-cred_json = os.path.join(dir, 'cred', 'openscopetest-d7614-firebase-adminsdk-bwzou-b9942c1cd6.json')
-
+cred_json = fb.get_creds()
 
 #ephys_list = fb.update_ephys_statuses()
 slurm_temp.set_text(762602078)
