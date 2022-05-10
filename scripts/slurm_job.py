@@ -67,6 +67,6 @@ def generate_ephys_nwb(session_id):
     slurm.sbatch(python_path+
                 r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                r'scripts/deciphering_variability/ecephys_nwb_generation.py'
+                r'scripts/ecephys_nwb_generation.py'
                 ' --session_id {}'.format(session_id) )
 
