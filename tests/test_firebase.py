@@ -3,7 +3,6 @@ import os
 from openscopenwb.utils import firebase_functions as fb
 
 
-
 @pytest.fixture
 def firebase_prep():
     test_dict = {
@@ -17,7 +16,7 @@ def firebase_prep():
 
 def test_sess_meta(firebase_prep):
     dir = os.path.dirname(__file__)
-    cred_json = os.path.join(dir, 'openscopetest-d7614-firebase-adminsdk-bwzou-b9942c1cd6.json')
+    cred_json = fb.get_creds()
     fb.start(cred_json)
     session_meta = fb.view_session("Project_test_id", 758519303)
     assert session_meta['session_type'] == firebase_prep['session_1_type']
