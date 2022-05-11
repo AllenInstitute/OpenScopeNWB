@@ -22,7 +22,7 @@ project_parameter_json = os.path.join(dir, "project_json",
 
 project_info = popp.parse_json(project_parameter_json)
 ophys_experiment_ids = popp.get_ids(project_info)
-# ophys_experiment_id = 1137365310
+
 for key in ophys_experiment_ids:
     ophys_experiment_id = int(key)
     ophys_session_id = int(ophys_experiment_ids[key])

@@ -2,8 +2,19 @@ from psycopg2 import connect
 import json
 import os
 
-
 def get_cred_location():
+    """Gets content of firebase credential file
+    Files are ignored and not committed to the repository
+    
+    Parameters
+    ----------
+
+    Returns
+    -------
+    cred_json: str
+    path to json file storing credential information 
+    
+    """
     dir = os.path.dirname(__file__)
     cred_json = os.path.join(dir, ".cred", "post_gres.json")
     return cred_json
