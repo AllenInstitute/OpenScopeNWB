@@ -25,7 +25,7 @@ def generate_ophys_json(session_id):
 
 
 def generate_ephys_json(session_id):
-    date = datetime.today().strftime('%Y-%m-%d')
+    date = datetime.today().strftime('%Y-%m-%d-%H-%M')
     json_data = {}
     json_data['modules'] = [
     "allensdk.brain_observatory.ecephys.align_timestamps",
