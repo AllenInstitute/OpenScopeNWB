@@ -59,6 +59,7 @@ def generate_ephys_nwb(session_id):
         job_name='openscope_test',
         dependency=dict(after=65541, afterok=34987),
         mem='8gb',
+        partition = 'braintv',
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
