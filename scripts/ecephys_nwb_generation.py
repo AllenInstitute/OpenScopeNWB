@@ -171,13 +171,11 @@ def write_subject_to_nwb(nwb_path):
     input_nwb = io.read()
     
     subject = pynwb.file.Subject(
-        age="0", 
+        age="P90D", 
         description="Placeholder", 
         genotype="Placeholder", 
-        sex="O", 
-        species="Placeholder", 
+        sex="M", 
         subject_id="Placeholder", 
-        weight="Placeholder", 
         strain="Placeholder"
     )
     input_nwb.subject = subject
