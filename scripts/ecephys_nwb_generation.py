@@ -122,6 +122,7 @@ def convert_session(session_id):
                 subprocess.check_call(command_string)
                 logging.debug("Finished Probe Level Module: " + module)
 
+'''
                 if module == 'allensdk.brain_observatory.ecephys.write_nwb':
                     stimulus_pkl_path = glob(join(module_params['base_directory'],
                                             "*.stim.pkl"))[0]
@@ -161,6 +162,7 @@ def convert_session(session_id):
                     }
 
                 #ecephys_nwb_trials.add_trials_to_nwb(trial_params)
+'''
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=int)
