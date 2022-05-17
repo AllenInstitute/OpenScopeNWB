@@ -13,6 +13,8 @@ import openscopenwb.create_module_input_json as osnjson
 import sys
 import generate_json as gen_json
 
+from pynwb import NWBHDF5IO
+import pynwb
 
 from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
@@ -121,7 +123,7 @@ def convert_session(session_id):
                 logging.debug("Starting Probe Level Module:: " + module)
                 subprocess.check_call(command_string)
                 logging.debug("Finished Probe Level Module: " + module)
-
+    return join(module_params['nwb_path'])
 '''
                 if module == 'allensdk.brain_observatory.ecephys.write_nwb':
                     stimulus_pkl_path = glob(join(module_params['base_directory'],
@@ -163,9 +165,29 @@ def convert_session(session_id):
 
                 #ecephys_nwb_trials.add_trials_to_nwb(trial_params)
 '''
+def write_subject_to_nwb(nwb_path):
+    write_nwb_path = nwb_path.replace("spike_times.nwb", "spike_times_re.nwb")
+    io = NWBHDF5IO(nwb_path, "a", load_namespaces=True)
+    input_nwb = io.read()
+    
+    subject = pynwb.file.Subject(
+        age="0", 
+        description="Placeholder", 
+        genotype="Placeholder", 
+        sex="O", 
+        species="Placeholder", 
+        subject_id="Placeholder", 
+        weight="Placeholder", 
+        strain="Placeholder"
+    )
+    input_nwb.subject = subject
+    io.write(input_nwb)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=int)
     args = parser.parse_args()
-    convert_session(session_id = args.session_id)
-
+    write_subject_to_nwb(
+        convert_session(session_id = args.session_id)
+    )
