@@ -16,10 +16,11 @@ def get_probes(path):
         existence_list = glob(os.path.join(path, '*' + probe_idx + '*_sorted'))
         print(existence_list)
 
+
 def generate_ophys_json(session_id):
     json_data = {}
-    for experiment in postgres.get_sess_experiments(session_id):    
-        json_data['Session_ids'] = {experiment : session_id}
+    for experiment in postgres.get_sess_experiments(session_id):
+        json_data['Session_ids'] = {experiment:session_id}
     json_out = json.dumps(json_data)
     return json_out
 
@@ -33,7 +34,8 @@ def generate_ephys_json(session_id):
     "allensdk.brain_observatory.extract_running_speed",
     "allensdk.brain_observatory.ecephys.write_nwb"
     ]
-    output_path = r"/allen/programs/mindscope/workgroups/openscope/openscopedata2022/" + str(session_id) +  '/' + date + '/outputs'
+    output_path = r"/allen/programs/mindscope/workgroups/openscope/" + "openscopedata2022/"
+                    + str(session_id) +  '/' + date + '/outputs'
     nwb_path = r"/allen/programs/mindscope/workgroups/openscope/openscopedata2022/" + str(session_id) +  '/' + date + '/nwb_path'
     json_path = r"/allen/programs/mindscope/workgroups/openscope/openscopedata2022/" + str(session_id) +  '/' + date + '/json'
     if not os.path.exists(output_path):
