@@ -18,7 +18,7 @@ def gres_sess_prep():
 
 
 def test_sessions(gres_sess_prep):
-    info_list = postgres.get_sess_info(1137276124)
+    info_list = postgres.get_o_sess_info(1137276124)
     mouse = info_list['mouse']
     name = info_list['name']
     date = info_list['date']

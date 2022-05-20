@@ -2,18 +2,19 @@ from psycopg2 import connect
 import json
 import os
 
+
 def get_cred_location():
     """Gets content of firebase credential file
     Files are ignored and not committed to the repository
-    
+
     Parameters
     ----------
 
     Returns
     -------
     cred_json: str
-    path to json file storing credential information 
-    
+    path to json file storing credential information
+
     """
     dir = os.path.dirname(__file__)
     cred_json = os.path.join(dir, ".cred", "post_gres.json")
@@ -43,6 +44,7 @@ def get_psql_cursor(cred_json):
     con: connect
     A connection to the postgres database
     """
+    print(cred_json)
     cred_file = open(cred_json)
     cred_info = json.load(cred_file)
     cred_file.close()
@@ -117,7 +119,6 @@ def get_e_sess_all(session_id):
     return info_list
 
 
-
 def get_o_sess_directory(session_id):
     """Gets a specific session's filepath
 
@@ -130,7 +131,7 @@ def get_o_sess_directory(session_id):
     -------
     path: str
     The session's file path
-    """    
+    """
     OPHYS_SESSION_QRY = """
     SELECT os.storage_directory
     FROM ophys_sessions os
@@ -144,7 +145,7 @@ def get_o_sess_directory(session_id):
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
-        info_list=cur.fetchall()
+        info_list = cur.fetchall()
         path = info_list[0]
     return path
 
@@ -161,7 +162,7 @@ def get_e_sess_directory(session_id):
     -------
     path: str
     The session's file path
-    """    
+    """
     EPHYS_SESSION_QRY = """
     SELECT es.storage_directory
     FROM ecephys_sessions es
@@ -180,7 +181,6 @@ def get_e_sess_directory(session_id):
     return path[0]
 
 
-
 def get_sess_probes(session_id):
     """Gets a specific session's probes and workflow states
 
@@ -192,8 +192,8 @@ def get_sess_probes(session_id):
     Returns
     -------
     info_list: str
-    A list of the session's passing probes 
-    """      
+    A list of the session's passing probes
+    """
     EPHYS_PROBE_QRY = '''
     SELECT es.workflow_state,
         ARRAY_AGG(ep.id ORDER BY ep.id) AS ephys_probe_ids
@@ -224,7 +224,8 @@ def get_sess_probes(session_id):
             probe_query = PROBE_ID_QRY.format(probe_id)
             cur.execute(probe_query)
             if cur.rowcount == 0:
-                raise Exception("No data was found for ID {}".format(session_id))
+                raise Exception("No data was found for ID {}".format(
+                                session_id))
             else:
                 probe_name_status = cur.fetchall()
                 probe_status = probe_name_status[0][1]
@@ -245,13 +246,13 @@ def get_sess_experiments(session_id):
     Returns
     -------
     info_list: str
-    A list of the session's passing experiments 
-    """    
+    A list of the session's passing experiments
+    """
     OPHYS_SESSION_QRY = """
     SELECT os.workflow_state,
         ARRAY_AGG(oe.id ORDER BY oe.id) AS ophys_experiment_ids
     FROM ophys_sessions os
-        LEFT JOIN ophys_experiments oe on oe.ophys_session_id = os.id 
+        LEFT JOIN ophys_experiments oe on oe.ophys_session_id = os.id
     WHERE os.id = {}
     GROUP by os.id
     """
@@ -308,7 +309,7 @@ def get_e_sess_info(session_id):
     for i in info_list:
         for j in i:
             tmp.append(j)
-    info_list  = tmp
+    info_list = tmp
     meta_dict = {}
     meta_dict['name'] = info_list[0]
     meta_dict['date'] = info_list[1]
@@ -352,7 +353,6 @@ def get_o_sess_info(session_id):
 
     info_list = []
     tmp = []
-    counter = 0
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:

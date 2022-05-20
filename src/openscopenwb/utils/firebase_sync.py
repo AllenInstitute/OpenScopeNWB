@@ -70,18 +70,18 @@ def create_sessions(project_id, new_sessions):
 
 
 def update_session_status(project_id, sessions):
-    """Updates the conversion status of sessions for a project 
+    """Updates the conversion status of sessions for a project
 
     Parameters
     ----------
     project_id: int
     The project's id value
     sessions: list
-    A list of the sessions which are to be updated and their statuses 
+    A list of the sessions which are to be updated and their statuses
 
     Returns
     -------
-    """   
+    """
     for session in sessions:
         firebase.update_session_status(project_id,
                                        session_id=session[0],

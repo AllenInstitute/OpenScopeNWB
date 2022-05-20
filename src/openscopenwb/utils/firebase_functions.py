@@ -1,4 +1,3 @@
-from re import S
 from openscopenwb.utils import postgres_functions as post_gres
 
 import os
@@ -7,9 +6,11 @@ from firebase_admin import credentials
 from firebase_admin import db
 import glob
 
+
 def get_creds():
     dir = os.path.dirname(__file__)
-    credential_file = glob.glob(os.path.join(dir, '.cred', 'firebase_backend_credentials.json'))
+    credential_file = glob.glob(os.path.join(dir, '.cred',
+                                'firebase_backend_credentials.json'))
     cred_json = credential_file[0]
     return cred_json
 
@@ -17,7 +18,8 @@ def get_creds():
 def start(cred_path):
     cred = credentials.Certificate(cred_path)
     app = firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
+        'databaseURL':
+            'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
     })
     return app
 
@@ -130,8 +132,9 @@ def update_session_status(project_id, session_id, status):
     Returns
     -------
     """
-    #fb = start(get_creds())
-    ref = db.reference('/Sessions/' + project_id  + "/" + session_id +  "/status/")
+    # fb = start(get_creds())
+    ref = db.reference('/Sessions/' + project_id + "/" + session_id +
+                       "/status/")
     ref.update({"status": status})
 
 
@@ -152,6 +155,7 @@ def view_session(project_id, session_id):
     """
     ref = db.reference('/Sessions/' + str(project_id) + '/' + str(session_id))
     meta_dict = ref.get()
+    print(meta_dict)
     return meta_dict
 
 
@@ -214,8 +218,9 @@ def get_sessions(project_id):
             sess_list.append(session)
     return sess_list
 
+
 def update_ephys_statuses():
-    """Updates all initalized statuses to converting 
+    """Updates all initalized statuses to converting
 
     Parameters
     ----------
@@ -225,7 +230,6 @@ def update_ephys_statuses():
     session_list: list
     A list of the sessions that need to be converted
     """
-    fb = start(get_creds())
     ref = db.reference('/Sessions/')
     session_list = []
     Projects = ref.get()
@@ -233,7 +237,8 @@ def update_ephys_statuses():
         proj_ref = db.reference('/Sessions/'+project)
         proj = proj_ref.get()
         for session, value in proj.items():
-            if value['status']['status'] == "Initialized" and value['session_type'] == "Ecephys":
+            if value['status']['status'] == "Initialized" and \
+               value['session_type'] == "Ecephys":
                 update_session_status(project, session, "Converting")
                 session_list.append(session)
     return session_list
