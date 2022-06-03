@@ -18,12 +18,15 @@ def compare_session(project_id, session_id):
     A list of the differences between the postgres and firebase,
     ordered by info type and the information reported by the postgres
     """
-    post_gres_info = post_gres.get_sess_info(session_id)
+    post_gres_info = post_gres.get_e_sess_info(session_id)
     firebase_info = firebase.view_session(project_id, session_id)
     difference_list = []
     for i in post_gres_info:
+        if i not in firebase_info:
+            difference_list.append(i)
+            continue
         if post_gres_info[i] != firebase_info[i]:
-            difference_list.append(i, post_gres_info[i])
+            difference_list.append(i)
     return difference_list
 
 
@@ -39,17 +42,17 @@ def compare_sessions(project_id):
     -------
     new_sessions: list
     A list of the sessions which are not present in the firebase
-    project_id: int
-    The project's id value
     """
-    post_gres_sessions = post_gres.get_proj_info(project_id)
+    print(project_id)
+    post_gres_sessions = post_gres.get_e_proj_info(project_id)
     post_gres_sessions = post_gres_sessions['sessions']
     firebase_sessions = firebase.get_sessions(project_id)
     new_sessions = []
+
     for session in post_gres_sessions:
         if session not in firebase_sessions:
             new_sessions.append(session)
-    return project_id, new_sessions
+    return new_sessions
 
 
 def create_sessions(project_id, new_sessions):

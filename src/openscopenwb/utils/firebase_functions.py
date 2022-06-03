@@ -1,3 +1,4 @@
+from multiprocessing import Value
 from re import S
 from openscopenwb.utils import postgres_functions as post_gres
 
@@ -37,18 +38,19 @@ def upload_session(project_id, session_id):
     """
     ref = db.reference('/Sessions')
     sessions = ref.get()
-    meta_dict = post_gres.get_sess_info(session_id)
+    meta_dict = post_gres.get_e_sess_info(session_id)
 
     for key in sessions.items():
+        # print(key)
         if key == session_id:
-            print("editing session info")
-            ref.child(key).update({project_id: {
+            # print(session_id)
+            ref.update({project_id: { session_id: {
                                    'session_date': meta_dict['date'],
                                    'session_mouse': meta_dict['mouse'],
                                    'session_stimulus_type': meta_dict['stim'],
                                    'session_img_depth': meta_dict['img'],
                                    'session_operator': meta_dict['operator'],
-                                   'session_equipment': meta_dict['equip']}})
+                                   'session_equipment': meta_dict['equip']}}})
 
 
 def upload_project(project_id):
@@ -62,10 +64,15 @@ def upload_project(project_id):
     Returns
     -------
     """
-    init_project(project_id)
-    meta_dict = post_gres.get_proj_info(project_id)
+    start(get_creds())
+    #init_project(project_id)
+    meta_dict = post_gres.get_e_proj_info(project_id)
     for session in meta_dict['sessions']:
-        upload_session(project_id, session)
+        session = str(session)
+        session = ''.join((c for c in session if c.isdigit()))
+        init_session(project_id, session)        
+
+        #upload_session(project_id, session)
 
 
 def init_project(project_id):
@@ -80,7 +87,8 @@ def init_project(project_id):
     -------
     """
     ref = db.reference('/Projects')
-    meta_dict = post_gres.get_proj_info(project_id)
+    meta_dict = post_gres.get_e_proj_info(project_id)
+    #print(meta_dict)
     ref.update({project_id: meta_dict})
 
 
@@ -97,9 +105,33 @@ def init_session(project_id, session_id):
     Returns
     -------
     """
-    ref = db.reference('/Sessions/' + str(session_id))
-    meta_dict = post_gres.get_sess_info(session_id)
-    ref.update({project_id: meta_dict})
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
+    meta_dict = post_gres.get_e_sess_info(session_id)
+    #print('init session')
+    #print(meta_dict)
+    ref.update(meta_dict)
+
+def update_session(project_id, session_id):
+    """Updates a specific sessions's information while keeping current status
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
+    meta_dict = post_gres.get_e_sess_info(session_id)
+    status = view_session(project_id, session_id)['status']
+    meta_dict['status'] = status
+    #print('init session')
+    #print(meta_dict)
+    ref.update(meta_dict)
+
 
 
 def update_project_status(project_id, status):
@@ -208,32 +240,30 @@ def get_sessions(project_id):
     A list of all the sessions
     """
     ref = db.reference('/Sessions/' + project_id)
+    sessions = ref.get()
     sess_list = []
-    for session in ref:
+    for session in sessions:
         if session != "Metadata":
             sess_list.append(session)
     return sess_list
 
-def update_ephys_statuses():
+def update_ephys_statuses(projectID):
     """Updates all initalized statuses to converting 
 
     Parameters
     ----------
-
+    projectID: str
+    The project's ID value
     Returns
     -------
     session_list: list
     A list of the sessions that need to be converted
     """
-    fb = start(get_creds())
-    ref = db.reference('/Sessions/')
+    ref = db.reference('/Sessions/' + projectID)
+    sessions = ref.get()
     session_list = []
-    Projects = ref.get()
-    for project, value in Projects.items():
-        proj_ref = db.reference('/Sessions/'+project)
-        proj = proj_ref.get()
-        for session, value in proj.items():
-            if value['status']['status'] == "Initialized" and value['session_type'] == "Ecephys":
-                update_session_status(project, session, "Converting")
-                session_list.append(session)
+    for session, value in sessions.items():
+        if value['status']['status'] == "Initialized" and value['type'] == "Ecephys":
+            update_session_status(projectID, session, "Converting")
+            session_list.append(session)
     return session_list

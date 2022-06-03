@@ -145,6 +145,7 @@ def ecephys_align_timestamps(module_params):
         logging.debug("Current directory is: " + probe_directory)
     timestamp_files = []
 
+    file_found = False
     file_in_probe_folder = False
     file_in_parent_folder = False
     file_in_queue_folder = False

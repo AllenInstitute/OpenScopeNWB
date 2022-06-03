@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from psycopg2 import connect
 import json
 import os
@@ -100,6 +101,7 @@ def get_e_sess_all(session_id):
     info_list: str
     The session's info
     """
+
     EPHYS_SESSION_QRY = """
     SELECT *
     FROM ecephys_sessions es
@@ -221,7 +223,9 @@ def get_sess_probes(session_id):
         probes_list = []
         probes_id_list = info_list[0][1]
         for probe_id in probes_id_list:
+            print(probe_id)
             probe_query = PROBE_ID_QRY.format(probe_id)
+            print(probe_query)
             cur.execute(probe_query)
             if cur.rowcount == 0:
                 raise Exception("No data was found for ID {}".format(session_id))
@@ -288,7 +292,8 @@ def get_e_sess_info(session_id):
         es.stimulus_name,
         sp.external_specimen_name,
         isi.id AS isi_experiment_id,
-        e.name AS rig
+        e.name AS rig,
+        es.workflow_state
     FROM ecephys_sessions es
         JOIN specimens sp ON sp.id = es.specimen_id
         LEFT JOIN isi_experiments isi ON isi.id = es.isi_experiment_id
@@ -296,6 +301,8 @@ def get_e_sess_info(session_id):
     WHERE es.id = {}
     """
     cur = get_psql_cursor(get_cred_location())
+    session_id = str(session_id)
+    session_id = ''.join((c for c in session_id if c.isdigit()))
     lims_query = EPHYS_SESSION_QRY.format(session_id)
     cur.execute(lims_query)
 
@@ -310,14 +317,20 @@ def get_e_sess_info(session_id):
             tmp.append(j)
     info_list  = tmp
     meta_dict = {}
+    if isinstance(info_list[1], (datetime, date)):
+        info_list[1] = info_list[1].isoformat()
+
     meta_dict['name'] = info_list[0]
     meta_dict['date'] = info_list[1]
     meta_dict['stimulus'] = info_list[2]
     meta_dict['mouse'] = info_list[3]
     meta_dict['exp_id'] = info_list[4]
     meta_dict['rig'] = info_list[5]
+    meta_dict['workflow'] = info_list[6]
     meta_dict['path'] = get_e_sess_directory(session_id)
     meta_dict['type'] = 'Ecephys'
+    meta_dict['status'] = {'status': 'Not Converted'}
+    meta_dict['notes'] = 'none'
     return meta_dict
 
 
@@ -377,7 +390,45 @@ def get_o_sess_info(session_id):
     return meta_dict
 
 
-def get_proj_info(project_id):
+def get_e_proj_info(project_id):
+    """Gets a specific project's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    meta_dict: dict
+    A dictionary including all relevant metadata, currently just the sessions
+    """
+    LIST_OF_SESSION_QRY = """
+    SELECT es.id
+    FROM ecephys_sessions es
+        JOIN projects p ON p.id = es.project_id
+        JOIN specimens sp ON sp.id = es.specimen_id
+        WHERE p.code =  '{}'
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = LIST_OF_SESSION_QRY.format(project_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(project_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    meta_dict = {}
+    meta_dict['sessions'] = []
+    for session in info_list:
+        session = str(session)
+        session = ''.join((c for c in session if c.isdigit()))
+        meta_dict['sessions'].append(session)
+    return meta_dict
+
+
+def get_o_proj_info(project_id):
     """Gets a specific project's information
 
     Parameters
