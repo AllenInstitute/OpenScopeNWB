@@ -206,7 +206,8 @@ def get_sess_probes(session_id):
     '''
     PROBE_ID_QRY = '''
     SELECT ep.name,
-        ep.workflow_state
+        ep.workflow_state,
+        ep.storage_directory
     FROM ecephys_probes ep
         JOIN ecephys_sessions es ON es.id = ep.ecephys_session_id
     WHERE ep.id = {}
@@ -233,7 +234,13 @@ def get_sess_probes(session_id):
                 probe_name_status = cur.fetchall()
                 probe_status = probe_name_status[0][1]
                 probe_name = probe_name_status[0][0]
-                if probe_status == 'passed' or probe_status == 'created':
+                probe_storage = probe_name_status[0][2]
+                print(probe_storage)
+                if (probe_status == 'passed' or probe_status == 'created') and probe_storage is not None:
+                    if(probe_status) == 'passed':
+                        print(probe_name)
+                    else:
+                        print(probe_name + " is created, but not passed")
                     probes_list.append(probe_name)
         return probes_list
 
@@ -271,6 +278,26 @@ def get_sess_experiments(session_id):
         if info_list[0][0] == "uploaded" or info_list[0][1] == "passed":
             info_list = info_list[0][1]
     return info_list
+
+
+def get_e_sess_specimen_info(session_id):
+    EPHYS_SESSION_QRY = """
+    SELECT sp
+    FROM ecephys_sessions es
+        JOIN specimens sp ON sp.id = es.specimen_id    
+    WHERE es.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = EPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list
+
 
 
 def get_e_sess_info(session_id):
@@ -331,6 +358,10 @@ def get_e_sess_info(session_id):
     meta_dict['type'] = 'Ecephys'
     meta_dict['status'] = {'status': 'Not Converted'}
     meta_dict['notes'] = 'none'
+    try:
+        meta_dict['probes'] = get_sess_probes(session_id)
+    except Exception:
+        meta_dict['probes'] = ['no probe info']
     return meta_dict
 
 

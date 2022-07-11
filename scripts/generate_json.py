@@ -24,13 +24,15 @@ def generate_ophys_json(session_id):
     return json_out
 
 
-def generate_ephys_json(session_id):
+def generate_ephys_json(session_id, project):
     date = datetime.today().strftime('%Y-%m-%d-%H-%M')
     json_data = {}
     json_data['modules'] = [
     "allensdk.brain_observatory.ecephys.align_timestamps",
     "allensdk.brain_observatory.ecephys.stimulus_table",
     "allensdk.brain_observatory.extract_running_speed",
+    'allensdk.brain_observatory.ecephys.lfp_subsampling',
+    'allensdk.brain_observatory.ecephys.optotagging_table',
     "allensdk.brain_observatory.ecephys.write_nwb"
     ]
     output_path = r"/allen/programs/mindscope/workgroups/openscope/openscopedata2022/" + str(session_id) +  '/' + date + '/outputs'
@@ -51,6 +53,7 @@ def generate_ephys_json(session_id):
     json_data['output_json'] = json_path
     json_data['trim_discontiguous_frame_times'] = False
     json_data['last_unit_id'] = 0
+    json_data['project'] = project
     json_data['lims'] = True
     json_data['probes'] = {session_id:postgres.get_sess_probes(session_id)}
     json_data['sessions']={session_id:postgres.get_e_sess_directory(session_id)}

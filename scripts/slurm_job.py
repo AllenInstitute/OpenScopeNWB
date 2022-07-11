@@ -1,4 +1,5 @@
 import os
+from time import time
 import warnings
 import logging
 import sys
@@ -36,7 +37,7 @@ def generate_ophys_nwb(session_id):
 
 '''
 
-def generate_ephys_nwb(session_id):
+def generate_ephys_nwb(session_id, project):
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
@@ -55,11 +56,12 @@ def generate_ephys_nwb(session_id):
 
     slurm = Slurm(
         array=range(3, 4),
-        cpus_per_task=6,
+        cpus_per_task=12,
         job_name='openscope_test',
         dependency=dict(after=65541, afterok=34987),
-        mem='8gb',
+        mem='24gb',
         partition = 'braintv',
+        time = "01:30:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
@@ -69,5 +71,6 @@ def generate_ephys_nwb(session_id):
                 r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                 r'scripts/ecephys_nwb_generation.py'
-                ' --session_id {}'.format(session_id) )
+                ' --session_id {}'.format(session_id) +
+                ' --project {}'.format(project))
 

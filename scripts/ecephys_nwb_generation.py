@@ -19,7 +19,7 @@ import pynwb
 from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
 
-def convert_session(session_id):
+def convert_session(session_id, project):
     warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
     logging.basicConfig(filename="std.log",
@@ -33,7 +33,8 @@ def convert_session(session_id):
     # project_params = ppp.parse_json(project_parameter_json)
     #project_csv_json = os.path.join(dir, "project_json",
     #                                "test_ecephys_csv_json.json")
-    project_csv_json = gen_json.generate_ephys_json(session_id)
+    print(session_id, project)
+    project_csv_json = gen_json.generate_ephys_json(session_id, project)
     project_params = ppp.parse_json(project_csv_json)
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)
@@ -165,27 +166,30 @@ def convert_session(session_id):
 
                 #ecephys_nwb_trials.add_trials_to_nwb(trial_params)
 '''
-def write_subject_to_nwb(nwb_path):
+def write_subject_to_nwb(nwb_path, session_id):
     write_nwb_path = nwb_path.replace("spike_times.nwb", "spike_times_re.nwb")
     io = NWBHDF5IO(nwb_path, "a", load_namespaces=True)
     input_nwb = io.read()
     
     subject = pynwb.file.Subject(
         age="P90D", 
-        description="Placeholder", 
+        description="OpenScope", 
         genotype="Placeholder", 
         sex="M", 
         subject_id="Placeholder", 
         strain="Placeholder"
     )
     input_nwb.subject = subject
+    input_nwb.file.session_id = session_id
     io.write(input_nwb)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=int)
+    parser.add_argument('--project', type=str)
     args = parser.parse_args()
+    print(args.project)
     write_subject_to_nwb(
-        convert_session(session_id = args.session_id)
+        convert_session(session_id = args.session_id, project=args.project)
     )

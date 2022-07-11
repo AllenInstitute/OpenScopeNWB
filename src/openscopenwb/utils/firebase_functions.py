@@ -265,5 +265,28 @@ def update_ephys_statuses(projectID):
     for session, value in sessions.items():
         if value['status']['status'] == "Initialized" and value['type'] == "Ecephys":
             update_session_status(projectID, session, "Converting")
+    for session, value in sessions.items():
+        if value['status']['status'] == "Converting" and value['type'] == "Ecephys":
             session_list.append(session)
+    return session_list
+
+
+def get_dandi_statuses(projectID):
+    """Grabs all sessions that are ready to be uploaded to dandi 
+
+    Parameters
+    ----------
+    projectID: str
+    The project's ID value
+    Returns
+    -------
+    session_list: list
+    A list of the sessions that need to be converted
+    """
+    ref = db.reference('/Sessions/' + projectID)
+    sessions = ref.get()
+    session_list = []
+    for session, value in sessions.items():
+        if value['status']['status'] == "Initalizing Upload" and value['type'] == "Ecephys":
+            session_list.append(session, value['nwb_location'])
     return session_list

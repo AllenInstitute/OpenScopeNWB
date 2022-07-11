@@ -54,13 +54,13 @@ def write_module_dict(module, module_params):
     A dictionary representing the values that will be written to the input json
     """
     input_json_write_dict = {}
-    if module == 'allensdk.brain_observatory.ecephys_optotagging_table':
+    if module == 'allensdk.brain_observatory.ecephys.optotagging_table':
         module_params, input_json_write_dict =  \
             ephys_mod.ecephys_optotagging_table(module_params)
     if module == 'allensdk.brain_observatory.ecephys.write_nwb':
         module_params, input_json_write_dict =  \
             ephys_mod.ecephys_write_nwb(module_params)
-    if module == 'allensdk.brain_observatory.ecephys_lfp_subsampling':
+    if module == 'allensdk.brain_observatory.ecephys.lfp_subsampling':
         module_params, input_json_write_dict = \
             ephys_mod.ecephys_lfp_subsampling(module_params)
     if module == 'allensdk.brain_observatory.extract_running_speed':

@@ -61,15 +61,12 @@ def stimulus_table(module_params):
     
     pkl_data = []
     #shutil.copyfile(pkl_path, local_pkl)
+
     with open(pkl_path, 'rb') as pkl_file:
            with open(local_pkl, 'wb+') as local_file:
-            
             pkl_data = pickle.load(pkl_file,encoding='iso-8859-1')
-            for i in range(0,len(pkl_data['stimuli'])):
-                tmp_path = r"C:\\not_a_stim_script\\fake_stim{}.stim".format(i)
-                pkl_data['stimuli'][i]['stim_path'] = tmp_path 
             pickle.dump(pkl_data, local_file)
-
+    
     """with open(pkl_path, 'rb') as pkl_file:
         with open(local_pkl, "rb") as local_file:
             pkl_data = pickle.load(pkl_file,encoding='iso-8859-1')
@@ -129,9 +126,13 @@ def ecephys_align_timestamps(module_params):
         file_in_base_folder = True
 
     alt_probe_directory = glob(join(module_params['base_directory'],
-                                    '*', "*" + probe_idx,
+                                    "**", '*'+ probe_idx,
                                     'continuous',
                                     'Neuropix*'))
+    print(alt_probe_directory)
+    test_probe_directory = glob(join(module_params['base_directory'],
+                                    "**", '*'+ probe_idx))
+    print(test_probe_directory)
     if alt_probe_directory != []:
         alt_probe_directory = alt_probe_directory[0]
 
@@ -161,6 +162,8 @@ def ecephys_align_timestamps(module_params):
 
     if alt_probe_directory != []:
         try:
+            print(alt_probe_directory)
+            print(glob(join(alt_probe_directory, "spike_times.npy")))
             np.load(glob(join(alt_probe_directory,
                     "spike_times.npy"))[0])
             spike_directory = glob(join(
@@ -227,6 +230,7 @@ def ecephys_align_timestamps(module_params):
                                 'spike_times_master_clock.npy')
         })
 
+    print("File was found: " + str(file_found))
     if(file_found):
         probe_dict = {
             'name': probe_idx,
@@ -242,6 +246,7 @@ def ecephys_align_timestamps(module_params):
 
         module_params['probe_dict_list'].append(probe_dict)
         if probe_idx != module_params['final_probe']:
+            print(module_params, probe_dict)
             return module_params, probe_dict
         else:
             print(module_params['base_directory'])
@@ -269,6 +274,7 @@ def ecephys_align_timestamps(module_params):
                 "probes": module_params['probe_dict_list']
             }
             module_params['probe_dict_list'] = []
+            print(module_params, input_json_write_dict)
             return module_params, input_json_write_dict
 
 
@@ -367,6 +373,7 @@ def ecephys_write_nwb(module_params):
                 pass
     if not channel_in_child and not channel_in_parent and not channel_in_queue:
         need_placeholder = True
+        print("placeholder")
         base_directory = "/allen/programs/mindscope/workgroups/openscope/openscopedata2022/placeholdercsvs"
         neuropix = glob(os.path.join(
                         base_directory, "ccf_regions.csv"))
@@ -638,6 +645,14 @@ def ecephys_write_nwb(module_params):
 
                 units.append(unit_dict)
                 module_params['last_unit_id'] += 1
+    lfp_directory = module_params['lfp_path']
+    output = module_params['nwb_path'].replace('spike_times.nwb', '')
+    lfp_dict = {
+        'input_data_path': join(module_params['output_path'], probe_idx+ '_lfp.dat'),
+        'input_timestamps_path': join(module_params['output_path'],  probe_idx +'_timestamps.npy'),
+        'input_channels_path': join(module_params['output_path'], probe_idx +'_channels.npy'),
+        'output_path': join(module_params['output_path'], probe_idx + '_lfp.nwb')
+    }
     probe_dict = {
         'id': module_params['id'],
         'name': probe_idx,
@@ -652,7 +667,7 @@ def ecephys_write_nwb(module_params):
                                               'whitening_mat_inv.npy'),
         'channels': channels,
         'units': units,
-        'lfp': None
+        'lfp': lfp_dict
     }
     module_params['probe_dict_list'].append(probe_dict)
     input_json_write_dict = probe_dict
@@ -695,6 +710,9 @@ def ecephys_write_nwb(module_params):
                 "stimulus_table_path": os.path.join(
                                     output_directory,
                                     'stim_table_allensdk.csv'),
+                "optotagging_table_path": os.path.join(
+                                    output_directory,
+                                    'optotagging_table.csv'),
                 "probes": probes,
                 "session_sync_path": sync_file,
                 "running_speed_path": join(output_directory,
@@ -719,14 +737,66 @@ def ecephys_optotagging_table(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
+    if module_params['project'] == 'OpenScopeGlobalLocalOddball':
+        print("GLO")
+        conditions = {
+            "0": {
+                "duration": 1.0,
+                "name": "fast_pulses",
+                "condition": "2.5 ms pulses at 10 Hz"
+            },
+            "1": {
+                "duration": 0.005,
+                "name": "pulse",
+                "condition": "a single square pulse"
+            },
+            "2": {
+                "duration": 0.01,
+                "name": "pulse",
+                "condition": "a single square pulse"
+            },
+            "3": {
+                "duration": 1.0,
+                "name": "raised_cosine",
+                "condition": "half-period of a cosine wave"
+            },
+            "4": {
+                "duration": 1.0,
+                "name": "5 hz pulse train",
+                "condition": "Each pulse is 10 ms wide"
+            }, 
+            "5": {
+                "duration": 1.0,
+                "name": "40 hz pulse train",
+                "condition": "Each pulse is 6 ms wide"        
+            }
+        } 
+    elif module_params['project'] == 'OpenScopeIllusion':
+        conditions = {
+            
+        }
+    try:
+        opto_pickle_path = glob(join(module_params['base_directory'], 
+                                     '*.opto.pkl'))[0]
+    except IndexError:
+        opto_pickle_path = glob(join(module_params['base_directory'], 
+                                     '**', '*.opto.pkl'))[0]
+    try:
+        sync_path = glob(join(module_params['base_directory'],
+                                      "*.sync"))[0]
+    except IndexError:
+        sync_path = glob(join(module_params['base_directory'],
+                                      "**",
+                                      "*.sync"))[0]
     input_json_write_dict = {
-        'opto_pickle_path': glob(
-            join(module_params['base_directory'], '*.opto.pkl'))[0],
-        'sync_h5_path': glob(
-            join(module_params['base_directory'], '*.sync'))[0],
-        'output_opto_table_path': join(module_params['base_directory'],
-                                       'optotagging_table.csv')
+        'opto_pickle_path': opto_pickle_path,
+        'sync_h5_path': sync_path,
+        'output_opto_table_path': join(module_params['output_path'],
+                                       'optotagging_table.csv'),
+        'conditions': conditions
+
     }
+    print(input_json_write_dict)
     return module_params, input_json_write_dict
 
 
@@ -746,37 +816,66 @@ def ecephys_lfp_subsampling(module_params):
     A dictionary representing the values that will be written to the input json
     """
     probe_idx = module_params['current_probe']
-    base_directory = glob(os.path.join(
-                          module_params['base_directory'], '*'
-                          + probe_idx + '*_sorted'))[0]
-    lfp_directory = glob(os.path.join(
-                         base_directory,
-                         'continuous',
-                         'Neuropix*100.1'))[0]
-    probe_info_file = join(base_directory, 'probe_info.json')
+    output_path = module_params['output_path']
+    print(module_params['base_directory'])
+    print(probe_idx)
+    print(glob(join(module_params['base_directory'],
+                                           '*',
+                                           '*_' + probe_idx)))
+    print(glob(join(module_params['base_directory'],
+                                           '**',
+                                           probe_idx)))
+    try:
+        lfp_directory = glob(join(module_params['base_directory'],
+                                           '*',
+                                           '*_' +
+                                           probe_idx,
+                                           'continuous'
+                                           "Neuropix*100.1"))[0]
+    except IndexError:
+        lfp_directory = glob(join(module_params['base_directory'], 
+                                           "**",
+                                           "*_" +
+                                           probe_idx,
+                                           'continuous',
+                                           '**'
+                                           "Neuropix*100.1"))[0]
+    try:
+        probe_info_file = glob(join(module_params['base_directory'],
+                                           '*'
+                                           "probe_info.json"))[0]
+    except IndexError:
+        probe_info_file= glob(join(module_params['base_directory'], 
+                                           "**",
+                                           '**',
+                                           "probe_info.json"))[0]
+
 
     with open(probe_info_file) as probe_file:
         probe_info = json.load(probe_file)
+    module_params['lfp_path'] = lfp_directory
     input_json_write_dict = {
         'name': module_params['current_probe'],
         'lfp_sampling_rate': 2500.,
         'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
         'lfp_timestamps_input_path': join(lfp_directory,
-                                          'lfp_timestamps_master_clock.npy'),
-        'lfp_data_path': join(base_directory + '_lfp.dat'),
-        'lfp_timestamps_path': join(base_directory + '_timestamps.npy'),
-        'lfp_channel_info_path': join(base_directory + '_channels.npy'),
+                                          'lfp_timestamps.npy'),
+        'lfp_data_path': join(output_path, probe_idx+ '_lfp.dat'),
+        'lfp_timestamps_path': join(output_path, probe_idx +  '_timestamps.npy'),
+        'lfp_channel_info_path': join(output_path, probe_idx +'_channels.npy'),
         'surface_channel': probe_info['surface_channel'],
         'reference_channels': [191]
     }
     if probe_idx != module_params['final_probe']:
+        print(input_json_write_dict)
+        module_params['lfp_list'].append(input_json_write_dict)
         return module_params, input_json_write_dict
     else:
-        probes = module_params['probe_dict_list']
+        module_params['lfp_list'].append(input_json_write_dict)
         input_json_write_dict = \
             {
                 'lfp_subsampling': {'temporal_subsampling_factor': 2},
-                "probes": probes,
+                "probes": module_params['lfp_list'],
             }
         return module_params, input_json_write_dict
 

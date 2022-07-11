@@ -213,11 +213,27 @@ def get_module_types(project_dict):
     session_modules = []
     probe_modules = []
     for module in get_modules(project_dict):
-        if module == 'allensdk.brain_observatory.extract_running_speed':
+        if module == 'allensdk.brain_observatory.extract_running_speed' or module == 'allensdk.brain_observatory.ecephys.optotagging_table':
             session_modules.append(module)
         else:
             probe_modules.append(module)
     return session_modules, probe_modules
+
+def get_project(project_dict):
+    """Gets the project associated with the session
+
+    Parameters
+    ----------
+    project_dict: dict
+    A dictionary containing all the project's json values
+
+    Returns
+    -------
+    session_project: str
+    a string of the project
+    """
+    session_project = project_dict['project']
+    return session_project
 
 
 def generate_session_params(project_dict, session, session_dir):
@@ -251,6 +267,7 @@ def generate_session_params(project_dict, session, session_dir):
 
     output_path = get_output_path(project_dict)
     output_path = os.path.join(output_path, session)
+    project = get_project(project_dict)
 
     probes = (get_probes(project_dict))[session]
     final_probe = probes[-1]
@@ -259,12 +276,15 @@ def generate_session_params(project_dict, session, session_dir):
     session_parameters = {
         'session_id': session,
         'base_directory': session_paths,
+        'project': project,
         'output_path': output_path,
         'nwb_path': nwb_path,
         'last_unit_id': probe_count,
         'probes': probes,
         'final_probe': final_probe,
         'probe_dict_list': [],
+        'lfp_list': [],
+        'lfp_path': "",
         'trim': trim,
         'session_modules': session_modules,
         'probe_modules': probe_modules,
