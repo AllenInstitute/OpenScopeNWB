@@ -9,6 +9,7 @@ from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import allen_functions as allen
 from pathlib import Path
 
+
 dir = os.path.dirname(__file__) or '.'
 curr_dir = Path(__file__).parent
 print(curr_dir)
@@ -22,6 +23,7 @@ print(dir)
 # OpenScopeIllusion
 
 proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball"]
+
 
 fb.start(fb.get_creds())
 for project in proj_list:
@@ -70,3 +72,4 @@ for project in proj_list:
         cmd = dir + '/bash/dandi.sh ' + "-d " + proj_dandi_value
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")
+

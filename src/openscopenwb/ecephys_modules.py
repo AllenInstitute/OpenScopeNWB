@@ -1,15 +1,11 @@
 import datetime
-from email.mime import base
-import random
-from threading import local
 import pandas as pd
 import numpy as np
 import re
 import os
 import json
 import logging
-import pickle 
-import shutil
+# import pickle
 from openscopenwb.utils import clean_up_functions as cuf
 
 from os.path import join
@@ -41,25 +37,25 @@ def stimulus_table(module_params):
     output_directory = module_params['output_path']
     try:
         pkl_path = glob(join(module_params['base_directory'],
-                                           "*.stim.pkl"))[0]
+                             "*.stim.pkl"))[0]
     except IndexError:
-        pkl_path = glob(join(module_params['base_directory'], 
-                                           "**",
-                                           "*.stim.pkl"))[0]
+        pkl_path = glob(join(module_params['base_directory'],
+                             "**",
+                             "*.stim.pkl"))[0]
     try:
         sync_path = glob(join(module_params['base_directory'],
-                                      "*.sync"))[0]
+                              "*.sync"))[0]
     except IndexError:
         sync_path = glob(join(module_params['base_directory'],
-                                      "**",
-                                      "*.sync"))[0]        
+                              "**",
+                              "*.sync"))[0]
     print(pkl_path)
     print(sync_path)
     local_pkl = os.path.join(output_directory, "stim.pkl")
-    #local_pkl_append = os.path.join(output_directory, "new.stim.pkl")
-    # Open Pickle file, copy the contents to another file, and then add stim_path
-    
+
+    '''
     pkl_data = []
+<<<<<<< HEAD
     #shutil.copyfile(pkl_path, local_pkl)
 
     with open(pkl_path, 'rb') as pkl_file:
@@ -75,6 +71,16 @@ def stimulus_table(module_params):
             print("local")
             print(local_data)
     """
+=======
+    with open(pkl_path, 'rb') as pkl_file:
+        with open(local_pkl, 'wb+') as local_file:
+            pkl_data = pickle.load(pkl_file, encoding='iso-8859-1')
+            for i in range(0, len(pkl_data['stimuli'])):
+                tmp_path = r"C:\\not_a_stim_script\\fake_stim{}.stim".format(i)
+                pkl_data['stimuli'][i]['stim_path'] = tmp_path
+            pickle.dump(pkl_data, local_file)
+    '''
+>>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
     input_json_write_dict = \
         {
             'stimulus_pkl_path': local_pkl,
@@ -136,7 +142,6 @@ def ecephys_align_timestamps(module_params):
     if alt_probe_directory != []:
         alt_probe_directory = alt_probe_directory[0]
 
-
     if queue_directory != []:
         queue_directory = queue_directory[0]
 
@@ -174,10 +179,11 @@ def ecephys_align_timestamps(module_params):
             try:
                 events_directory = glob(join(module_params['base_directory'],
                                         '*', "*" + probe_idx, 'events',
-                                        'Neuropix*', 'TTL*'))[0]
+                                             'Neuropix*', 'TTL*'))[0]
             except IndexError:
                 events_directory = glob(os.path.join(
-                                   base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
+                                   base_directory, 'events', 'Neuropix*',
+                                   'TTL*'))[0]
             print(events_directory)
             file_found = True
             file_in_parent_folder = True
@@ -259,8 +265,7 @@ def ecephys_align_timestamps(module_params):
             print(glob(join(
                     module_params['base_directory'],
                     '*.sync')))
-            
-            
+
             try:
                 sync_path = glob(join(
                     module_params['base_directory'],
@@ -353,7 +358,8 @@ def ecephys_write_nwb(module_params):
     if search_queue:
         if base_directory == []:
             base_directory = glob(os.path.join(
-                            module_params['base_directory'], '*', '*' + probe_idx + '*_sorted'))
+                            module_params['base_directory'], '*', '*' +
+                            probe_idx + '*_sorted'))
         if base_directory != []:
             base_directory = base_directory[0]
         if base_directory == []:
@@ -373,8 +379,13 @@ def ecephys_write_nwb(module_params):
                 pass
     if not channel_in_child and not channel_in_parent and not channel_in_queue:
         need_placeholder = True
+<<<<<<< HEAD
         print("placeholder")
         base_directory = "/allen/programs/mindscope/workgroups/openscope/openscopedata2022/placeholdercsvs"
+=======
+        base_directory = "/allen/programs/mindscope/workgroups/openscope/" + \
+                         "openscopedata2022/placeholdercsvs"
+>>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
         neuropix = glob(os.path.join(
                         base_directory, "ccf_regions.csv"))
         channel_info = pd.read_csv(neuropix[0])
@@ -402,16 +413,17 @@ def ecephys_write_nwb(module_params):
         channels = []
         master_clock_path = join(output_directory, probe_idx,
                                  'spike_times_master_clock.npy')
-    
+
     elif need_placeholder:
         probe_directory = glob(os.path.join(
-                           module_params['base_directory'], "**", "*" + probe_idx,'continuous',
-                          'Neuropix*',
+                           module_params['base_directory'], "**", "*" +
+                           probe_idx, 'continuous',
+                           'Neuropix*',
                           ))[0]
         region = 'region'
         channels = []
         master_clock_path = join(output_directory, probe_idx,
-                                 'spike_times_master_clock.npy')        
+                                 'spike_times_master_clock.npy')
 
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
@@ -442,9 +454,9 @@ def ecephys_write_nwb(module_params):
                               'cluster_group.tsv'))
     if quality_check != []:
         quality_info = pd.read_csv(join(probe_directory,
-                                    'cluster_group.tsv'),
-                               sep='\t',
-                               index_col=0)
+                                   'cluster_group.tsv'),
+                                   sep='\t',
+                                   index_col=0)
     else:
         quality_info = []
     spike_clusters = np.load(join(probe_directory,
@@ -524,7 +536,7 @@ def ecephys_write_nwb(module_params):
                 unit_info[i] = i_list
     for idx, unit_row in unit_info.iterrows():
         if quality_info == []:
-            
+
             spike_count = np.sum(spike_clusters ==
                                  unit_row['cluster_id'])
 
@@ -584,10 +596,10 @@ def ecephys_write_nwb(module_params):
 
             units.append(unit_dict)
             module_params['last_unit_id'] += 1
-        else: 
+        else:
             if quality_info.loc[unit_row.cluster_id].group == 'good':
                 spike_count = np.sum(spike_clusters ==
-                                    unit_row['cluster_id'])
+                                     unit_row['cluster_id'])
 
                 unit_dict = {
                     'id': module_params['last_unit_id'],
@@ -681,7 +693,8 @@ def ecephys_write_nwb(module_params):
             sync_file = sync_file[0]
         else:
             sync_file = glob(
-            join(module_params['base_directory'], "**", '*.sync'))[0]
+                        join(module_params['base_directory'], "**",
+                             '*.sync'))[0]
             new_date = True
         sync_string = os.path.basename(sync_file)
         if not new_date:
@@ -691,7 +704,7 @@ def ecephys_write_nwb(module_params):
         elif new_date:
             YYYY = int(sync_string[18:22])
             MM = int(sync_string[22:24])
-            DD = int(sync_string[24:26]) 
+            DD = int(sync_string[24:26])
         probes = module_params['probe_dict_list']
 
         input_json_write_dict = \
@@ -900,20 +913,22 @@ def extract_running_speed(module_params):
     output_path = module_params['output_path']
     try:
         pkl_path = glob(join(module_params['base_directory'],
-                                           "*.stim.pkl"))[0]
+                             "*.stim.pkl"))[0]
     except IndexError:
-        pkl_path = glob(join(module_params['base_directory'], 
-                                           "**",
-                                           "*.stim.pkl"))[0]
+        pkl_path = glob(join(module_params['base_directory'],
+                             "**",
+                             "*.stim.pkl"))[0]
     try:
         sync_path = glob(join(module_params['base_directory'],
-                                      "*.sync"))[0]
+                              "*.sync"))[0]
     except IndexError:
         sync_path = glob(join(module_params['base_directory'],
-                                      "**",
-                                      "*.sync"))[0]
+                              "**",
+                              "*.sync"))[0]
+    # TODO: Create a check to see if we want to use a modified version
+    # of the stim pkl here
+    local_pkl = pkl_path
     local_pkl = os.path.join(output_path, "stim.pkl")
-    # Open Pickle file, copy the contents to another file, and then add stim_path      
     input_json_write_dict = \
         {
             'stimulus_pkl_path': local_pkl,

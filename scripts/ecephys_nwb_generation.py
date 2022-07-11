@@ -4,13 +4,11 @@ import os
 import subprocess
 import warnings
 import argparse
-import ecephys_nwb_trials
+# import ecephys_nwb_trials
 
-from glob import glob
 from os.path import join
 
 import openscopenwb.create_module_input_json as osnjson
-import sys
 import generate_json as gen_json
 
 from pynwb import NWBHDF5IO
@@ -27,11 +25,11 @@ def convert_session(session_id, project):
                         level=logging.DEBUG,
                         filemode='a')
 
-    dir = os.path.dirname(__file__)
+    # dir = os.path.dirname(__file__)
     # project_parameter_json = os.path.join(dir, "project_json",
     #                                      "test_ephys_project_parameter_json.json")
     # project_params = ppp.parse_json(project_parameter_json)
-    #project_csv_json = os.path.join(dir, "project_json",
+    # project_csv_json = os.path.join(dir, "project_json",
     #                                "test_ecephys_csv_json.json")
     print(session_id, project)
     project_csv_json = gen_json.generate_ephys_json(session_id, project)
@@ -40,7 +38,7 @@ def convert_session(session_id, project):
     modules = ppp.get_modules(project_params)
     session_modules, probe_modules = ppp.get_module_types(project_params)
     old_last_unit = -1
-
+    '''
     default_stimulus_renames = {
         "": "spontaneous",
 
@@ -68,8 +66,8 @@ def convert_session(session_id, project):
         "signal_noise_session_4": "dense_movie_four",
         "signal_noise_session_5": "dense_movie_five",
         "signal_noise_session_6": "dense_movie_six",
-    }
-
+    } '''
+    '''
     default_column_renames = {
         "Contrast": "contrast",
         "Ori":	"orientation",
@@ -80,8 +78,7 @@ def convert_session(session_id, project):
         "Image": "frame",
         "Pos_x": "x_position",
         "Pos_y": "y_position"
-    }
-
+    } '''
 
     for session_params in session_param_list:
         session = session_params["session_id"]
@@ -90,9 +87,9 @@ def convert_session(session_id, project):
             json_directory = ppp.get_input_json_directory(project_params)
             json_directory = os.path.join(json_directory, session)
             input_json = os.path.join(json_directory, session + '-' + module
-                                    + '-input.json')
+                                      + '-input.json')
             output_json = os.path.join(json_directory, session + '-' + module
-                                    + '-output.json')
+                                       + '-output.json')
             if module in session_modules:
                 module_params = session_params
                 module_params = osnjson.create_module_input(
@@ -125,9 +122,12 @@ def convert_session(session_id, project):
                 subprocess.check_call(command_string)
                 logging.debug("Finished Probe Level Module: " + module)
     return join(module_params['nwb_path'])
+
+
 '''
                 if module == 'allensdk.brain_observatory.ecephys.write_nwb':
-                    stimulus_pkl_path = glob(join(module_params['base_directory'],
+                    stimulus_pkl_path = glob(join(
+                        module_params['base_directory'],
                                             "*.stim.pkl"))[0]
                     sync_h5_path = glob(join(module_params['base_directory'],
                                             "*.sync"))[0]
@@ -135,7 +135,8 @@ def convert_session(session_id, project):
                                                 module_params['output_path'],
                                                 "manual_stim_table_allensdk.csv")
                     frame_time_strategy = "use_photodiode"
-                    minimum_spontaneous_activity_duration = sys.float_info.epsilon
+                    minimum_spontaneous_activity_duration = \
+                         sys.float_info.epsilon
                     maximum_expected_spontaneous_activity_duration = 1225.02541
                     extract_const_params_from_repr = True
                     drop_const_params = ["name", "maskParams", "win",
@@ -158,7 +159,8 @@ def convert_session(session_id, project):
                             "extract_const_params_from_repr":
                             extract_const_params_from_repr,
                             "drop_const_params": drop_const_params,
-                            "fail_on_negative_duration": fail_on_negative_duration,
+                            "fail_on_negative_duration": \
+                                fail_on_negative_duration,
                             "column_name_map": column_name_map,
                             "stimulus_name_map": stimulus_name_map,
                             "output_nwb_path": output_nwb_path
@@ -170,13 +172,13 @@ def write_subject_to_nwb(nwb_path, session_id):
     write_nwb_path = nwb_path.replace("spike_times.nwb", "spike_times_re.nwb")
     io = NWBHDF5IO(nwb_path, "a", load_namespaces=True)
     input_nwb = io.read()
-    
+
     subject = pynwb.file.Subject(
-        age="P90D", 
-        description="OpenScope", 
-        genotype="Placeholder", 
-        sex="M", 
-        subject_id="Placeholder", 
+        age="P90D",
+        description="Placeholder",
+        genotype="Placeholder",
+        sex="M",
+        subject_id="Placeholder",
         strain="Placeholder"
     )
     input_nwb.subject = subject

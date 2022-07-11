@@ -1,4 +1,4 @@
-import os 
+import os
 
 
 def generate_module_cmd(module, input_json, output_json):

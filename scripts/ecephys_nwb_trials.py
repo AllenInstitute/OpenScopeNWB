@@ -1,4 +1,4 @@
-import csv
+''' import csv
 import functools
 import numpy as np
 import pandas as pd
@@ -18,22 +18,24 @@ from allensdk.brain_observatory.ecephys.stimulus_table import (
     naming_utilities,
     output_validation,
 )
-from openscopenwb.utils import clean_up_functions as cuf
-from os.path import join
+# from openscopenwb.utils import clean_up_functions as cuf
+# from os.path import join
 
-from pynwb.file import NWBFile
+# from pynwb.file import NWBFile
 
 loc_stim_file = ""
 
 
 def add_trials_to_nwb(trial_params):
-    stim_file = CamStimOnePickleStimFile.factory(trial_params['stimulus_pkl_path'])
+    stim_file = CamStimOnePickleStimFile.factory(
+        trial_params['stimulus_pkl_path'])
 
     sync_dataset = EcephysSyncDataset.factory(trial_params['sync_h5_path'])
     frame_times = sync_dataset.extract_frame_times(
                 strategy=trial_params['frame_time_strategy'])
     update_glob_stim(stim_file)
-    stimulus_tabler, spon_tabler = create_partial_funcs(trial_params, stim_file)
+    stimulus_tabler, spon_tabler = create_partial_funcs(trial_params, 
+                                   stim_file)
 
     stim_table_full = ephys_pre_spikes.create_stim_table(
         stim_file.stimuli, stimulus_tabler, spon_tabler
@@ -63,7 +65,8 @@ def add_trials_to_nwb(trial_params):
     stim_table_full = naming_utilities.map_column_names(stim_table_full,
                                                         trial_params['column_name_map'])
 
-    stim_table_full.to_csv(trial_params['output_stimulus_table_path'], index=False)
+    stim_table_full.to_csv(trial_params['output_stimulus_table_path'],
+                           index=False)
     write_trials_to_nwb(trial_params['output_stimulus_table_path'],
                         trial_params['output_nwb_path'])
 
@@ -123,3 +126,4 @@ def seconds_to_frames(seconds):
     return  \
         (np.array(seconds) + loc_stim_file.pre_blank_sec) * \
         loc_stim_file.frames_per_second
+'''

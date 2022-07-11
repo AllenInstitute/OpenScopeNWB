@@ -14,13 +14,14 @@ def firebase_prep():
     }
     yield test_dict
 
+
 def test_sess_meta(firebase_prep):
-    dir = os.path.dirname(__file__)
     cred_json = fb.get_creds()
     fb.start(cred_json)
     session_meta = fb.view_session("Project_test_id", 758519303)
-    assert session_meta['session_type'] == firebase_prep['session_1_type']
-    assert session_meta['session_date'] == firebase_prep['session_1_date']
-    assert session_meta['session_pass'] == firebase_prep['session_1_pass']
-    assert session_meta['session_stimulus_type'] == firebase_prep['session_1_stimulus_type']
-    assert session_meta['session_mouse'] == firebase_prep['session_1_mouse']
+    assert session_meta['session_1_type'] == firebase_prep['session_1_type']
+    assert session_meta['session_1_date'] == firebase_prep['session_1_date']
+    assert session_meta['session_1_pass'] == firebase_prep['session_1_pass']
+    assert session_meta['session_1_stimulus_type'] == \
+        firebase_prep['session_1_stimulus_type']
+    assert session_meta['session_1_mouse'] == firebase_prep['session_1_mouse']
