@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-from multiprocessing import Value
-from re import S
-=======
->>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
 from openscopenwb.utils import postgres_functions as post_gres
 
 import os
@@ -255,14 +250,8 @@ def get_sessions(project_id):
             sess_list.append(session)
     return sess_list
 
-<<<<<<< HEAD
 def update_ephys_statuses(projectID):
     """Updates all initalized statuses to converting 
-=======
-
-def update_ephys_statuses():
-    """Updates all initalized statuses to converting
->>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
 
     Parameters
     ----------
@@ -297,7 +286,6 @@ def get_dandi_statuses(projectID):
     session_list: list
     A list of the sessions that need to be converted
     """
-<<<<<<< HEAD
     ref = db.reference('/Sessions/' + projectID)
     sessions = ref.get()
     session_list = []
@@ -305,17 +293,3 @@ def get_dandi_statuses(projectID):
         if value['status']['status'] == "Initalizing Upload" and value['type'] == "Ecephys":
             session_list.append(session, value['nwb_location'])
     return session_list
-=======
-    ref = db.reference('/Sessions/')
-    session_list = []
-    Projects = ref.get()
-    for project, value in Projects.items():
-        proj_ref = db.reference('/Sessions/'+project)
-        proj = proj_ref.get()
-        for session, value in proj.items():
-            if value['status']['status'] == "Initialized" and \
-               value['session_type'] == "Ecephys":
-                update_session_status(project, session, "Converting")
-                session_list.append(session)
-    return session_list
->>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80

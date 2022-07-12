@@ -5,7 +5,7 @@ import re
 import os
 import json
 import logging
-# import pickle
+import pickle
 from openscopenwb.utils import clean_up_functions as cuf
 
 from os.path import join
@@ -53,34 +53,15 @@ def stimulus_table(module_params):
     print(sync_path)
     local_pkl = os.path.join(output_directory, "stim.pkl")
 
-    '''
-    pkl_data = []
-<<<<<<< HEAD
-    #shutil.copyfile(pkl_path, local_pkl)
 
     with open(pkl_path, 'rb') as pkl_file:
-           with open(local_pkl, 'wb+') as local_file:
-            pkl_data = pickle.load(pkl_file,encoding='iso-8859-1')
-            pickle.dump(pkl_data, local_file)
-    
-    """with open(pkl_path, 'rb') as pkl_file:
         with open(local_pkl, "rb") as local_file:
             pkl_data = pickle.load(pkl_file,encoding='iso-8859-1')
             local_data = pickle.load(local_file,encoding='iso-8859-1')
             print(pkl_data)
             print("local")
             print(local_data)
-    """
-=======
-    with open(pkl_path, 'rb') as pkl_file:
-        with open(local_pkl, 'wb+') as local_file:
-            pkl_data = pickle.load(pkl_file, encoding='iso-8859-1')
-            for i in range(0, len(pkl_data['stimuli'])):
-                tmp_path = r"C:\\not_a_stim_script\\fake_stim{}.stim".format(i)
-                pkl_data['stimuli'][i]['stim_path'] = tmp_path
-            pickle.dump(pkl_data, local_file)
-    '''
->>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
+    
     input_json_write_dict = \
         {
             'stimulus_pkl_path': local_pkl,
@@ -379,13 +360,8 @@ def ecephys_write_nwb(module_params):
                 pass
     if not channel_in_child and not channel_in_parent and not channel_in_queue:
         need_placeholder = True
-<<<<<<< HEAD
-        print("placeholder")
-        base_directory = "/allen/programs/mindscope/workgroups/openscope/openscopedata2022/placeholdercsvs"
-=======
         base_directory = "/allen/programs/mindscope/workgroups/openscope/" + \
                          "openscopedata2022/placeholdercsvs"
->>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
         neuropix = glob(os.path.join(
                         base_directory, "ccf_regions.csv"))
         channel_info = pd.read_csv(neuropix[0])
