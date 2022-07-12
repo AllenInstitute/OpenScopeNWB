@@ -65,7 +65,7 @@ for project in proj_list:
         cmd = dir + '/bash/ecephys.sh ' + "-s " + str(session) +" -p " + project
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
-        #fb.update_session_status(project, session, "Conversion Running")
+        fb.update_session_status(project, session, "Conversion Running")
     dandi_list = fb.get_dandi_statuses(project)
     print(dandi_list)
     for session in dandi_list:

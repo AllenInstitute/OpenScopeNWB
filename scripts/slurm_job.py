@@ -39,12 +39,7 @@ def generate_ophys_nwb(session_id):
 
 '''
 
-<<<<<<< HEAD
 def generate_ephys_nwb(session_id, project):
-=======
-
-def generate_ephys_nwb(session_id):
->>>>>>> 2d5cb54c1156709f9ade545932f17886c08e5c80
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
