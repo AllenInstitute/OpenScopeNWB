@@ -51,20 +51,10 @@ def stimulus_table(module_params):
                               "*.sync"))[0]
     print(pkl_path)
     print(sync_path)
-    local_pkl = os.path.join(output_directory, "stim.pkl")
 
-
-    with open(pkl_path, 'rb') as pkl_file:
-        with open(local_pkl, "rb") as local_file:
-            pkl_data = pickle.load(pkl_file,encoding='iso-8859-1')
-            local_data = pickle.load(local_file,encoding='iso-8859-1')
-            print(pkl_data)
-            print("local")
-            print(local_data)
-    
     input_json_write_dict = \
         {
-            'stimulus_pkl_path': local_pkl,
+            'stimulus_pkl_path': pkl_path,
             'sync_h5_path': sync_path,
             'output_stimulus_table_path':
                 os.path.join(output_directory,
@@ -76,6 +66,76 @@ def stimulus_table(module_params):
             "log_level": 'INFO'
         }
     return module_params, input_json_write_dict
+
+
+def ecephys_gaze_mapping(module_params):
+    """Returns the dict for the Gaze json
+
+    Parameters
+    ----------
+    module_params: dict
+    Session or probe unique information, used by each module
+
+    Returns
+    -------
+    module_params: dict
+    Session or probe unique information, used by each module
+    input_json_write_dict: dict
+    A dictionary representing the values that will be written to the input json
+    """
+    try:
+        elipse_path = glob(join(module_params['base_directory'], 'eye_tracking',
+                                     '*_ellipse.h5'))[0]
+    except IndexError:
+        elipse_path = glob(join(module_params['base_directory'], 
+                                     '**', 'eye_tracking','*_ellipse.h5'))[0] 
+    try:
+        platform_path = glob(join(module_params['base_directory'], '*',
+                                     '*_platformD1.json'))[0]
+    except IndexError:
+        platform_path = glob(join(module_params['base_directory'], '**',
+                                     '*_platformD1.json'))[0]
+    try:
+        eye_path = glob(join(module_params['base_directory'], '*',
+                                     '*.eye.mp4'))[0]
+    except IndexError:
+        eye_path = glob(join(module_params['base_directory'], '**',
+                                     '*.eye.mp4'))[0]
+    param_file = open(platform_path)
+    platform_dict = json.load(param_file)
+    param_file.close()
+    eye_info = platform_dict['HardwareConfiguration']['eye_camera_position']
+    led_info = platform_dict['HardwareConfiguration']['eye_led_position']
+    monitor_info = platform_dict['HardwareConfiguration']['screen_position']
+    equipment = "Allen Institute OpenScope Rig"
+    date = platform_dict['ProbeInsertionCompleteTime']
+
+    input_json_write_dict = \
+    {
+        'session_sync_file': module_params['sync_path'],
+        'input_file': elipse_path,
+        'output_file': module_params['output_path'] + 'gaze.h5',
+        'monitor_position_x_mm': monitor_info['center_x_mm'],
+        'monitor_position_y_mm': monitor_info['center_y_mm'],
+        'monitor_position_z_mm': monitor_info['center_z_mm'],
+        'monitor_rotation_x_deg': monitor_info['rotation_x_deg'],
+        'monitor_rotation_y_deg': monitor_info['rotation_y_deg'],
+        'monitor_rotation_z_deg': monitor_info['rotation_z_deg'],
+        'camera_rotation_x_deg': eye_info['rotation_x_deg'],
+        'camera_rotation_y_deg': eye_info['rotation_y_deg'],
+        'camera_rotation_z_deg': eye_info['rotation_z_deg'],
+        'camera_position_x_mm': eye_info['center_x_mm'],
+        'camera_position_y_mm': eye_info['center_y_mm'],
+        'camera_position_z_mm': eye_info['center_z_mm'],
+        'led_position_x_mm': led_info['center_x_mm'],
+        'led_position_y_mm': led_info['center_y_mm'],
+        'led_position_z_mm': led_info['center_z_mm'],
+        'equipment': equipment,
+        'date_of_acquisition': date,
+        'eye_video_file': eye_path
+    }
+    return module_params, input_json_write_dict
+
 
 
 def ecephys_align_timestamps(module_params):
@@ -259,6 +319,7 @@ def ecephys_align_timestamps(module_params):
                 'sync_h5_path': sync_path,
                 "probes": module_params['probe_dict_list']
             }
+            module_params['sync_path'] = sync_path
             module_params['probe_dict_list'] = []
             print(module_params, input_json_write_dict)
             return module_params, input_json_write_dict
@@ -400,7 +461,13 @@ def ecephys_write_nwb(module_params):
         channels = []
         master_clock_path = join(output_directory, probe_idx,
                                  'spike_times_master_clock.npy')
-
+    try:
+        elipse_path = glob(join(module_params['base_directory'], 'eye_tracking',
+                                     '*_ellipse.h5'))[0]
+    except IndexError:
+        elipse_path = glob(join(module_params['base_directory'], 
+                                     '**', 'eye_tracking','*_ellipse.h5'))[0] 
+    module_params['ellipse_path'] = elipse_path
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
         numbers = re.findall(r'\d+', structure_acronym)
@@ -655,7 +722,8 @@ def ecephys_write_nwb(module_params):
                                               'whitening_mat_inv.npy'),
         'channels': channels,
         'units': units,
-        'lfp': lfp_dict
+        #'lfp': lfp_dict
+        'lfp': None
     }
     module_params['probe_dict_list'].append(probe_dict)
     input_json_write_dict = probe_dict
@@ -673,6 +741,13 @@ def ecephys_write_nwb(module_params):
                              '*.sync'))[0]
             new_date = True
         sync_string = os.path.basename(sync_file)
+        try:
+            data_json = glob(join(module_params['base_directory'], "*",
+                             '*.behavior.json'))[0]
+        except IndexError:
+            data_json = glob(join(module_params['base_directory'], "**",
+                             '*.behavior.json'))[0]
+        module_params['data_json'] = data_json
         if not new_date:
             YYYY = int(sync_string[17:21])
             MM = int(sync_string[21:23])
@@ -903,11 +978,9 @@ def extract_running_speed(module_params):
                               "*.sync"))[0]
     # TODO: Create a check to see if we want to use a modified version
     # of the stim pkl here
-    local_pkl = pkl_path
-    local_pkl = os.path.join(output_path, "stim.pkl")
     input_json_write_dict = \
         {
-            'stimulus_pkl_path': local_pkl,
+            'stimulus_pkl_path': pkl_path,
             'sync_h5_path': sync_path,
             'output_path': join(output_path,
                                 "running_speed.h5"),

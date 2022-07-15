@@ -8,6 +8,7 @@ from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import allen_functions as allen
 from pathlib import Path
+from ecephys_nwb_generation import write_subject_to_nwb
 
 
 dir = os.path.dirname(__file__) or '.'

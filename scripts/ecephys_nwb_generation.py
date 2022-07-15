@@ -5,8 +5,11 @@ import subprocess
 import warnings
 import argparse
 # import ecephys_nwb_trials
+import ecephys_nwb_eye_tracking
 
 from os.path import join
+
+from requests import session
 
 import openscopenwb.create_module_input_json as osnjson
 import generate_json as gen_json
@@ -121,7 +124,7 @@ def convert_session(session_id, project):
                 logging.debug("Starting Probe Level Module:: " + module)
                 subprocess.check_call(command_string)
                 logging.debug("Finished Probe Level Module: " + module)
-    return join(module_params['nwb_path'])
+    return module_params
 
 
 '''
@@ -168,7 +171,8 @@ def convert_session(session_id, project):
 
                 #ecephys_nwb_trials.add_trials_to_nwb(trial_params)
 '''
-def write_subject_to_nwb(nwb_path, session_id):
+def write_subject_to_nwb(session_id, module_params):
+    nwb_path = module_params['nwb_path']
     write_nwb_path = nwb_path.replace("spike_times.nwb", "spike_times_re.nwb")
     io = NWBHDF5IO(nwb_path, "a", load_namespaces=True)
     input_nwb = io.read()
@@ -178,12 +182,13 @@ def write_subject_to_nwb(nwb_path, session_id):
         description="Placeholder",
         genotype="Placeholder",
         sex="M",
-        subject_id="Placeholder",
+        subject_id=str(session_id),
         strain="Placeholder"
     )
     input_nwb.subject = subject
-    input_nwb.file.session_id = session_id
     io.write(input_nwb)
+    ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
+    
 
 
 if __name__ == "__main__":
@@ -193,5 +198,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args.project)
     write_subject_to_nwb(
-        convert_session(session_id = args.session_id, project=args.project)
+        module_params = convert_session(session_id = args.session_id, project=args.project), session_id=args.session_id
     )
