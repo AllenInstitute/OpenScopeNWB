@@ -516,6 +516,7 @@ def get_o_sess_info(session_id):
     meta_dict['id'] = info_list[0]
     meta_dict['path'] = get_o_sess_directory(session_id)
     meta_dict['type'] = 'Ophys'
+    meta_dict['experiments'] = get_sess_experiments(session_id)
 
     return meta_dict
 
@@ -577,7 +578,6 @@ def get_o_proj_info(project_id):
         JOIN projects p ON p.id = os.project_id
         JOIN specimens sp ON sp.id = os.specimen_id
         WHERE p.code =  '{}'
-        AND os.workflow_state = 'uploaded'
     """
     cur = get_psql_cursor(get_cred_location())
     lims_query = LIST_OF_SESSION_QRY.format(project_id)

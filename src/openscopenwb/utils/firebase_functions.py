@@ -229,6 +229,17 @@ def view_project(project_id):
     return meta_dict
 
 
+def get_experiments(project_id, session_id):
+    ref = db.reference('/Sessions/' + project_id / session_id / 'experiments')
+    experiments = ref.get()
+    exp_list = []
+    for experiment in experiments:
+        if experiment != "Metadata":
+            exp_list.append(experiment)
+    return exp_list    
+
+
+
 def get_sessions(project_id):
     """Returns all sessions of a project
 
