@@ -32,7 +32,7 @@ print(dir)
 # OpenScopeIllusion
 
 e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball"]
-o_proj_list = ["OpenScopeDendritecoupling"]
+o_proj_list = ["OpenScopeDendriteCoupling"]
 
 fb.start(fb.get_creds())
 for project in e_proj_list:
@@ -49,7 +49,7 @@ for project in e_proj_list:
     tmp_update_list = postgres.get_e_proj_info(project)['sessions']
     for sess in tmp_update_list:
         tmp_val = fire_sync.compare_session(project, sess)
-        if tmp_val != []:
+        if tmp_val != []: 
             update_list.append(sess)
     print("List of Sessions to Update: ")
     print(update_list)
@@ -83,10 +83,28 @@ for project in e_proj_list:
         fb.update_session_status(project, session, "Conversion Running")
 
 for project in o_proj_list:
-    exp_list = postgres.get_sess_experiments('1202394917')
-    for experiment in exp_list:
-        cmd = dir + '/bash/ophys.sh ' + "-s " + '1202394917 '+ "-e " + str(experiment)
-        subprocess.call(shlex.split(cmd))
+    if project == 'OpenScopeDendriteCoupling':
+      proj_dandi_value = '000336'
+    missing_list = fire_sync.compare_o_sessions(project)
+    print("List of sessions to upload: ")
+    print(missing_list)
+    for session in missing_list:
+        fb.init_o_session(project, session)
+    update_list = []
+    tmp_update_list = postgres.get_o_proj_info(project)['sessions']
+    for sess in tmp_update_list:
+        tmp_val = fire_sync.compare_o_session(project, sess)
+        if tmp_val != []: 
+            update_list.append(sess)
+    print("List of Sessions to Update: ")
+    print(update_list)
+    for session in update_list:
+        fb.update_o_session(project, session)
+
+#    exp_list = postgres.get_sess_experiments('1202394917')
+#    for experiment in exp_list:
+#        cmd = dir + '/bash/ophys.sh ' + "-s " + '1202394917 '+ "-e " + str(experiment)
+#        subprocess.call(shlex.split(cmd))
             
 
 # cmd = dir + '/bash/ophys.sh ' + "-e " + "1202533456"
