@@ -19,14 +19,16 @@ import pynwb
 
 from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
+from openscopenwb.utils import allen_functions as allen
+from openscopenwb.utils import firebase_functions as fb
+
+
+from datetime import datetime
 
 def convert_session(session_id, project):
     warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
-    logging.basicConfig(filename="std.log",
-                        format='%(asctime)s %(message)s',
-                        level=logging.DEBUG,
-                        filemode='a')
+
 
     # dir = os.path.dirname(__file__)
     # project_parameter_json = os.path.join(dir, "project_json",
@@ -41,6 +43,11 @@ def convert_session(session_id, project):
     modules = ppp.get_modules(project_params)
     session_modules, probe_modules = ppp.get_module_types(project_params)
     old_last_unit = -1
+    log_out = session_param_list[0]['output_path']
+    logging.basicConfig(filename=log_out + "/std.log",
+                        format='%(asctime)s %(message)s',
+                        level=logging.DEBUG,
+                        filemode='a')
     '''
     default_stimulus_renames = {
         "": "spontaneous",
@@ -172,21 +179,6 @@ def convert_session(session_id, project):
                 #ecephys_nwb_trials.add_trials_to_nwb(trial_params)
 '''
 def write_subject_to_nwb(session_id, module_params):
-    nwb_path = module_params['nwb_path']
-    write_nwb_path = nwb_path.replace("spike_times.nwb", "spike_times_re.nwb")
-    io = NWBHDF5IO(nwb_path, "a", load_namespaces=True)
-    input_nwb = io.read()
-
-    subject = pynwb.file.Subject(
-        age="P90D",
-        description="Placeholder",
-        genotype="Placeholder",
-        sex="M",
-        subject_id=str(session_id),
-        strain="Placeholder"
-    )
-    input_nwb.subject = subject
-    io.write(input_nwb)
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
     
 
