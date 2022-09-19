@@ -7,9 +7,12 @@ import json
 import logging
 import pickle
 from openscopenwb.utils import clean_up_functions as cuf
+from openscopenwb.utils import firebase_functions as fb
+from openscopenwb.utils import allen_functions as allen
 
 from os.path import join
 from glob import glob
+from datetime import datetime
 
 
 logging.basicConfig(filename="std.log",
@@ -210,11 +213,21 @@ def ecephys_align_timestamps(module_params):
         try:
             print(alt_probe_directory)
             print(glob(join(alt_probe_directory, "spike_times.npy")))
-            np.load(glob(join(alt_probe_directory,
-                    "spike_times.npy"))[0])
-            spike_directory = glob(join(
-                                   alt_probe_directory,
-                                   "spike_times.npy"))[0]
+            np.load(glob(join(module_params['base_directory'],
+                                    "**", '*'+ probe_idx,
+                                    'continuous',
+                                    'Neuropix*',
+                                    'spike_times.npy'))[0])
+            spike_directory = glob(join(module_params['base_directory'],
+                                    "**", '*'+ probe_idx,
+                                    'continuous',
+                                    'Neuropix*',
+                                    'spike_times.npy'))[0]
+#            np.load(glob(join(alt_probe_directory,
+#                    "spike_times.npy"))[0])
+#            spike_directory = glob(join(
+ #                                  alt_probe_directory,
+#                                   "spike_times.npy"))[0]
             print(alt_probe_directory)
             print(spike_directory)
             try:
@@ -471,6 +484,8 @@ def ecephys_write_nwb(module_params):
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
         numbers = re.findall(r'\d+', structure_acronym)
+        logging.debug(channel_row)
+
 
         if (len(numbers) > 0):
             structure_acronym = structure_acronym.split(numbers[0])[0]
@@ -480,30 +495,40 @@ def ecephys_write_nwb(module_params):
             'valid_data': True,
             'probe_id': probe_id,
             'local_index': idx,
-            'probe_vertical_position': -1,
-            'probe_horizontal_position': -1,
+            'probe_vertical_position': channel_row['vertical_position'],
+            'probe_horizontal_position': channel_row['horizontal_position'],
             'manual_structure_id': channel_row['structure_id'],
             'manual_structure_acronym': structure_acronym,
-            'anterior_posterior_ccf_coordinate': -1,
-            'dorsal_ventral_ccf_coordinate': -1,
-            'left_right_ccf_coordinate': -1
+            'anterior_posterior_ccf_coordinate': channel_row['A/P'],
+            'dorsal_ventral_ccf_coordinate': channel_row['D/V'],
+            'left_right_ccf_coordinate': channel_row['M/L']
         }
         channels.append(channel_dict)
+    print(glob(join(module_params['base_directory'],'**/*','metrics.csv'), recursive=True))
+    print(glob(join(module_params['base_directory'],'**/*','metrics.csv'), recursive=True))
+    unit_info =   pd.read_csv(glob(join(module_params['base_directory'],
+                                    "**/*", 
+                                    'metrics.csv'), recursive=True)[0], index_col=0)
 
-    unit_info = pd.read_csv(join(probe_directory,
-                                 'metrics.csv'),
-                            index_col=0)
-    quality_check = glob(join(probe_directory,
-                              'cluster_group.tsv'))
+#    unit_info = pd.read_csv(join(probe_directory,
+#                                 'metrics.csv'),
+#                            index_col=0)
+
+    quality_check = glob(join(module_params['base_directory'],
+                                    "**", 
+                                    'cluster_group.tsv'), recursive=True)
+#    quality_check = glob(join(probe_directory,
+#                              'cluster_group.tsv'))
     if quality_check != []:
-        quality_info = pd.read_csv(join(probe_directory,
-                                   'cluster_group.tsv'),
+        quality_info = pd.read_csv(join(quality_check[0],
                                    sep='\t',
-                                   index_col=0)
+                                   index_col=0))
     else:
         quality_info = []
-    spike_clusters = np.load(join(probe_directory,
-                                  'spike_clusters.npy'))
+    spike_clusters = np.load(glob(join(module_params['base_directory'],
+                                    "**", 
+                                    'spike_clusters.npy'), recursive=True)[0])
+
 
     units = []
     spike_times_index = 0
@@ -706,28 +731,50 @@ def ecephys_write_nwb(module_params):
         'input_data_path': join(module_params['output_path'], probe_idx+ '_lfp.dat'),
         'input_timestamps_path': join(module_params['output_path'],  probe_idx +'_timestamps.npy'),
         'input_channels_path': join(module_params['output_path'], probe_idx +'_channels.npy'),
-        'output_path': join(module_params['output_path'], probe_idx + '_lfp.nwb')
+        'output_path': join(output, probe_idx + '_lfp.nwb')
     }
     probe_dict = {
         'id': module_params['id'],
         'name': probe_idx,
         'spike_times_path': master_clock_path,
-        'spike_clusters_file': join(probe_directory, 'spike_clusters.npy'),
-        'spike_amplitudes_path': join(probe_directory, 'amplitudes.npy'),
-        'mean_waveforms_path': join(probe_directory, 'mean_waveforms.npy'),
-        'spike_templates_path': join(probe_directory,
-                                     'spike_templates.npy'),
-        'templates_path': join(probe_directory, 'templates.npy'),
-        'inverse_whitening_matrix_path': join(probe_directory,
-                                              'whitening_mat_inv.npy'),
+        'spike_clusters_file': glob(join(module_params['base_directory'], '**/*', 'spike_clusters.npy'), recursive=True)[0],
+        'spike_amplitudes_path': glob(join(module_params['base_directory'], '**/*', 'amplitudes.npy'), recursive=True)[0],
+        'mean_waveforms_path': glob(join(module_params['base_directory'], '**/*','mean_waveforms.npy'), recursive=True)[0],
+        'spike_templates_path': glob(join(module_params['base_directory'], '**/*',
+                                     'spike_templates.npy'), recursive=True)[0],
+        'templates_path': glob(join(module_params['base_directory'], '**/*','templates.npy'), recursive=True)[0],
+        'inverse_whitening_matrix_path': glob(join(module_params['base_directory'], '**',
+                                              'whitening_mat_inv.npy'), recursive=True)[0],
         'channels': channels,
         'units': units,
-        #'lfp': lfp_dict
-        'lfp': None
+        'lfp': lfp_dict
     }
     module_params['probe_dict_list'].append(probe_dict)
     input_json_write_dict = probe_dict
     new_date = False
+    session_id = module_params['session_id']
+    nwb_path = module_params['nwb_path']
+    subject_info = allen.lims_subject_info(session_id)
+    if probe_idx == module_params['first_probe']:
+        fb.start(fb.get_creds())
+    session_date = fb.view_session(module_params['project'], session_id)
+    session_date = session_date['date']
+    session_date = datetime.strptime(session_date[:10], '%Y-%m-%d')
+    subject_dob = datetime.strptime(subject_info['dob'][:10],'%Y-%m-%d' )
+    duration = session_date - subject_dob
+    duration = duration.total_seconds()
+    duration = divmod(duration, 86400)
+    days = (duration[0])
+    subject = {
+        'age_in_days': days,
+        'specimen_name': subject_info['name'],
+        'full_genotype': subject_info['genotype'],
+        'sex': subject_info['gender'],
+        'strain': "Transgenic",
+        'stimulus_name': module_params['project'],
+        'species': 'Mus musculus',
+        'donor_id': subject_info['id']
+    }
     if probe_idx != module_params['final_probe']:
         return module_params, input_json_write_dict
     else:
@@ -768,7 +815,7 @@ def ecephys_write_nwb(module_params):
                 "log_level": 'INFO',
                 "output_path": module_params['nwb_path'],
                 "session_id": module_params['session_id'],
-                "session_start_time": datetime.datetime(
+                "session_start_time": datetime(
                                     YYYY, MM, DD,
                                     0, 0, 0).isoformat(),
                 "stimulus_table_path": os.path.join(
@@ -777,6 +824,7 @@ def ecephys_write_nwb(module_params):
                 "optotagging_table_path": os.path.join(
                                     output_directory,
                                     'optotagging_table.csv'),
+                "session_metadata": subject,
                 "probes": probes,
                 "session_sync_path": sync_file,
                 "running_speed_path": join(output_directory,
@@ -837,7 +885,66 @@ def ecephys_optotagging_table(module_params):
         } 
     elif module_params['project'] == 'OpenScopeIllusion':
         conditions = {
-            
+            "0": {
+                "duration": 1,
+                "name": "fast_pulses",
+                "condition": "2 ms pulses at 1 Hz"
+            },
+            "1": {
+                "duration": 1,
+                "name": "pulse",
+                "condition": "a single 10ms pulse"
+            },
+            "2": {
+                "duration": .2,
+                "name": "pulse",
+                "condition": "1 second of 5Hz pulse train. Each pulse is 2 ms wide"
+            },
+            "3": {
+                "duration": .1,
+                "name": "raised_cosine",
+                "condition": "half-period of a cosine wave"
+            },
+            "4": {
+                "duration": .05,
+                "name": "5 hz pulse train",
+                "condition": "Each pulse is 10 ms wide"
+            }, 
+            "5": {
+                "duration": .033,
+                "name": "40 hz pulse train",
+                "condition": "Each pulse is 6 ms wide"        
+            },
+            "6": {
+                "duration": .025,
+                "name": "fast_pulses",
+                "condition": "1 second of 40 Hz pulse train. Each pulse is 2 ms wide"
+            },
+            "7": {
+                "duration": 0.02,
+                "name": "pulse",
+                "condition": "a single square pulse"
+            },
+            "8": {
+                "duration": 0.0167,
+                "name": "pulse",
+                "condition": "a single square pulse"
+            },
+            "9": {
+                "duration": .0125,
+                "name": "raised_cosine",
+                "condition": "half-period of a cosine wave"
+            },
+            "10": {
+                "duration": .01,
+                "name": "100 hz pulse train",
+                "condition": "1 second of 100 Hz pulse train. Each pulse is 2 ms wide"
+            }, 
+            "11": {
+                "duration": 1.0,
+                "name": "Square Pulse",
+                "condition": "1 second square pulse: continuously on for 1s"        
+            }
         }
     try:
         opto_pickle_path = glob(join(module_params['base_directory'], 

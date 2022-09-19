@@ -3,7 +3,58 @@ import os
 import numpy as np
 from os.path import join
 from glob import glob
+import requests
+import json
 
+
+def lims_subject_info(session_id):
+    gender = ""
+    genotype = ""
+    dob = ""
+    donor_name = post_gres.get_e_sess_donor_info(session_id)[0]
+    print(donor_name)
+    donor_info = requests.get('http://lims2/donors/info/details.json?external_donor_name=' + donor_name)
+    donor_json = json.loads(donor_info.text)
+    genotype = donor_json[0]['full_genotype']
+    if donor_json[0]['gender_id'] == 2:
+        gender = "F"
+    else:
+        gender = "M"
+    dob = donor_json[0]['date_of_birth'] 
+    id = donor_json[0]['id']
+    info = {
+        'gender': gender,
+        'genotype': genotype,
+        'dob': dob,
+        'name': donor_name,
+        'id': id
+    }
+    return info 
+
+
+def lims_o_subject_info(session_id):
+    gender = ""
+    genotype = ""
+    dob = ""
+    donor_name = post_gres.get_o_sess_donor_info(session_id)[0]
+    print(donor_name)
+    donor_info = requests.get('http://lims2/donors/info/details.json?external_donor_name=' + donor_name)
+    donor_json = json.loads(donor_info.text)
+    genotype = donor_json[0]['full_genotype']
+    if donor_json[0]['gender_id'] == 2:
+        gender = "F"
+    else:
+        gender = "M"
+    dob = donor_json[0]['date_of_birth'] 
+    id = donor_json[0]['id']
+    info = {
+        'gender': gender,
+        'genotype': genotype,
+        'dob': dob,
+        'name': donor_name,
+        'id': id
+    }
+    return info 
 
 def sanity_check(allen_path, session_id):
     probes = post_gres.get_sess_probes(session_id)

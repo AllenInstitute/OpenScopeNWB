@@ -121,6 +121,7 @@ def get_e_sess_all(session_id):
     return info_list
 
 
+
 def get_o_sess_directory(session_id):
     """Gets a specific session's filepath
 
@@ -181,6 +182,37 @@ def get_e_sess_directory(session_id):
         info_list = cur.fetchall()
         path = info_list[0]
     return path[0]
+
+
+def get_sess_donor(session_id):
+    """Gets a specific session's donor
+
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+
+    Returns
+    -------
+    info_list: str
+    A list of the session's passing probes
+    """
+    EPHYS_DONOR_QRY = '''
+    SELECT es.external_name
+    FROM ecephys_sessions es
+    WHERE es.id = {}
+    GROUP BY es.id
+    '''
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = EPHYS_DONOR_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list
 
 
 def get_sess_probes(session_id):
@@ -281,12 +313,17 @@ def get_sess_experiments(session_id):
     return info_list
 
 
-def get_e_sess_specimen_info(session_id):
+def get_e_sess_donor_info(session_id):
     EPHYS_SESSION_QRY = """
-    SELECT sp
+    SELECT sp.donor_id
     FROM ecephys_sessions es
         JOIN specimens sp ON sp.id = es.specimen_id    
     WHERE es.id = {}
+    """
+    DONOR_NAME_QRY = """
+    SELECT d.external_donor_name
+    FROM donors d
+    WHERE d.id = {}
     """
     cur = get_psql_cursor(get_cred_location())
     lims_query = EPHYS_SESSION_QRY.format(session_id)
@@ -297,9 +334,71 @@ def get_e_sess_specimen_info(session_id):
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
+        cur = get_psql_cursor(get_cred_location())
+        info_list = [item for item, in info_list]
+        lims_query = DONOR_NAME_QRY.format(info_list[0])
+        cur.execute(lims_query)
+        if cur.rowcount == 0:
+            raise Exception("No data was found for ID {}".format(session_id))
+        elif cur.rowcount != 0:
+            info_list = cur.fetchall()
+            info_list = [item for item, in info_list]
+            return info_list
+
+
+def get_o_sess_donor_info(session_id):
+    OPHYS_SESSION_QRY = """
+    SELECT sp.donor_id
+    FROM ophys_sessions os
+        JOIN specimens sp ON sp.id = os.specimen_id    
+    WHERE os.id = {}
+    """
+    DONOR_NAME_QRY = """
+    SELECT d.external_donor_name
+    FROM donors d
+    WHERE d.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = OPHYS_SESSION_QRY.format(session_id)
+    cur.execute(lims_query)
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+        cur = get_psql_cursor(get_cred_location())
+        info_list = [item for item, in info_list]
+        lims_query = DONOR_NAME_QRY.format(info_list[0])
+        cur.execute(lims_query)
+        if cur.rowcount == 0:
+            raise Exception("No data was found for ID {}".format(session_id))
+        elif cur.rowcount != 0:
+            info_list = cur.fetchall()
+            info_list = [item for item, in info_list]
+            return info_list
+
+
+def get_o_sess_dff(session_id):
+    QRY = """                
+    SELECT wkf.storage_directory || wkf.filename AS dff_file
+    FROM ophys_experiments oe
+                JOIN well_known_files wkf ON wkf.attachable_id = oe.id
+                JOIN well_known_file_types wkft
+                ON wkft.id = wkf.well_known_file_type_id
+    WHERE wkft.name = 'OphysDffTraceFile'
+    AND oe.id = {};"""
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = QRY.format(session_id)
+    cur.execute(lims_query)
+
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
     return info_list
-
-
 
 def get_e_sess_info(session_id):
     """Gets a specific session's information

@@ -270,6 +270,7 @@ def generate_session_params(project_dict, session, session_dir):
     project = get_project(project_dict)
 
     probes = (get_probes(project_dict))[session]
+    first_probe = probes[0]
     final_probe = probes[-1]
     trim = get_trim(project_dict)
     session_modules, probe_modules = get_module_types(project_dict)
@@ -283,6 +284,7 @@ def generate_session_params(project_dict, session, session_dir):
         'data_json': "",
         'last_unit_id': probe_count,
         'probes': probes,
+        'first_probe': first_probe,
         'final_probe': final_probe,
         'probe_dict_list': [],
         'lfp_list': [],

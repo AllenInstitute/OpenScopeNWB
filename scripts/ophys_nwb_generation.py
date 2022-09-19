@@ -6,6 +6,7 @@ import logging
 import sys
 import subprocess
 import json
+import datetime
 
 # import openscopenwb.create_module_input_json as osnjson
 # from openscopenwb.utils import script_functions as sf
@@ -16,6 +17,7 @@ from allensdk.brain_observatory.behavior.ophys_experiment import \
 from pynwb import NWBHDF5IO
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
+from openscopenwb.utils import postgres_functions as postgres
 from generate_json import generate_ophys_json
 from pynwb.file import Subject
 
@@ -52,8 +54,16 @@ def add_data_to_nwb(csv_path, nwb_path):
 def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     subject_info = allen.lims_o_subject_info(session_id)
     # TODO: Calculate mouse age 
+    subject_dob = datetime.strptime(subject_info['dob'][:10],'%Y-%m-%d')
+    subject_date = postgres.get_o_sess_info['date']
+    subject_date = datetime.strptime(subject_date[:10], '%Y-%m-%d')
+    duration = subject_date - subject_dob
+    duration = duration.total_seconds()
+    duration = divmod(duration, 86400)
+    days = (duration[0])
+    days = 'P' + str(days) + 'D'
     subject = {
-        'age_in_days': '90D',
+        'age_in_days': days,
         'specimen_name': subject_info['name'],
         'full_genotype': subject_info['genotype'],
         'sex': subject_info['gender'],
