@@ -24,6 +24,40 @@ def start(cred_path):
     return app
 
 
+def upload_o_session(project_id, session_id):
+    """Uploads a specific session's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """    
+    ref = db.reference('/Sessions')
+    sessions = ref.get()
+    meta_dict = post_gres.get_o_sess_info(session_id)
+
+    for key in sessions.items():
+        if key == session_id:
+            ref.update({project_id: { session_id: {
+                'name':  meta_dict['name'],
+                'date': meta_dict['date'],
+                'mouse': meta_dict['mouse'],
+                'stim': meta_dict['stim'],
+                'img': meta_dict['img'],
+                'operator': meta_dict['operator'],
+                'equipment': meta_dict['equip'],
+                'path': meta_dict['path'],
+                'type': meta_dict['type'],
+                'experiments': meta_dict['experiments']
+            }}})
+
+
+
 def upload_session(project_id, session_id):
     """Uploads a specific session's information
 
@@ -76,6 +110,27 @@ def upload_project(project_id):
         #upload_session(project_id, session)
 
 
+
+def upload_o_project(project_id):
+    """Uploads a specific project's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
+    start(get_creds())
+    #init_project(project_id)
+    meta_dict = post_gres.get_o_proj_info(project_id)
+    for session in meta_dict['sessions']:
+        session = str(session)
+        session = ''.join((c for c in session if c.isdigit()))
+        init_o_session(project_id, session)        
+
+
 def init_project(project_id):
     """Initializes a specific project's information
 
@@ -111,6 +166,51 @@ def init_session(project_id, session_id):
     #print('init session')
     #print(meta_dict)
     ref.update(meta_dict)
+
+
+def init_o_session(project_id, session_id):
+    """Initializes a specific sessions's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
+    meta_dict = post_gres.get_o_sess_info(session_id)
+    #print('init session')
+    #print(meta_dict)
+    ref.update(meta_dict)
+
+
+def update_o_session(project_id, session_id):
+    """Updates a specific sessions's information while keeping current status
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
+    meta_dict = post_gres.get_o_sess_info(session_id)
+    status = view_session(project_id, session_id)['status']
+    meta_dict['status'] = status
+    #print('init session')
+    #print(meta_dict)
+    ref.update(meta_dict)    
+
+
+
 
 def update_session(project_id, session_id):
     """Updates a specific sessions's information while keeping current status
@@ -260,6 +360,7 @@ def get_sessions(project_id):
         if session != "Metadata":
             sess_list.append(session)
     return sess_list
+
 
 def update_ephys_statuses(projectID):
     """Updates all initalized statuses to converting 
