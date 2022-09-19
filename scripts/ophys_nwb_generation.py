@@ -6,7 +6,7 @@ import logging
 import sys
 import subprocess
 import json
-import datetime
+from datetime import datetime
 
 # import openscopenwb.create_module_input_json as osnjson
 # from openscopenwb.utils import script_functions as sf
