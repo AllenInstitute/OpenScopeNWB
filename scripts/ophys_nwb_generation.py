@@ -7,17 +7,19 @@ import sys
 import subprocess
 import json
 from datetime import datetime
+from os.path import join
+from glob import glob
 
 # import openscopenwb.create_module_input_json as osnjson
 # from openscopenwb.utils import script_functions as sf
 import ophys_nwb_stim as stim
-from openscopenwb.utils import parse_ophys_project_parameters as popp
 from allensdk.brain_observatory.behavior.ophys_experiment import \
      OphysExperiment as ophys
 from pynwb import NWBHDF5IO
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
+import ecephys_nwb_eye_tracking as eye_tracking
 from generate_json import generate_ophys_json
 from pynwb.file import Subject
 
@@ -55,7 +57,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     subject_info = allen.lims_o_subject_info(session_id)
     # TODO: Calculate mouse age 
     subject_dob = datetime.strptime(subject_info['dob'][:10],'%Y-%m-%d')
-    subject_date = postgres.get_o_sess_info['date']
+    subject_date = postgres.get_o_sess_info(session_id)['date']
     subject_date = datetime.strptime(subject_date[:10], '%Y-%m-%d')
     duration = subject_date - subject_dob
     duration = duration.total_seconds()
@@ -109,5 +111,23 @@ if __name__ == "__main__":
     file_path =  file_path + '/' + str(experiment_id) + 'raw_data.nwb'
     gen_ophys(experiment_id, file_path)
     json_in = json.loads(json_in)
+    main_dir = postgres.get_o_sess_directory(session_id)
+    main_dir = main_dir[0]
+    ellipse_path = glob(join(main_dir, "eye_tracking", "*_ellipse.h5"))[0]
+    print('ellipse')
+    print(ellipse_path)
+    data_json_path = glob(join(main_dir,"*_Behavior_*.json"))[0]
+    print('data')
+    print(data_json_path)
+    sync_path = glob(join(main_dir, "*.h5"))[0]
+    print('sync')
+    print(sync_path)
+    tracking_params = {
+        'ellipse_path': ellipse_path, 
+        'sync_path': sync_path,
+        'nwb_path': file_path,
+        'data_json': data_json_path
+    }
     add_data_to_nwb(json_in['output_stimulus_table_path'],file_path)
     add_subject_to_nwb(session_id, experiment_id, file_path)
+    eye_tracking.add_tracking_to_ophys_nwb(tracking_params)    

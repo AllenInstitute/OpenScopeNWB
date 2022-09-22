@@ -101,15 +101,9 @@ for project in o_proj_list:
     for session in update_list:
         fb.update_o_session(project, session)
 
-#    exp_list = postgres.get_sess_experiments('1202394917')
-#    for experiment in exp_list:
-#        cmd = dir + '/bash/ophys.sh ' + "-s " + '1202394917 '+ "-e " + str(experiment)
+# 1202394917
+#exp_list = postgres.get_sess_experiments('1211188419')
+#for experiment in exp_list:
+#    if experiment == 1211453853:
+#        cmd = dir + '/bash/ophys.sh ' + "-s " + '1211188419 '+ "-e " + str(experiment)
 #        subprocess.call(shlex.split(cmd))
-            
-
-# cmd = dir + '/bash/ophys.sh ' + "-e " + "1202533456"
-# subprocess.call(shlex.split(cmd))
-# sync_path = postgres.get_o_sess_directory('1202394917')
-# print(sync_path[0])
-# sync_path = glob(join(sync_path[0], '1202394917_*.h5'))
-# print(sync_path)
