@@ -491,6 +491,8 @@ def get_o_sess_info(session_id):
     WHERE os.id = {}
     """
     cur = get_psql_cursor(get_cred_location())
+    session_id = str(session_id)
+    session_id = ''.join((c for c in session_id if c.isdigit()))
     lims_query = OPHYS_SESSION_QRY.format(session_id)
     cur.execute(lims_query)
 
@@ -506,6 +508,8 @@ def get_o_sess_info(session_id):
             tmp.append(j)
     info_list = tmp
     meta_dict = {}
+    if isinstance(info_list[5], (datetime, date)):
+        info_list[5] = info_list[5].isoformat()
     meta_dict['name'] = info_list[1]
     meta_dict['date'] = info_list[5]
     meta_dict['mouse'] = info_list[2]
@@ -514,11 +518,38 @@ def get_o_sess_info(session_id):
     meta_dict['operator'] = info_list[6]
     meta_dict['equip'] = info_list[3]
     meta_dict['id'] = info_list[0]
-    meta_dict['path'] = get_o_sess_directory(session_id)
+    meta_dict['path'] = get_o_sess_directory(session_id)[0]
     meta_dict['type'] = 'Ophys'
     meta_dict['experiments'] = get_sess_experiments(session_id)
+    meta_dict['status'] = {'status': 'Not Converted'}
 
     return meta_dict
+
+
+
+def get_o_sess_sync(session_id):
+    QRY = f"""
+        SELECT wkf.storage_directory || wkf.filename AS sync_file
+        FROM ophys_sessions os
+        JOIN well_known_files wkf ON wkf.attachable_id = os.id
+        JOIN well_known_file_types wkft
+        ON wkft.id = wkf.well_known_file_type_id
+        WHERE wkf.attachable_type = 'OphysSession'
+        AND wkft.name = 'OphysRigSync'
+        AND os.id = {session_id}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = QRY.format(session_id)
+    cur.execute(lims_query)
+
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list
+
 
 
 def get_e_proj_info(project_id):
@@ -591,5 +622,7 @@ def get_o_proj_info(project_id):
     meta_dict = {}
     meta_dict['sessions'] = []
     for session in info_list:
+        session = str(session)
+        session = ''.join((c for c in session if c.isdigit()))
         meta_dict['sessions'].append(session)
     return meta_dict

@@ -102,8 +102,8 @@ for project in o_proj_list:
         fb.update_o_session(project, session)
 
 # 1202394917
-#exp_list = postgres.get_sess_experiments('1211188419')
-#for experiment in exp_list:
+# exp_list = postgres.get_sess_experiments('1211188419')
+# for experiment in exp_list:
 #    if experiment == 1211453853:
 #        cmd = dir + '/bash/ophys.sh ' + "-s " + '1211188419 '+ "-e " + str(experiment)
 #        subprocess.call(shlex.split(cmd))

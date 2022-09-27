@@ -2,6 +2,34 @@ from openscopenwb.utils import postgres_functions as post_gres
 from openscopenwb.utils import firebase_functions as firebase
 
 
+def compare_o_session(project_id, session_id):
+    """Compares a specific session's information between postgres and firebase
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    difference_list: list
+    A list of the differences between the postgres and firebase,
+    ordered by info type and the information reported by the postgres
+    """
+    post_gres_info = post_gres.get_o_sess_info(session_id)
+    firebase_info = firebase.view_session(project_id, session_id)
+    difference_list = []
+    for i in post_gres_info:
+        if i not in firebase_info:
+            difference_list.append(i)
+            continue
+        if post_gres_info[i] != firebase_info[i]:
+            difference_list.append(i)
+    return difference_list
+
+
 def compare_o_sessions(project_id):
     """Compares which sessions are associated with a project postgres and firebase
 

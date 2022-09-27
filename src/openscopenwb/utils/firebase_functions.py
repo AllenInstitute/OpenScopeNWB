@@ -148,6 +148,23 @@ def init_project(project_id):
     ref.update({project_id: meta_dict})
 
 
+def init_o_project(project_id):
+    """Initializes a specific project's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Projects')
+    meta_dict = post_gres.get_o_proj_info(project_id)
+    #print(meta_dict)
+    ref.update({project_id: meta_dict})   
+
+
 def init_session(project_id, session_id):
     """Initializes a specific sessions's information
 
