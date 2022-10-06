@@ -301,7 +301,7 @@ def ecephys_align_timestamps(module_params):
             'barcode_timestamps_path': join(
                 events_directory,
                 'event_timestamps.npy'),
-            'mappable_timestamp_files': timestamp_files,
+            'mappable_timestamp_files': timestamp_files
         }
 
         module_params['probe_dict_list'].append(probe_dict)
@@ -506,9 +506,15 @@ def ecephys_write_nwb(module_params):
         channels.append(channel_dict)
     print(glob(join(module_params['base_directory'],'**/*','metrics.csv'), recursive=True))
     print(glob(join(module_params['base_directory'],'**/*','metrics.csv'), recursive=True))
-    unit_info =   pd.read_csv(glob(join(module_params['base_directory'],
+    metrics = glob(join(module_params['base_directory'],
                                     "**/*", 
-                                    'metrics.csv'), recursive=True)[0], index_col=0)
+                                    'metrics.csv'), recursive=True)
+    for probe in metrics:
+        if probe_idx in probe:
+            current_metric = probe
+    print('current-metric')
+    print(current_metric)
+    unit_info =   pd.read_csv(current_metric, index_col=0)
 
 #    unit_info = pd.read_csv(join(probe_directory,
 #                                 'metrics.csv'),
@@ -517,17 +523,23 @@ def ecephys_write_nwb(module_params):
     quality_check = glob(join(module_params['base_directory'],
                                     "**", 
                                     'cluster_group.tsv'), recursive=True)
-#    quality_check = glob(join(probe_directory,
-#                              'cluster_group.tsv'))
+    tmp_index = 0
     if quality_check != []:
-        quality_info = pd.read_csv(join(quality_check[0],
+        for index, quality in enumerate(quality_info):
+            if probe_idx in quality:
+                tmp_index = index
+        quality_info = pd.read_csv(join(quality_check[index],
                                    sep='\t',
                                    index_col=0))
     else:
         quality_info = []
-    spike_clusters = np.load(glob(join(module_params['base_directory'],
+    spike_clusters = glob(join(module_params['base_directory'],
                                     "**", 
-                                    'spike_clusters.npy'), recursive=True)[0])
+                                    'spike_clusters.npy'), recursive=True)
+    for index, cluster in enumerate(spike_clusters):
+        if probe_idx in cluster:
+            tmp_index = index
+    spike_clusters = np.load(spike_clusters[tmp_index])
 
 
     units = []
@@ -733,18 +745,38 @@ def ecephys_write_nwb(module_params):
         'input_channels_path': join(module_params['output_path'], probe_idx +'_channels.npy'),
         'output_path': join(output, probe_idx + '_lfp.nwb')
     }
+    print(glob(join(module_params['base_directory'], '**/*', 'spike_clusters.npy'), recursive=True))
+    spike_clusters = glob(join(module_params['base_directory'], '**/*', 'spike_clusters.npy'), recursive=True)
+    spike_amplitudes = glob(join(module_params['base_directory'], '**/*', 'amplitudes.npy'), recursive=True)
+    mean_waveforms = glob(join(module_params['base_directory'], '**/*','mean_waveforms.npy'), recursive=True)
+    spike_templates =  glob(join(module_params['base_directory'], '**/*',
+                                     'spike_templates.npy'), recursive=True)
+    templates_path =  glob(join(module_params['base_directory'], '**/*','templates.npy'), recursive=True)
+    inverse_whitening = glob(join(module_params['base_directory'], '**',
+                                              'whitening_mat_inv.npy'), recursive=True)
+    spike_info = {
+        'spike_clusters': spike_clusters, 
+        'spike_amplitudes': spike_amplitudes, 
+        'mean_waveforms': mean_waveforms, 
+        'spike_templates': spike_templates, 
+        'templates_path': templates_path, 
+        'whitening': inverse_whitening}
+    for info in spike_info:
+        for probe in spike_info[info]:
+            if probe_idx in probe:
+                tmp = probe
+                spike_info[info] = tmp 
+                break
     probe_dict = {
         'id': module_params['id'],
         'name': probe_idx,
         'spike_times_path': master_clock_path,
-        'spike_clusters_file': glob(join(module_params['base_directory'], '**/*', 'spike_clusters.npy'), recursive=True)[0],
-        'spike_amplitudes_path': glob(join(module_params['base_directory'], '**/*', 'amplitudes.npy'), recursive=True)[0],
-        'mean_waveforms_path': glob(join(module_params['base_directory'], '**/*','mean_waveforms.npy'), recursive=True)[0],
-        'spike_templates_path': glob(join(module_params['base_directory'], '**/*',
-                                     'spike_templates.npy'), recursive=True)[0],
-        'templates_path': glob(join(module_params['base_directory'], '**/*','templates.npy'), recursive=True)[0],
-        'inverse_whitening_matrix_path': glob(join(module_params['base_directory'], '**',
-                                              'whitening_mat_inv.npy'), recursive=True)[0],
+        'spike_clusters_file': spike_info['spike_clusters'],
+        'spike_amplitudes_path': spike_info['spike_amplitudes'],
+        'mean_waveforms_path': spike_info['mean_waveforms'],
+        'spike_templates_path': spike_info['spike_templates'],
+        'templates_path': spike_info['templates_path'],
+        'inverse_whitening_matrix_path': spike_info['whitening'],
         'channels': channels,
         'units': units,
         'lfp': lfp_dict
@@ -1018,12 +1050,14 @@ def ecephys_lfp_subsampling(module_params):
     except IndexError:
         probe_info_file= glob(join(module_params['base_directory'], 
                                            "**",
-                                           '**',
-                                           "probe_info.json"))[0]
+                                           "*_" +
+                                           probe_idx,
+                                           'probe_info.json'))[0]
 
-
+    print(probe_info_file)
     with open(probe_info_file) as probe_file:
         probe_info = json.load(probe_file)
+        print(probe_info)
     module_params['lfp_path'] = lfp_directory
     input_json_write_dict = {
         'name': module_params['current_probe'],

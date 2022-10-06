@@ -116,6 +116,9 @@ def convert_session(session_id, project):
                 logging.debug("Finished Session Level Module: " + module)
             elif module in probe_modules:
                 for probe in probes:
+                    if probe == 'probe_A':
+                        print("probe A")
+                        continue
                     session_params['last_unit_id'] = old_last_unit + 1
                     module_params = session_params
                     module_params['current_probe'] = probe
