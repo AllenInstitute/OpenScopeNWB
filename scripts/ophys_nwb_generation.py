@@ -20,6 +20,7 @@ from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
 import ecephys_nwb_eye_tracking as eye_tracking
+import ophys_nwb_raw as raw_nwb
 from generate_json import generate_ophys_json
 from pynwb.file import Subject
 
@@ -122,6 +123,11 @@ if __name__ == "__main__":
     sync_path = glob(join(main_dir, "*.h5"))[0]
     print('sync')
     print(sync_path)
+    print('experiment')
+    print(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed'))
+    print('motion')
+    print(glob(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed', '*_suite2p*')))
+    motion_path = glob(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed', '*_suite2p_motion_output.h5'))[0]
     tracking_params = {
         'ellipse_path': ellipse_path, 
         'sync_path': sync_path,
@@ -131,3 +137,8 @@ if __name__ == "__main__":
     add_data_to_nwb(json_in['output_stimulus_table_path'],file_path)
     add_subject_to_nwb(session_id, experiment_id, file_path)
     eye_tracking.add_tracking_to_ophys_nwb(tracking_params)    
+    raw_params = {
+        'nwb_path': file_path,
+        'suite_2p': motion_path
+    }
+    #raw_nwb.process_suit2p(raw_params)
