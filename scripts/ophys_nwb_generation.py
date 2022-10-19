@@ -45,7 +45,6 @@ def gen_ophys(experiment_id, file_path):
     ophys_nwb = ophys.from_lims(ophys_experiment_id=ophys_experiment_id,
                                 skip_eye_tracking=True)
     ophys_nwb = ophys_nwb.to_nwb()
-    print(file_path)
     with NWBHDF5IO(file_path, mode='w') as io:
         io.write(ophys_nwb)
 
@@ -115,18 +114,9 @@ if __name__ == "__main__":
     main_dir = postgres.get_o_sess_directory(session_id)
     main_dir = main_dir[0]
     ellipse_path = glob(join(main_dir, "eye_tracking", "*_ellipse.h5"))[0]
-    print('ellipse')
-    print(ellipse_path)
+
     data_json_path = glob(join(main_dir,"*_Behavior_*.json"))[0]
-    print('data')
-    print(data_json_path)
     sync_path = glob(join(main_dir, "*.h5"))[0]
-    print('sync')
-    print(sync_path)
-    print('experiment')
-    print(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed'))
-    print('motion')
-    print(glob(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed', '*_suite2p*')))
     motion_path = glob(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed', '*_suite2p_motion_output.h5'))[0]
     tracking_params = {
         'ellipse_path': ellipse_path, 
