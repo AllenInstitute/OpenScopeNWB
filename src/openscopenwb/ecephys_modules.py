@@ -52,8 +52,6 @@ def stimulus_table(module_params):
         sync_path = glob(join(module_params['base_directory'],
                               "**",
                               "*.sync"))[0]
-    print(pkl_path)
-    print(sync_path)
 
     input_json_write_dict = \
         {
@@ -289,7 +287,27 @@ def ecephys_align_timestamps(module_params):
             'output_path': join(output_directory, probe_idx,
                                 'spike_times_master_clock.npy')
         })
+    try:
+        lfp_directory = glob(join(module_params['base_directory'],
+                                           '*',
+                                           '*_' +
+                                           probe_idx,
+                                           'continuous'
+                                           "Neuropix*100.1"))[0]
+    except IndexError:
+        lfp_directory = glob(join(module_params['base_directory'], 
+                                           "**",
+                                           "*_" +
+                                           probe_idx,
+                                           'continuous',
+                                           '**'
+                                           "Neuropix*100.1"))[0]
 
+    timestamp_files.append({
+        'name': 'lfp_timestamps',
+        'input_path': join(lfp_directory, 'lfp_timestamps.npy'),
+        'output_path': join(module_params['output_path'], probe_idx + '_lfp_timestamps.npy')
+    })
     print("File was found: " + str(file_found))
     if(file_found):
         probe_dict = {
@@ -499,13 +517,11 @@ def ecephys_write_nwb(module_params):
             'probe_horizontal_position': channel_row['horizontal_position'],
             'manual_structure_id': channel_row['structure_id'],
             'manual_structure_acronym': structure_acronym,
-            'anterior_posterior_ccf_coordinate': channel_row['A/P'],
-            'dorsal_ventral_ccf_coordinate': channel_row['D/V'],
-            'left_right_ccf_coordinate': channel_row['M/L']
+            'anterior_posterior_ccf_coordinate': channel_row['A/P'] * 1000,
+            'dorsal_ventral_ccf_coordinate': channel_row['D/V'] * 1000 ,
+            'left_right_ccf_coordinate': channel_row['M/L'] * 1000
         }
         channels.append(channel_dict)
-    print(glob(join(module_params['base_directory'],'**/*','metrics.csv'), recursive=True))
-    print(glob(join(module_params['base_directory'],'**/*','metrics.csv'), recursive=True))
     metrics = glob(join(module_params['base_directory'],
                                     "**/*", 
                                     'metrics.csv'), recursive=True)
@@ -1057,14 +1073,12 @@ def ecephys_lfp_subsampling(module_params):
     print(probe_info_file)
     with open(probe_info_file) as probe_file:
         probe_info = json.load(probe_file)
-        print(probe_info)
     module_params['lfp_path'] = lfp_directory
     input_json_write_dict = {
         'name': module_params['current_probe'],
         'lfp_sampling_rate': 2500.,
         'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
-        'lfp_timestamps_input_path': join(lfp_directory,
-                                          'lfp_timestamps.npy'),
+        'lfp_timestamps_input_path': join(output_path, probe_idx + '_lfp_timestamps.npy'),
         'lfp_data_path': join(output_path, probe_idx+ '_lfp.dat'),
         'lfp_timestamps_path': join(output_path, probe_idx +  '_timestamps.npy'),
         'lfp_channel_info_path': join(output_path, probe_idx +'_channels.npy'),
@@ -1072,7 +1086,6 @@ def ecephys_lfp_subsampling(module_params):
         'reference_channels': [191]
     }
     if probe_idx != module_params['final_probe']:
-        print(input_json_write_dict)
         module_params['lfp_list'].append(input_json_write_dict)
         return module_params, input_json_write_dict
     else:
