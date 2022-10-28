@@ -25,15 +25,20 @@ if __name__ == "__main__":
     parser.add_argument('--dandi_val', type=str)
     parser.add_argument('--sess_id', type=str)
     parser.add_argument('--exp_id', type=str)
-
+    parser.add_argument('--raw', type=bool)
     args = parser.parse_args()
     set_env()
     dandi_set = dandi()
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
+    raw = args.raw
+
 
     #TODO: Implement a flag check for if file exists and then use replace if it does 
-    status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id , "dandiset": str(dandi_dataset)} )
+    if raw:
+        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_raw.nwb', "dandiset": str(dandi_dataset)} )
+    else:
+        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_nwb', "dandiset": str(dandi_dataset)} )
     print(list(status))
     #file = dandi_file(args.dandi_file, args.dandi_file)
     #file.upload(dandiset = dandi_set.get_dandiset(args.dandi_val), metadata = {})

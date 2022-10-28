@@ -6,6 +6,9 @@ import logging
 import sys
 import subprocess
 import json
+import subprocess
+import shlex
+
 from datetime import datetime
 from os.path import join
 from glob import glob
@@ -93,11 +96,13 @@ if __name__ == "__main__":
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
     parser.add_argument('--raw', type= bool)
+    parser.add_argument('--val', type=int)
     args = parser.parse_args()
     session_id = args.session_id
     experiment_id = args.experiment_id
     experiment_id = int(experiment_id)
     raw_flag = args.raw
+    val = args.val
     json_in = generate_ophys_json(experiment_id)
     input_json =  r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_in.json"
     output_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_out.json"
@@ -134,7 +139,14 @@ if __name__ == "__main__":
         'suite_2p': motion_path,
         'time': r"2022-06-29-T00:000-07:00"
     }
+    dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag:
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
-    
+        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + experiment_id + " --raw " + True + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + val
+        print(shlex.split(cmd))
+        subprocess.call(shlex.split(cmd))
+    else: 
+        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + experiment_id + " --raw " + False + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + val
+        print(shlex.split(cmd))
+        subprocess.call(shlex.split(cmd))

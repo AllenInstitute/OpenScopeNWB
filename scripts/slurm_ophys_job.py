@@ -8,4 +8,4 @@ if __name__ == '__main__':
     """
     print("arguments")
     print(sys.argv)
-    slurm_job.generate_ophys_nwb(sys.argv[1], sys.argv[2], sys.argv[3])
+    slurm_job.generate_ophys_nwb(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
