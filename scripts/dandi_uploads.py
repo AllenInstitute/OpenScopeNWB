@@ -1,12 +1,15 @@
-import dandi.dandiapi.DandiAPIClient as dandi
-import dandi.files.LocalAsset as dandi_file
+from  dandi.dandiapi import DandiAPIClient as dandi
+from  dandi.files import LocalAsset as dandi_file
 import argparse
 import os 
 import json
 
 
 def get_creds():
-    cred_json = json.load(r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
+    cred_file = open(r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
+    cred_json = json.load(cred_file)
+    print(cred_json['api_key'])
+    print('cred')
     return cred_json['api_key']
 
 
@@ -17,10 +20,15 @@ def set_env():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dandi_url', type=int)
+    parser.add_argument('--dandi_url', type=str)
     parser.add_argument('--dandi_file', type=str)
+    parser.add_argument('--dandi_val', type=str)
     args = parser.parse_args()
-    dandi_set = dandi(args.dandi_url)
-    dandi_set.authenticate()
-    file = dandi_file(args.dandi_file)
-    file.upload(dandi_set)
+    set_env()
+    dandi_set = dandi()
+    dandi_set.dandi_authenticate()
+    dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
+    status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.dandi_val, "dandiset": str(dandi_dataset)})
+    print(list(status))
+    #file = dandi_file(args.dandi_file, args.dandi_file)
+    #file.upload(dandiset = dandi_set.get_dandiset(args.dandi_val), metadata = {})
