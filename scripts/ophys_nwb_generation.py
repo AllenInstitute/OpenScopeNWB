@@ -92,10 +92,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
+    parser.add_argument('--raw', type= bool)
     args = parser.parse_args()
     session_id = args.session_id
     experiment_id = args.experiment_id
     experiment_id = int(experiment_id)
+    raw_flag = args.raw
     json_in = generate_ophys_json(experiment_id)
     input_json =  r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_in.json"
     output_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_out.json"
@@ -132,5 +134,7 @@ if __name__ == "__main__":
         'suite_2p': motion_path,
         'time': r"2022-06-29-T00:000-07:00"
     }
-    # print("Processing Raw")
-    # raw_nwb.process_suit2p(raw_params)
+    if raw_flag:
+        print("Processing Raw")
+        raw_nwb.process_suit2p(raw_params)
+    

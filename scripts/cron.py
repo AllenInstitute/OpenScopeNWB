@@ -1,6 +1,7 @@
 import os
 import subprocess
 import shlex
+import h5py
 import matplotlib.pyplot as plt
 
 from requests import post
@@ -101,12 +102,29 @@ for project in o_proj_list:
     print(update_list)
     for session in update_list:
         fb.update_o_session(project, session)
-
+    conversion_list = fb.update_ophys_statuses(project)
+    print("List of Sessions to convert: ")
+    print(conversion_list)
+    for session in conversion_list:
+        exp_list = fb.get_experiments(project, session)
+        for experiment in exp_list:
+            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + experiment + " -r " + False
+            print(shlex.split(cmd))
+            subprocess.call(shlex.split(cmd))
+            fb.update_session_status(project, session, "Conversion Running")
+    raw_conversion_list = fb.update_ophys_RAW_statuses
+    for session in raw_conversion_list:
+        exp_list = fb.get_experiments(project, session)
+        for experiment in exp_list:
+            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + experiment - " -r " + True
+            print(shlex.split(cmd))
+            subprocess.call(shlex.split(cmd))
+            fb.update_session_status(project, session, "Raw Conversion Running")
 # 1193163594
 #exp_list = postgres.get_sess_experiments('1212553658')
 #for experiment in exp_list:
-#    cmd = dir + '/bash/ophys.sh ' + "-s " + '1212553658 '+ "-e " + str(experiment)
-#    subprocess.call(shlex.split(cmd))
-
+#    if experiment == 1212705242:
+#        cmd = dir + '/bash/ophys.sh ' + "-s " + '1212553658 '+ "-e " + str(experiment)
+#        subprocess.call(shlex.split(cmd))
 # print(postgres.get_e_sess_sync('1213341633'))
 # print(sync.sync_test('1213341633'))
