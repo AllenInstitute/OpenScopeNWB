@@ -8,6 +8,7 @@ from openscopenwb.utils import firebase_sync as fire_sync
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import allen_functions as allen
+from openscopenwb.utils import sync_functions as sync 
 from pathlib import Path
 from ecephys_nwb_generation import write_subject_to_nwb
 
@@ -101,11 +102,11 @@ for project in o_proj_list:
     for session in update_list:
         fb.update_o_session(project, session)
 
-# 1202394917
-# exp_list = postgres.get_sess_experiments('1214523350')
-# for experiment in exp_list:
-#    if experiment == 1211453853:
-#    cmd = dir + '/bash/ophys.sh ' + "-s " + '1214523350 '+ "-e " + str(experiment)
-#    subprocess.call(shlex.split(cmd))
+# 1193163594
+exp_list = postgres.get_sess_experiments('1212553658')
+for experiment in exp_list:
+    cmd = dir + '/bash/ophys.sh ' + "-s " + '1212553658 '+ "-e " + str(experiment)
+    subprocess.call(shlex.split(cmd))
 
-print(postgres.get_e_sess_sync('1181330601'))
+# print(postgres.get_e_sess_sync('1213341633'))
+# print(sync.sync_test('1213341633'))

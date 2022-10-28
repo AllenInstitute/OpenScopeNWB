@@ -6,7 +6,7 @@ import allensdk.brain_observatory.ecephys.stimulus_sync as sync
 from allensdk.brain_observatory.sync_dataset import \
     Dataset
 #Get sync dataset object for one of the bad sessions
-syncdata = Dataset(r'/allen/programs/mindscope/workgroups/np-exp/1214578117_639564_20220928/1214578117_639564_20220928.sync')
+syncdata = Dataset(r'/allen/programs/mindscope/production/openscope/prod0/specimen_1194090570/ecephys_session_1208667752/1208964113/1208667752_637484_20220908.sync')
 # syncdata = Dataset(r'/allen/programs/mindscope/workgroups/np-exp/1213341633_637908_20220922/1213341633_637908_20220922.sync')
 #Grab the stim running line that tells us when visual stimuli were on the screen
 stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),

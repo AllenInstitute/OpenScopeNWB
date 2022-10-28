@@ -98,7 +98,7 @@ def generate_ophys_nwb(session_id, experiment_id):
         cpus_per_task=12,
         job_name='openscope_test',
         dependency=dict(after=65541, afterok=34987),
-        mem='48gb',
+        mem='128gb',
         partition = 'braintv',
         time = "01:50:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'

@@ -77,7 +77,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     with NWBHDF5IO(nwb_path, "r+", load_namespaces=True) as nwbfile:
         input_nwb = nwbfile.read()
         input_nwb.subject = Subject(
-            subject_id= str(experiment_id),
+            subject_id= str(session_id),
             age = subject['age_in_days'],
             species = 'Mus musculus',
             sex = subject['sex'],
@@ -129,6 +129,8 @@ if __name__ == "__main__":
     eye_tracking.add_tracking_to_ophys_nwb(tracking_params)    
     raw_params = {
         'nwb_path': file_path,
-        'suite_2p': motion_path
+        'suite_2p': motion_path,
+        'time': r"2022-06-29-T00:000-07:00"
     }
-    #raw_nwb.process_suit2p(raw_params)
+    # print("Processing Raw")
+    # raw_nwb.process_suit2p(raw_params)

@@ -15,7 +15,10 @@ from hdmf.backends.hdf5.h5_utils import H5DataIO
 def process_suit2p(raw_params):
     print("Processing timeseries data")
     with h5py.File(raw_params['suite_2p'], "r") as suite2p:
-        data = list(suite2p.keys())[0][()]
+        data =suite2p['data']
+        print(data[0])
+        print(data[1])
+        print(data[2])
         wrapped_data = H5DataIO(
             data = data,
             compression = 'gzip',
@@ -29,9 +32,8 @@ def process_suit2p(raw_params):
         ts = TimeSeries(
             name = 'raw_data',
             data = wrapped_data,
-            unit = 'SIunit',
-            starting_time = raw_params['time']
+            unit = 'SIunit'        ,
+            rate = 10.71
         )
-        
-        input_nwb.add_aquisiton(ts)
+        input_nwb.add_acquisition(ts)
         io.write(input_nwb)
