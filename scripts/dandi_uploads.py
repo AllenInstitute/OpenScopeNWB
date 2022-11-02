@@ -1,5 +1,6 @@
 from  dandi.dandiapi import DandiAPIClient as dandi
 from  dandi.files import LocalAsset as dandi_file
+from dandi import validate as validate
 import argparse
 import os 
 import json
@@ -28,6 +29,7 @@ if __name__ == "__main__":
     parser.add_argument('--raw', type=bool)
     args = parser.parse_args()
     set_env()
+    validate.validate(args.dandi_file)
     dandi_set = dandi()
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)

@@ -108,7 +108,7 @@ for project in o_proj_list:
     for session in conversion_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
-            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + experiment + " -r " + False
+            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + str(experiment) + " -r " + False
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Conversion Running")
