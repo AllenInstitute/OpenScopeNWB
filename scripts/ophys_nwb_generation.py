@@ -137,16 +137,17 @@ if __name__ == "__main__":
     raw_params = {
         'nwb_path': file_path,
         'suite_2p': motion_path,
-        'time': r"2022-06-29-T00:000-07:00"
+        'time': r"2022-06-29-T00:000-07:00",
+        'plane': str(experiment_id)
     }
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag:
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
-        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + experiment_id + " --raw " + True + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + val
+        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(True) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
     else: 
-        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + experiment_id + " --raw " + False + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + val
+        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(False) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))

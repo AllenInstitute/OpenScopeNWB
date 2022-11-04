@@ -347,7 +347,7 @@ def view_project(project_id):
 
 
 def get_experiments(project_id, session_id):
-    ref = db.reference('/Sessions/' + project_id / session_id / 'experiments')
+    ref = db.reference('/Sessions/' + project_id +'/' + session_id + '/experiments')
     experiments = ref.get()
     exp_list = []
     for experiment in experiments:
@@ -399,6 +399,54 @@ def update_ephys_statuses(projectID):
             update_session_status(projectID, session, "Converting")
     for session, value in sessions.items():
         if value['status']['status'] == "Converting" and value['type'] == "Ecephys":
+            session_list.append(session)
+    return session_list
+
+def update_ophys_statuses(projectID):
+    """Updates all initalized statuses to converting 
+
+    Parameters
+    ----------
+    projectID: str
+    The project's ID value
+    Returns
+    -------
+    session_list: list
+    A list of the sessions that need to be converted
+    """
+    ref = db.reference('/Sessions/' + projectID)
+    sessions = ref.get()
+    session_list = []
+    for session, value in sessions.items():
+        if value['status']['status'] == "Initialized" and value['type'] == "Ophys":
+            update_session_status(projectID, session, "Converting")
+    for session, value in sessions.items():
+        if value['status']['status'] == "Converting" and value['type'] == "Ophys":
+            session_list.append(session)
+    return session_list
+
+
+
+def update_ophys_RAW_statuses(projectID):
+    """Updates all initalized statuses to converting 
+
+    Parameters
+    ----------
+    projectID: str
+    The project's ID value
+    Returns
+    -------
+    session_list: list
+    A list of the sessions that need to be converted
+    """
+    ref = db.reference('/Sessions/' + projectID)
+    sessions = ref.get()
+    session_list = []
+    for session, value in sessions.items():
+        if value['status']['status'] == "RAW_Initialized" and value['type'] == "Ophys":
+            update_session_status(projectID, session, "RAW_Converting")
+    for session, value in sessions.items():
+        if value['status']['status'] == "RAW_Converting" and value['type'] == "Ophys":
             session_list.append(session)
     return session_list
 

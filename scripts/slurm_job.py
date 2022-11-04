@@ -61,9 +61,9 @@ def generate_ephys_nwb(session_id, project):
         cpus_per_task=12,
         job_name='openscope_test',
         dependency=dict(after=65541, afterok=34987),
-        mem='48gb',
+        mem='128gb',
         partition = 'braintv',
-        time = "01:50:00",
+        time = "06:00:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
@@ -77,7 +77,7 @@ def generate_ephys_nwb(session_id, project):
                 ' --project {}'.format(project))
 
 
-def generate_ophys_nwb(session_id, experiment_id):
+def generate_ophys_nwb(session_id, experiment_id, raw, val):
     conda_environment = 'ophys_nwb'
 
     python_path = os.path.join(
@@ -111,4 +111,6 @@ def generate_ophys_nwb(session_id, experiment_id):
                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                 r'scripts/ophys_nwb_generation.py'
                 ' --session_id {}'.format(session_id) +
-                ' --experiment_id {}'.format(experiment_id))
+                ' --experiment_id {}'.format(experiment_id) +
+                ' --raw {}'.format(raw) +
+                ' --val {}'.format(val))

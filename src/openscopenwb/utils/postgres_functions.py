@@ -527,6 +527,31 @@ def get_o_sess_info(session_id):
 
 
 
+def get_e_sess_sync(session_id):
+    QRY = f"""
+    SELECT wkf.storage_directory || wkf.filename AS sync_file
+    FROM ecephys_sessions es
+    JOIN well_known_files wkf ON wkf.attachable_id = es.id
+    JOIN well_known_file_types wkft
+    ON wkft.id = wkf.well_known_file_type_id
+    AND wkft.name = 'EcephysRigSync'
+    AND es.id = {session_id}
+    """
+
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = QRY.format(session_id)
+    cur.execute(lims_query)
+
+
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list[0][0]   
+
+
+
 def get_o_sess_sync(session_id):
     QRY = f"""
         SELECT wkf.storage_directory || wkf.filename AS sync_file

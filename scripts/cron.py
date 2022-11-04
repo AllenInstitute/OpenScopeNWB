@@ -108,18 +108,22 @@ for project in o_proj_list:
     for session in conversion_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
-            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + str(experiment) + " -r " + False
+            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + str(experiment) + ' -v ' + str(proj_dandi_value)
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Conversion Running")
-    raw_conversion_list = fb.update_ophys_RAW_statuses
+    raw_conversion_list = fb.update_ophys_RAW_statuses(project)
+    print("List of RAW Sessions to convert: ")
+    print(raw_conversion_list)
     for session in raw_conversion_list:
+        print(session)
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
-            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + experiment - " -r " + True + ' -v ' + proj_dandi_value
+            cmd = dir + '/bash/raw_ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + str(experiment) + ' -v ' + str(proj_dandi_value)
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Raw Conversion Running")
+
 # 1193163594
 #exp_list = postgres.get_sess_experiments('1212553658')
 #for experiment in exp_list:

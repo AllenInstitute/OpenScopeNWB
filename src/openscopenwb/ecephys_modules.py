@@ -501,12 +501,12 @@ def ecephys_write_nwb(module_params):
     module_params['ellipse_path'] = elipse_path
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
-        numbers = re.findall(r'\d+', structure_acronym)
+        #numbers = re.findall(r'\d+', structure_acronym)
         logging.debug(channel_row)
 
 
-        if (len(numbers) > 0):
-            structure_acronym = structure_acronym.split(numbers[0])[0]
+        #if (len(numbers) > 0):
+        #    structure_acronym = structure_acronym.split(numbers[0])[0]
 
         channel_dict = {
             'id': idx + probe_id * 1000,
@@ -1092,7 +1092,10 @@ def ecephys_lfp_subsampling(module_params):
         module_params['lfp_list'].append(input_json_write_dict)
         input_json_write_dict = \
             {
-                'lfp_subsampling': {'temporal_subsampling_factor': 2},
+                'lfp_subsampling': {
+                    'temporal_subsampling_factor': 2,
+                    'channel_stride': 1,
+                    'start_channel_offset': 0},
                 "probes": module_params['lfp_list'],
             }
         return module_params, input_json_write_dict

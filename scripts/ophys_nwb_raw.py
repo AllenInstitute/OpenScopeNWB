@@ -8,6 +8,7 @@ import pynwb
 import h5py
 from pynwb import NWBFile
 from pynwb.file import TimeSeries 
+from pynwb.ophys import TwoPhotonSeries
 from pynwb import NWBHDF5IO
 from hdmf.backends.hdf5.h5_utils import H5DataIO
 
@@ -29,11 +30,18 @@ def process_suit2p(raw_params):
         nwb_file = raw_params['nwb_path']
         io = NWBHDF5IO(nwb_file, "r+", load_namespaces=True)
         input_nwb = io.read()
-        ts = TimeSeries(
-            name = 'raw_data',
+        ts = TwoPhotonSeries(
+            name = 'raw_suite2p_motion_corrected',
+            imaging_plane = raw_params['plane'],
             data = wrapped_data,
-            unit = 'SIunit'        ,
+            unit = 'SIunit',
             rate = 10.71
         )
+#        ts = TimeSeries(
+#            name = 'raw_suite2p_motion_corrected',
+#            data = wrapped_data,
+#            unit = 'SIunit'        ,
+#            rate = 10.71
+#        )
         input_nwb.add_acquisition(ts)
         io.write(input_nwb)
