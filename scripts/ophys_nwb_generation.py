@@ -147,7 +147,9 @@ if __name__ == "__main__":
         cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(True) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
+        os.remove(file_path)
     else: 
         cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(False) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
+
