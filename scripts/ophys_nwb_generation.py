@@ -34,7 +34,7 @@ logging.basicConfig(filename="std.log",
                     format='%(asctime)s %(message)s',
                     level=logging.DEBUG,
                     filemode='a')
-# dir = os.path.dirname(__file__)
+dir = os.path.dirname(__file__)
 # project_parameter_json = os.path.join(dir, "project_json",
 #                                      "test_ophys_project_parameter_json.json")
 
@@ -85,7 +85,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
             species = 'Mus musculus',
             sex = subject['sex'],
             genotype = subject['full_genotype'],
-            description = 'Dendrite'
+            description = str(subject_info['id'])
         )
         nwbfile.write(input_nwb)
 
@@ -102,6 +102,7 @@ if __name__ == "__main__":
     experiment_id = args.experiment_id
     experiment_id = int(experiment_id)
     raw_flag = args.raw
+    print(raw_flag)
     val = args.val
     json_in = generate_ophys_json(experiment_id)
     input_json =  r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_in.json"
@@ -115,7 +116,10 @@ if __name__ == "__main__":
     )
     subprocess.check_call(command_string)
     file_path = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb'
-    file_path =  file_path + '/' + str(experiment_id) + 'raw_data.nwb'
+    if raw_flag: 
+        file_path =  file_path + '/' + str(experiment_id) + 'raw_data.nwb'
+    else:
+        file_path =  file_path + '/' + str(experiment_id) + '.nwb'
     gen_ophys(experiment_id, file_path)
     json_in = json.loads(json_in)
     main_dir = postgres.get_o_sess_directory(session_id)
@@ -137,19 +141,21 @@ if __name__ == "__main__":
     raw_params = {
         'nwb_path': file_path,
         'suite_2p': motion_path,
-        'time': r"2022-06-29-T00:000-07:00",
+        'time': postgres.get_o_sess_info(session_id)['date'],
         'plane': str(experiment_id)
     }
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag:
         print("Processing Raw")
-        raw_nwb.process_suit2p(raw_params)
-        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(True) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
+        # raw_nwb.process_suit2p(raw_params)
+        cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
+        print("dandi cmd")
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
-        os.remove(file_path)
+        print('upload done')
+        #os.remove(file_path)
     else: 
-        cmd = dir + 'dandi_upload.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(False) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
+        cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(False) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
 

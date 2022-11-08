@@ -2,6 +2,8 @@
 from  dandi.dandiapi import DandiAPIClient as dandi
 from  dandi.files import LocalAsset as dandi_file
 from dandi import validate as validate
+from glob import glob
+from os.path import join 
 import argparse
 import os 
 import json
@@ -21,29 +23,29 @@ def set_env():
 
 
 if __name__ == "__main__":
-    print("Uploading")
     parser = argparse.ArgumentParser()
     parser.add_argument('--dandi_url', type=str)
     parser.add_argument('--dandi_file', type=str)
     parser.add_argument('--dandi_val', type=str)
     parser.add_argument('--sess_id', type=str)
-    parser.add_argument('--exp_id', type=str)
-    parser.add_argument('--raw', type=bool)
     args = parser.parse_args()
     set_env()
     validate.validate(args.dandi_file)
     dandi_set = dandi()
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
-    raw = args.raw
 
 
     #TODO: Implement a flag check for if file exists and then use replace if it does 
-    if raw:
-        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_raw.nwb', "dandiset": str(dandi_dataset)} )
-    else:
-        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_nwb', "dandiset": str(dandi_dataset)} )
-    print("STATUS")
+    status_probes = []
+    status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.sess_id + '.nwb', "dandiset": str(dandi_dataset)} )
+    dir = os.path.dirname(args.dandi_file)
+    probes = ["probeA", 'probeB', 'probeC', 'probeD', 'probeE', 'probeF']
+    for i in glob(join(dir, "*" + 'probe' + "*.nwb")):
+        for probe in probes:
+            if probe in i:
+                print(i, probe)
+                status_probes.append(dandi_dataset.iter_upload_raw_asset(i, asset_metadata = {'path': args.sess_id  + '/' + probe + '.nwb', "dandiset": str(dandi_dataset)} ))
     print(list(status))
-    #file = dandi_file(args.dandi_file, args.dandi_file)
-    #file.upload(dandiset = dandi_set.get_dandiset(args.dandi_val), metadata = {})
+    for i in status_probes:
+        print(list(i))
