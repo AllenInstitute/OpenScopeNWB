@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     #TODO: Implement a flag check for if file exists and then use replace if it does 
     if raw:
-        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_raw.nwb', "dandiset": str(dandi_dataset)} )
+        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.sess_id + '/' + args.exp_id  + '_raw.nwb', "dandiset": str(dandi_dataset)} )
     else:
         status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_nwb', "dandiset": str(dandi_dataset)} )
     print("STATUS")

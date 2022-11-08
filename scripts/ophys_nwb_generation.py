@@ -155,7 +155,7 @@ if __name__ == "__main__":
         print('upload done')
         #os.remove(file_path)
     else: 
-        cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + str(False) + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
+        cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
 

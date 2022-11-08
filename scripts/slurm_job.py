@@ -105,8 +105,18 @@ def generate_ophys_nwb(session_id, experiment_id, raw, val):
     )
     dir = os.path.dirname(__file__)
     print(dir)
-
-    slurm.sbatch(python_path+
+    print(raw)
+    if raw is False:
+        slurm.sbatch(python_path+
+                r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
+                r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
+                r'scripts/ophys_nwb_generation.py'
+                ' --session_id {}'.format(session_id) +
+                ' --experiment_id {}'.format(experiment_id) +
+                ' --raw ""' +
+                ' --val {}'.format(val))
+    else: 
+        slurm.sbatch(python_path+
                 r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                 r'scripts/ophys_nwb_generation.py'
