@@ -3,6 +3,8 @@ from time import time
 import warnings
 import logging
 import sys
+import inspect 
+print(os.path.dirname(inspect.getfile(inspect))+"/site-packages") 
 
 # from openscopenwb.utils import parse_ophys_project_parameters as popp
 # from allensdk.brain_observatory.behavior.ophys_experiment import \
@@ -106,17 +108,7 @@ def generate_ophys_nwb(session_id, experiment_id, raw, val):
     dir = os.path.dirname(__file__)
     print(dir)
     print(raw)
-    if raw is False:
-        slurm.sbatch(python_path+
-                r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
-                r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                r'scripts/ophys_nwb_generation.py'
-                ' --session_id {}'.format(session_id) +
-                ' --experiment_id {}'.format(experiment_id) +
-                ' --raw ""' +
-                ' --val {}'.format(val))
-    else: 
-        slurm.sbatch(python_path+
+    slurm.sbatch(python_path+
                 r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                 r'scripts/ophys_nwb_generation.py'
@@ -124,3 +116,42 @@ def generate_ophys_nwb(session_id, experiment_id, raw, val):
                 ' --experiment_id {}'.format(experiment_id) +
                 ' --raw {}'.format(raw) +
                 ' --val {}'.format(val))
+
+def dandi_ophys_upload(file, session_id, experiment_id, raw, val):
+    conda_environment = 'openscopenwb'
+
+    python_path = os.path.join(
+        '/allen',
+        'programs',
+        'mindscope',
+        'workgroups',
+        'openscope',
+        'ahad',
+        'Conda_env',
+        conda_environment,
+        'bin',
+        'python'
+    )
+
+    slurm = Slurm(
+        array=range(3, 4),
+        cpus_per_task=12,
+        job_name='openscope_test',
+        dependency=dict(after=65541, afterok=34987),
+        mem='128gb',
+        partition = 'braintv',
+        time = "01:50:00",
+        output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
+    )
+    dir = os.path.dirname(__file__)
+    print(dir)
+    print(raw)
+    slurm.sbatch(python_path+
+                r' /allen/programs/mindscope/workgroups/openscope/ahad/'+
+                r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
+                r'scripts/dandi_uploads.py'
+                ' --sess_id {}'.format(session_id) +
+                ' --dandi_file {}'.format(file) +
+                ' --exp_id {}'.format(experiment_id) +
+                ' --raw {}'.format(raw) +
+                ' --dandi_val {}'.format(val))

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+import dandi
 from  dandi.dandiapi import DandiAPIClient as dandi
-from  dandi.files import LocalAsset as dandi_file
 from dandi import validate as validate
 import argparse
 import os 
@@ -28,18 +28,18 @@ if __name__ == "__main__":
     parser.add_argument('--dandi_val', type=str)
     parser.add_argument('--sess_id', type=str)
     parser.add_argument('--exp_id', type=str)
-    parser.add_argument('--raw', type=bool)
+    parser.add_argument('--raw', type=str)
     args = parser.parse_args()
     set_env()
     validate.validate(args.dandi_file)
     dandi_set = dandi()
     dandi_set.dandi_authenticate()
-    dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
+    dandi_dataset = dandi_set.get_dandiset('000' + args.dandi_val)
     raw = args.raw
 
 
     #TODO: Implement a flag check for if file exists and then use replace if it does 
-    if raw:
+    if raw == 'True':
         status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.sess_id + '/' + args.exp_id  + '_raw.nwb', "dandiset": str(dandi_dataset)} )
     else:
         status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '_nwb', "dandiset": str(dandi_dataset)} )

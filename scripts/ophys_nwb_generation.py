@@ -8,6 +8,7 @@ import subprocess
 import json
 import subprocess
 import shlex
+import slurm_job
 
 from datetime import datetime
 from os.path import join
@@ -95,7 +96,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
-    parser.add_argument('--raw', type= bool)
+    parser.add_argument('--raw', type= str)
     parser.add_argument('--val', type=int)
     args = parser.parse_args()
     session_id = args.session_id
@@ -145,17 +146,20 @@ if __name__ == "__main__":
         'plane': str(experiment_id)
     }
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
-    if raw_flag:
+    if raw_flag is "True":
         print("Processing Raw")
         # raw_nwb.process_suit2p(raw_params)
-        cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
+        #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print("dandi cmd")
-        print(shlex.split(cmd))
-        subprocess.call(shlex.split(cmd))
+        #print(shlex.split(cmd))
+        #subprocess.call(shlex.split(cmd))
         print('upload done')
+        slurm_job.dandi_ophys_upload(file_path, session_id, experiment_id, 'True', val)
         #os.remove(file_path)
     else: 
-        cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
-        print(shlex.split(cmd))
-        subprocess.call(shlex.split(cmd))
+        print("Processing without RAW")
+        slurm_job.dandi_ophys_upload(file_path, session_id, experiment_id, 'False', val)
+        #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
+        #print(shlex.split(cmd))
+        #subprocess.call(shlex.split(cmd))
 
