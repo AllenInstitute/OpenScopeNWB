@@ -146,9 +146,9 @@ if __name__ == "__main__":
         'plane': str(experiment_id)
     }
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
-    if raw_flag is "True":
+    if raw_flag == "True":
         print("Processing Raw")
-        # raw_nwb.process_suit2p(raw_params)
+        raw_nwb.process_suit2p(raw_params)
         #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print("dandi cmd")
         #print(shlex.split(cmd))

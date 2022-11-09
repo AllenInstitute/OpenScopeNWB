@@ -32,8 +32,9 @@ def process_suit2p(raw_params):
         input_nwb = io.read()
         ts = TwoPhotonSeries(
             name = 'raw_suite2p_motion_corrected',
-            imaging_plane = raw_params['plane'],
+            imaging_plane = input_nwb.processing['ophys']['image_segmentation']['cell_specimen_table'].imaging_plane,
             data = wrapped_data,
+            format = 'raw',
             unit = 'SIunit',
             rate = 10.71
         )
