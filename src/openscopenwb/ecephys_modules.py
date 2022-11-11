@@ -86,22 +86,22 @@ def ecephys_gaze_mapping(module_params):
     """
     try:
         elipse_path = glob(join(module_params['base_directory'], 'eye_tracking',
-                                     '*_ellipse.h5'))[0]
+                                '*_ellipse.h5'))[0]
     except IndexError:
-        elipse_path = glob(join(module_params['base_directory'], 
-                                     '**', 'eye_tracking','*_ellipse.h5'))[0] 
+        elipse_path = glob(join(module_params['base_directory'],
+                                '**', 'eye_tracking', '*_ellipse.h5'))[0]
     try:
         platform_path = glob(join(module_params['base_directory'], '*',
-                                     '*_platformD1.json'))[0]
+                                  '*_platformD1.json'))[0]
     except IndexError:
         platform_path = glob(join(module_params['base_directory'], '**',
-                                     '*_platformD1.json'))[0]
+                                  '*_platformD1.json'))[0]
     try:
         eye_path = glob(join(module_params['base_directory'], '*',
-                                     '*.eye.mp4'))[0]
+                             '*.eye.mp4'))[0]
     except IndexError:
         eye_path = glob(join(module_params['base_directory'], '**',
-                                     '*.eye.mp4'))[0]
+                             '*.eye.mp4'))[0]
     param_file = open(platform_path)
     platform_dict = json.load(param_file)
     param_file.close()
@@ -112,31 +112,30 @@ def ecephys_gaze_mapping(module_params):
     date = platform_dict['ProbeInsertionCompleteTime']
 
     input_json_write_dict = \
-    {
-        'session_sync_file': module_params['sync_path'],
-        'input_file': elipse_path,
-        'output_file': module_params['output_path'] + 'gaze.h5',
-        'monitor_position_x_mm': monitor_info['center_x_mm'],
-        'monitor_position_y_mm': monitor_info['center_y_mm'],
-        'monitor_position_z_mm': monitor_info['center_z_mm'],
-        'monitor_rotation_x_deg': monitor_info['rotation_x_deg'],
-        'monitor_rotation_y_deg': monitor_info['rotation_y_deg'],
-        'monitor_rotation_z_deg': monitor_info['rotation_z_deg'],
-        'camera_rotation_x_deg': eye_info['rotation_x_deg'],
-        'camera_rotation_y_deg': eye_info['rotation_y_deg'],
-        'camera_rotation_z_deg': eye_info['rotation_z_deg'],
-        'camera_position_x_mm': eye_info['center_x_mm'],
-        'camera_position_y_mm': eye_info['center_y_mm'],
-        'camera_position_z_mm': eye_info['center_z_mm'],
-        'led_position_x_mm': led_info['center_x_mm'],
-        'led_position_y_mm': led_info['center_y_mm'],
-        'led_position_z_mm': led_info['center_z_mm'],
-        'equipment': equipment,
-        'date_of_acquisition': date,
-        'eye_video_file': eye_path
-    }
+        {
+            'session_sync_file': module_params['sync_path'],
+            'input_file': elipse_path,
+            'output_file': module_params['output_path'] + 'gaze.h5',
+            'monitor_position_x_mm': monitor_info['center_x_mm'],
+            'monitor_position_y_mm': monitor_info['center_y_mm'],
+            'monitor_position_z_mm': monitor_info['center_z_mm'],
+            'monitor_rotation_x_deg': monitor_info['rotation_x_deg'],
+            'monitor_rotation_y_deg': monitor_info['rotation_y_deg'],
+            'monitor_rotation_z_deg': monitor_info['rotation_z_deg'],
+            'camera_rotation_x_deg': eye_info['rotation_x_deg'],
+            'camera_rotation_y_deg': eye_info['rotation_y_deg'],
+            'camera_rotation_z_deg': eye_info['rotation_z_deg'],
+            'camera_position_x_mm': eye_info['center_x_mm'],
+            'camera_position_y_mm': eye_info['center_y_mm'],
+            'camera_position_z_mm': eye_info['center_z_mm'],
+            'led_position_x_mm': led_info['center_x_mm'],
+            'led_position_y_mm': led_info['center_y_mm'],
+            'led_position_z_mm': led_info['center_z_mm'],
+            'equipment': equipment,
+            'date_of_acquisition': date,
+            'eye_video_file': eye_path
+        }
     return module_params, input_json_write_dict
-
 
 
 def ecephys_align_timestamps(module_params):
@@ -174,12 +173,12 @@ def ecephys_align_timestamps(module_params):
         file_in_base_folder = True
 
     alt_probe_directory = glob(join(module_params['base_directory'],
-                                    "**", '*'+ probe_idx,
+                                    "**", '*' + probe_idx,
                                     'continuous',
                                     'Neuropix*'))
     print(alt_probe_directory)
     test_probe_directory = glob(join(module_params['base_directory'],
-                                    "**", '*'+ probe_idx))
+                                     "**", '*' + probe_idx))
     print(test_probe_directory)
     if alt_probe_directory != []:
         alt_probe_directory = alt_probe_directory[0]
@@ -212,15 +211,15 @@ def ecephys_align_timestamps(module_params):
             print(alt_probe_directory)
             print(glob(join(alt_probe_directory, "spike_times.npy")))
             np.load(glob(join(module_params['base_directory'],
-                                    "**", '*'+ probe_idx,
+                              "**", '*' + probe_idx,
                                     'continuous',
                                     'Neuropix*',
                                     'spike_times.npy'))[0])
             spike_directory = glob(join(module_params['base_directory'],
-                                    "**", '*'+ probe_idx,
-                                    'continuous',
-                                    'Neuropix*',
-                                    'spike_times.npy'))[0]
+                                        "**", '*' + probe_idx,
+                                        'continuous',
+                                        'Neuropix*',
+                                        'spike_times.npy'))[0]
 #            np.load(glob(join(alt_probe_directory,
 #                    "spike_times.npy"))[0])
 #            spike_directory = glob(join(
@@ -234,8 +233,8 @@ def ecephys_align_timestamps(module_params):
                                              'Neuropix*', 'TTL*'))[0]
             except IndexError:
                 events_directory = glob(os.path.join(
-                                   base_directory, 'events', 'Neuropix*',
-                                   'TTL*'))[0]
+                    base_directory, 'events', 'Neuropix*',
+                    'TTL*'))[0]
             print(events_directory)
             file_found = True
             file_in_parent_folder = True
@@ -251,7 +250,7 @@ def ecephys_align_timestamps(module_params):
             file_found = False
             file_in_parent_folder = False
 
-    if(queue_directory != []) and not file_in_parent_folder:
+    if (queue_directory != []) and not file_in_parent_folder:
         try:
             np.load(join(queue_directory, 'spike_times.npy'))
             alt_spike_directory = glob(join(queue_directory,
@@ -264,15 +263,15 @@ def ecephys_align_timestamps(module_params):
             file_found = False
             file_in_queue_folder = False
 
-    if(file_in_probe_folder):
+    if (file_in_probe_folder):
         timestamp_files.append({
             'name': 'spike_timestamps',
-            'input_path': join(probe_directory,     'spike_times.npy'),
+            'input_path': join(probe_directory, 'spike_times.npy'),
             'output_path': join(output_directory, probe_idx,
                                 'spike_times_master_clock.npy')
         })
 
-    elif(file_in_parent_folder):
+    elif (file_in_parent_folder):
         timestamp_files.append({
             'name': 'spike_timestamps',
             'input_path': spike_directory,
@@ -280,7 +279,7 @@ def ecephys_align_timestamps(module_params):
                                 'spike_times_master_clock.npy')
         })
 
-    elif(file_in_queue_folder):
+    elif (file_in_queue_folder):
         timestamp_files.append({
             'name': 'spike_timestamps',
             'input_path': alt_spike_directory,
@@ -289,19 +288,19 @@ def ecephys_align_timestamps(module_params):
         })
     try:
         lfp_directory = glob(join(module_params['base_directory'],
-                                           '*',
-                                           '*_' +
-                                           probe_idx,
-                                           'continuous'
-                                           "Neuropix*100.1"))[0]
+                                  '*',
+                                  '*_' +
+                                  probe_idx,
+                                  'continuous'
+                                  "Neuropix*100.1"))[0]
     except IndexError:
-        lfp_directory = glob(join(module_params['base_directory'], 
-                                           "**",
-                                           "*_" +
-                                           probe_idx,
-                                           'continuous',
-                                           '**'
-                                           "Neuropix*100.1"))[0]
+        lfp_directory = glob(join(module_params['base_directory'],
+                                  "**",
+                                  "*_" +
+                                  probe_idx,
+                                  'continuous',
+                                  '**'
+                                  "Neuropix*100.1"))[0]
 
     timestamp_files.append({
         'name': 'lfp_timestamps',
@@ -309,7 +308,7 @@ def ecephys_align_timestamps(module_params):
         'output_path': join(module_params['output_path'], probe_idx + '_lfp_timestamps.npy')
     })
     print("File was found: " + str(file_found))
-    if(file_found):
+    if (file_found):
         probe_dict = {
             'name': probe_idx,
             'sampling_rate': 30000.,
@@ -329,14 +328,14 @@ def ecephys_align_timestamps(module_params):
         else:
             print(module_params['base_directory'])
             print(glob(join(
-                    module_params['base_directory'], '**',
-                    '*.sync')))
+                module_params['base_directory'], '**',
+                '*.sync')))
             print(glob(join(
-                    module_params['base_directory'], '*',
-                    '*.sync')))
+                module_params['base_directory'], '*',
+                '*.sync')))
             print(glob(join(
-                    module_params['base_directory'],
-                    '*.sync')))
+                module_params['base_directory'],
+                '*.sync')))
 
             try:
                 sync_path = glob(join(
@@ -376,7 +375,7 @@ def ecephys_write_nwb(module_params):
     probe_id = module_params['probes'].index(probe_idx)
     probe_directory = ''
     base_directory = glob(os.path.join(
-            module_params['base_directory'], '*' + probe_idx + '*_sorted'))
+        module_params['base_directory'], '*' + probe_idx + '*_sorted'))
     if base_directory != []:
         base_directory = base_directory[0]
         probe_directory = glob(os.path.join(base_directory,
@@ -431,8 +430,8 @@ def ecephys_write_nwb(module_params):
     if search_queue:
         if base_directory == []:
             base_directory = glob(os.path.join(
-                            module_params['base_directory'], '*', '*' +
-                            probe_idx + '*_sorted'))
+                module_params['base_directory'], '*', '*' +
+                probe_idx + '*_sorted'))
         if base_directory != []:
             base_directory = base_directory[0]
         if base_directory == []:
@@ -440,8 +439,8 @@ def ecephys_write_nwb(module_params):
             skip_queue = True
         if not skip_queue:
             queue_neuropix = glob(os.path.join(
-                              base_directory, 'EUR_QUEUE*',
-                              'continuous', 'Neuropix*',
+                base_directory, 'EUR_QUEUE*',
+                'continuous', 'Neuropix*',
                               "ccf_regions.csv"))
         if queue_neuropix != []:
             try:
@@ -475,8 +474,8 @@ def ecephys_write_nwb(module_params):
                                  'spike_times_master_clock.npy')
     elif channel_in_queue:
         probe_directory = glob(os.path.join(
-                              base_directory, 'EUR_QUEUE*',
-                              'continuous', 'Neuropix*'))[0]
+            base_directory, 'EUR_QUEUE*',
+            'continuous', 'Neuropix*'))[0]
         region = 'structure_acronym'
         channels = []
         master_clock_path = join(output_directory, probe_idx,
@@ -484,28 +483,27 @@ def ecephys_write_nwb(module_params):
 
     elif need_placeholder:
         probe_directory = glob(os.path.join(
-                           module_params['base_directory'], "**", "*" +
-                           probe_idx, 'continuous',
-                           'Neuropix*',
-                          ))[0]
+            module_params['base_directory'], "**", "*" +
+            probe_idx, 'continuous',
+            'Neuropix*',
+        ))[0]
         region = 'region'
         channels = []
         master_clock_path = join(output_directory, probe_idx,
                                  'spike_times_master_clock.npy')
     try:
         elipse_path = glob(join(module_params['base_directory'], 'eye_tracking',
-                                     '*_ellipse.h5'))[0]
+                                '*_ellipse.h5'))[0]
     except IndexError:
-        elipse_path = glob(join(module_params['base_directory'], 
-                                     '**', 'eye_tracking','*_ellipse.h5'))[0] 
+        elipse_path = glob(join(module_params['base_directory'],
+                                '**', 'eye_tracking', '*_ellipse.h5'))[0]
     module_params['ellipse_path'] = elipse_path
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
         #numbers = re.findall(r'\d+', structure_acronym)
         logging.debug(channel_row)
 
-
-        #if (len(numbers) > 0):
+        # if (len(numbers) > 0):
         #    structure_acronym = structure_acronym.split(numbers[0])[0]
 
         channel_dict = {
@@ -518,27 +516,27 @@ def ecephys_write_nwb(module_params):
             'manual_structure_id': channel_row['structure_id'],
             'manual_structure_acronym': structure_acronym,
             'anterior_posterior_ccf_coordinate': channel_row['A/P'] * 1000,
-            'dorsal_ventral_ccf_coordinate': channel_row['D/V'] * 1000 ,
+            'dorsal_ventral_ccf_coordinate': channel_row['D/V'] * 1000,
             'left_right_ccf_coordinate': channel_row['M/L'] * 1000
         }
         channels.append(channel_dict)
     metrics = glob(join(module_params['base_directory'],
-                                    "**/*", 
-                                    'metrics.csv'), recursive=True)
+                        "**/*",
+                        'metrics.csv'), recursive=True)
     for probe in metrics:
         if probe_idx in probe:
             current_metric = probe
     print('current-metric')
     print(current_metric)
-    unit_info =   pd.read_csv(current_metric, index_col=0)
+    unit_info = pd.read_csv(current_metric, index_col=0)
 
 #    unit_info = pd.read_csv(join(probe_directory,
 #                                 'metrics.csv'),
 #                            index_col=0)
 
     quality_check = glob(join(module_params['base_directory'],
-                                    "**", 
-                                    'cluster_group.tsv'), recursive=True)
+                              "**",
+                              'cluster_group.tsv'), recursive=True)
     tmp_index = 0
     if quality_check != []:
         for index, quality in enumerate(quality_info):
@@ -550,13 +548,12 @@ def ecephys_write_nwb(module_params):
     else:
         quality_info = []
     spike_clusters = glob(join(module_params['base_directory'],
-                                    "**", 
-                                    'spike_clusters.npy'), recursive=True)
+                               "**",
+                               'spike_clusters.npy'), recursive=True)
     for index, cluster in enumerate(spike_clusters):
         if probe_idx in cluster:
             tmp_index = index
     spike_clusters = np.load(spike_clusters[tmp_index])
-
 
     units = []
     spike_times_index = 0
@@ -644,48 +641,48 @@ def ecephys_write_nwb(module_params):
                 'cluster_id': unit_row['cluster_id'],
                 'quality': unit_row['quality'],
                 'firing_rate': cuf.clean_up_nan_and_inf(
-                                unit_row['firing_rate']),
+                    unit_row['firing_rate']),
                 'snr': cuf.clean_up_nan_and_inf(unit_row['snr']),
                 'isi_violations': cuf.clean_up_nan_and_inf(
-                                    unit_row['isi_viol']),
+                    unit_row['isi_viol']),
                 'presence_ratio': cuf.clean_up_nan_and_inf(
-                                    unit_row['presence_ratio']),
+                    unit_row['presence_ratio']),
                 'amplitude_cutoff': cuf.clean_up_nan_and_inf(
-                                    unit_row['amplitude_cutoff']),
+                    unit_row['amplitude_cutoff']),
                 'isolation_distance': cuf.clean_up_nan_and_inf(
-                                        unit_row['isolation_distance']),
+                    unit_row['isolation_distance']),
                 'l_ratio': cuf.clean_up_nan_and_inf(
-                            unit_row['l_ratio']),
+                    unit_row['l_ratio']),
                 'd_prime': cuf.clean_up_nan_and_inf(
-                            unit_row['d_prime']),
+                    unit_row['d_prime']),
                 'nn_hit_rate': cuf.clean_up_nan_and_inf(
-                                unit_row['nn_hit_rate']),
+                    unit_row['nn_hit_rate']),
                 'nn_miss_rate': cuf.clean_up_nan_and_inf(
-                                unit_row['nn_miss_rate']),
+                    unit_row['nn_miss_rate']),
                 'max_drift': cuf.clean_up_nan_and_inf(
-                                unit_row['max_drift']),
+                    unit_row['max_drift']),
                 'cumulative_drift': cuf.clean_up_nan_and_inf(
-                                    unit_row['cumulative_drift']),
+                    unit_row['cumulative_drift']),
                 'silhouette_score': cuf.clean_up_nan_and_inf(
-                                    unit_row['silhouette_score']),
+                    unit_row['silhouette_score']),
                 'waveform_duration': cuf.clean_up_nan_and_inf(
-                                        unit_row['duration']),
+                    unit_row['duration']),
                 'waveform_halfwidth': cuf.clean_up_nan_and_inf(
-                                        unit_row['halfwidth']),
+                    unit_row['halfwidth']),
                 'PT_ratio': cuf.clean_up_nan_and_inf(
-                                unit_row['PT_ratio']),
+                    unit_row['PT_ratio']),
                 'repolarization_slope': cuf.clean_up_nan_and_inf(
-                                        unit_row['repolarization_slope']),
+                    unit_row['repolarization_slope']),
                 'recovery_slope': cuf.clean_up_nan_and_inf(
-                                    unit_row['recovery_slope']),
+                    unit_row['recovery_slope']),
                 'amplitude': cuf.clean_up_nan_and_inf(
-                                unit_row['amplitude']),
+                    unit_row['amplitude']),
                 'spread': cuf.clean_up_nan_and_inf(
-                            unit_row['spread']),
+                    unit_row['spread']),
                 'velocity_above': cuf.clean_up_nan_and_inf(
-                                    unit_row['velocity_above']),
+                    unit_row['velocity_above']),
                 'velocity_below': cuf.clean_up_nan_and_inf(
-                                    unit_row['velocity_below'])
+                    unit_row['velocity_below'])
             }
             spike_times_index += spike_count
             spike_amplitudes_index += spike_count
@@ -705,48 +702,48 @@ def ecephys_write_nwb(module_params):
                     'cluster_id': unit_row['cluster_id'],
                     'quality': unit_row['quality'],
                     'firing_rate': cuf.clean_up_nan_and_inf(
-                                    unit_row['firing_rate']),
+                        unit_row['firing_rate']),
                     'snr': cuf.clean_up_nan_and_inf(unit_row['snr']),
                     'isi_violations': cuf.clean_up_nan_and_inf(
-                                        unit_row['isi_viol']),
+                        unit_row['isi_viol']),
                     'presence_ratio': cuf.clean_up_nan_and_inf(
-                                        unit_row['presence_ratio']),
+                        unit_row['presence_ratio']),
                     'amplitude_cutoff': cuf.clean_up_nan_and_inf(
-                                        unit_row['amplitude_cutoff']),
+                        unit_row['amplitude_cutoff']),
                     'isolation_distance': cuf.clean_up_nan_and_inf(
-                                            unit_row['isolation_distance']),
+                        unit_row['isolation_distance']),
                     'l_ratio': cuf.clean_up_nan_and_inf(
-                                unit_row['l_ratio']),
+                        unit_row['l_ratio']),
                     'd_prime': cuf.clean_up_nan_and_inf(
-                                unit_row['d_prime']),
+                        unit_row['d_prime']),
                     'nn_hit_rate': cuf.clean_up_nan_and_inf(
-                                    unit_row['nn_hit_rate']),
+                        unit_row['nn_hit_rate']),
                     'nn_miss_rate': cuf.clean_up_nan_and_inf(
-                                    unit_row['nn_miss_rate']),
+                        unit_row['nn_miss_rate']),
                     'max_drift': cuf.clean_up_nan_and_inf(
-                                    unit_row['max_drift']),
+                        unit_row['max_drift']),
                     'cumulative_drift': cuf.clean_up_nan_and_inf(
-                                        unit_row['cumulative_drift']),
+                        unit_row['cumulative_drift']),
                     'silhouette_score': cuf.clean_up_nan_and_inf(
-                                        unit_row['silhouette_score']),
+                        unit_row['silhouette_score']),
                     'waveform_duration': cuf.clean_up_nan_and_inf(
-                                            unit_row['duration']),
+                        unit_row['duration']),
                     'waveform_halfwidth': cuf.clean_up_nan_and_inf(
-                                            unit_row['halfwidth']),
+                        unit_row['halfwidth']),
                     'PT_ratio': cuf.clean_up_nan_and_inf(
-                                    unit_row['PT_ratio']),
+                        unit_row['PT_ratio']),
                     'repolarization_slope': cuf.clean_up_nan_and_inf(
-                                            unit_row['repolarization_slope']),
+                        unit_row['repolarization_slope']),
                     'recovery_slope': cuf.clean_up_nan_and_inf(
-                                        unit_row['recovery_slope']),
+                        unit_row['recovery_slope']),
                     'amplitude': cuf.clean_up_nan_and_inf(
-                                    unit_row['amplitude']),
+                        unit_row['amplitude']),
                     'spread': cuf.clean_up_nan_and_inf(
-                                unit_row['spread']),
+                        unit_row['spread']),
                     'velocity_above': cuf.clean_up_nan_and_inf(
-                                        unit_row['velocity_above']),
+                        unit_row['velocity_above']),
                     'velocity_below': cuf.clean_up_nan_and_inf(
-                                        unit_row['velocity_below'])
+                        unit_row['velocity_below'])
                 }
                 spike_times_index += spike_count
                 spike_amplitudes_index += spike_count
@@ -756,32 +753,58 @@ def ecephys_write_nwb(module_params):
     lfp_directory = module_params['lfp_path']
     output = module_params['nwb_path'].replace('spike_times.nwb', '')
     lfp_dict = {
-        'input_data_path': join(module_params['output_path'], probe_idx+ '_lfp.dat'),
-        'input_timestamps_path': join(module_params['output_path'],  probe_idx +'_timestamps.npy'),
-        'input_channels_path': join(module_params['output_path'], probe_idx +'_channels.npy'),
+        'input_data_path': join(module_params['output_path'], probe_idx + '_lfp.dat'),
+        'input_timestamps_path': join(module_params['output_path'], probe_idx + '_timestamps.npy'),
+        'input_channels_path': join(module_params['output_path'], probe_idx + '_channels.npy'),
         'output_path': join(output, probe_idx + '_lfp.nwb')
     }
-    print(glob(join(module_params['base_directory'], '**/*', 'spike_clusters.npy'), recursive=True))
-    spike_clusters = glob(join(module_params['base_directory'], '**/*', 'spike_clusters.npy'), recursive=True)
-    spike_amplitudes = glob(join(module_params['base_directory'], '**/*', 'amplitudes.npy'), recursive=True)
-    mean_waveforms = glob(join(module_params['base_directory'], '**/*','mean_waveforms.npy'), recursive=True)
-    spike_templates =  glob(join(module_params['base_directory'], '**/*',
-                                     'spike_templates.npy'), recursive=True)
-    templates_path =  glob(join(module_params['base_directory'], '**/*','templates.npy'), recursive=True)
+    print(
+        glob(
+            join(
+                module_params['base_directory'],
+                '**/*',
+                'spike_clusters.npy'),
+            recursive=True))
+    spike_clusters = glob(
+        join(
+            module_params['base_directory'],
+            '**/*',
+            'spike_clusters.npy'),
+        recursive=True)
+    spike_amplitudes = glob(
+        join(
+            module_params['base_directory'],
+            '**/*',
+            'amplitudes.npy'),
+        recursive=True)
+    mean_waveforms = glob(
+        join(
+            module_params['base_directory'],
+            '**/*',
+            'mean_waveforms.npy'),
+        recursive=True)
+    spike_templates = glob(join(module_params['base_directory'], '**/*',
+                                'spike_templates.npy'), recursive=True)
+    templates_path = glob(
+        join(
+            module_params['base_directory'],
+            '**/*',
+            'templates.npy'),
+        recursive=True)
     inverse_whitening = glob(join(module_params['base_directory'], '**',
-                                              'whitening_mat_inv.npy'), recursive=True)
+                                  'whitening_mat_inv.npy'), recursive=True)
     spike_info = {
-        'spike_clusters': spike_clusters, 
-        'spike_amplitudes': spike_amplitudes, 
-        'mean_waveforms': mean_waveforms, 
-        'spike_templates': spike_templates, 
-        'templates_path': templates_path, 
+        'spike_clusters': spike_clusters,
+        'spike_amplitudes': spike_amplitudes,
+        'mean_waveforms': mean_waveforms,
+        'spike_templates': spike_templates,
+        'templates_path': templates_path,
         'whitening': inverse_whitening}
     for info in spike_info:
         for probe in spike_info[info]:
             if probe_idx in probe:
                 tmp = probe
-                spike_info[info] = tmp 
+                spike_info[info] = tmp
                 break
     probe_dict = {
         'id': module_params['id'],
@@ -808,7 +831,7 @@ def ecephys_write_nwb(module_params):
     session_date = fb.view_session(module_params['project'], session_id)
     session_date = session_date['date']
     session_date = datetime.strptime(session_date[:10], '%Y-%m-%d')
-    subject_dob = datetime.strptime(subject_info['dob'][:10],'%Y-%m-%d' )
+    subject_dob = datetime.strptime(subject_info['dob'][:10], '%Y-%m-%d')
     duration = session_date - subject_dob
     duration = duration.total_seconds()
     duration = divmod(duration, 86400)
@@ -832,8 +855,8 @@ def ecephys_write_nwb(module_params):
             sync_file = sync_file[0]
         else:
             sync_file = glob(
-                        join(module_params['base_directory'], "**",
-                             '*.sync'))[0]
+                join(module_params['base_directory'], "**",
+                     '*.sync'))[0]
             new_date = True
         sync_string = os.path.basename(sync_file)
         try:
@@ -864,14 +887,14 @@ def ecephys_write_nwb(module_params):
                 "output_path": module_params['nwb_path'],
                 "session_id": module_params['session_id'],
                 "session_start_time": datetime(
-                                    YYYY, MM, DD,
-                                    0, 0, 0).isoformat(),
+                    YYYY, MM, DD,
+                    0, 0, 0).isoformat(),
                 "stimulus_table_path": os.path.join(
-                                    output_directory,
-                                    'stim_table_allensdk.csv'),
+                    output_directory,
+                    'stim_table_allensdk.csv'),
                 "optotagging_table_path": os.path.join(
-                                    output_directory,
-                                    'optotagging_table.csv'),
+                    output_directory,
+                    'optotagging_table.csv'),
                 "session_metadata": subject,
                 "probes": probes,
                 "session_sync_path": sync_file,
@@ -924,13 +947,13 @@ def ecephys_optotagging_table(module_params):
                 "duration": 1.0,
                 "name": "5 hz pulse train",
                 "condition": "Each pulse is 10 ms wide"
-            }, 
+            },
             "5": {
                 "duration": 1.0,
                 "name": "40 hz pulse train",
-                "condition": "Each pulse is 6 ms wide"        
+                "condition": "Each pulse is 6 ms wide"
             }
-        } 
+        }
     elif module_params['project'] == 'OpenScopeIllusion':
         conditions = {
             "0": {
@@ -957,11 +980,11 @@ def ecephys_optotagging_table(module_params):
                 "duration": .05,
                 "name": "5 hz pulse train",
                 "condition": "Each pulse is 10 ms wide"
-            }, 
+            },
             "5": {
                 "duration": .033,
                 "name": "40 hz pulse train",
-                "condition": "Each pulse is 6 ms wide"        
+                "condition": "Each pulse is 6 ms wide"
             },
             "6": {
                 "duration": .025,
@@ -987,26 +1010,26 @@ def ecephys_optotagging_table(module_params):
                 "duration": .01,
                 "name": "100 hz pulse train",
                 "condition": "1 second of 100 Hz pulse train. Each pulse is 2 ms wide"
-            }, 
+            },
             "11": {
                 "duration": 1.0,
                 "name": "Square Pulse",
-                "condition": "1 second square pulse: continuously on for 1s"        
+                "condition": "1 second square pulse: continuously on for 1s"
             }
         }
     try:
-        opto_pickle_path = glob(join(module_params['base_directory'], 
+        opto_pickle_path = glob(join(module_params['base_directory'],
                                      '*.opto.pkl'))[0]
     except IndexError:
-        opto_pickle_path = glob(join(module_params['base_directory'], 
+        opto_pickle_path = glob(join(module_params['base_directory'],
                                      '**', '*.opto.pkl'))[0]
     try:
         sync_path = glob(join(module_params['base_directory'],
-                                      "*.sync"))[0]
+                              "*.sync"))[0]
     except IndexError:
         sync_path = glob(join(module_params['base_directory'],
-                                      "**",
-                                      "*.sync"))[0]
+                              "**",
+                              "*.sync"))[0]
     input_json_write_dict = {
         'opto_pickle_path': opto_pickle_path,
         'sync_h5_path': sync_path,
@@ -1039,36 +1062,36 @@ def ecephys_lfp_subsampling(module_params):
     print(module_params['base_directory'])
     print(probe_idx)
     print(glob(join(module_params['base_directory'],
-                                           '*',
-                                           '*_' + probe_idx)))
+                    '*',
+                    '*_' + probe_idx)))
     print(glob(join(module_params['base_directory'],
-                                           '**',
-                                           probe_idx)))
+                    '**',
+                    probe_idx)))
     try:
         lfp_directory = glob(join(module_params['base_directory'],
-                                           '*',
-                                           '*_' +
-                                           probe_idx,
-                                           'continuous'
-                                           "Neuropix*100.1"))[0]
+                                  '*',
+                                  '*_' +
+                                  probe_idx,
+                                  'continuous'
+                                  "Neuropix*100.1"))[0]
     except IndexError:
-        lfp_directory = glob(join(module_params['base_directory'], 
-                                           "**",
-                                           "*_" +
-                                           probe_idx,
-                                           'continuous',
-                                           '**'
-                                           "Neuropix*100.1"))[0]
+        lfp_directory = glob(join(module_params['base_directory'],
+                                  "**",
+                                  "*_" +
+                                  probe_idx,
+                                  'continuous',
+                                  '**'
+                                  "Neuropix*100.1"))[0]
     try:
         probe_info_file = glob(join(module_params['base_directory'],
-                                           '*'
-                                           "probe_info.json"))[0]
+                                    '*'
+                                    "probe_info.json"))[0]
     except IndexError:
-        probe_info_file= glob(join(module_params['base_directory'], 
-                                           "**",
-                                           "*_" +
-                                           probe_idx,
-                                           'probe_info.json'))[0]
+        probe_info_file = glob(join(module_params['base_directory'],
+                                    "**",
+                                    "*_" +
+                                    probe_idx,
+                                    'probe_info.json'))[0]
 
     print(probe_info_file)
     with open(probe_info_file) as probe_file:
@@ -1079,9 +1102,9 @@ def ecephys_lfp_subsampling(module_params):
         'lfp_sampling_rate': 2500.,
         'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
         'lfp_timestamps_input_path': join(output_path, probe_idx + '_lfp_timestamps.npy'),
-        'lfp_data_path': join(output_path, probe_idx+ '_lfp.dat'),
-        'lfp_timestamps_path': join(output_path, probe_idx +  '_timestamps.npy'),
-        'lfp_channel_info_path': join(output_path, probe_idx +'_channels.npy'),
+        'lfp_data_path': join(output_path, probe_idx + '_lfp.dat'),
+        'lfp_timestamps_path': join(output_path, probe_idx + '_timestamps.npy'),
+        'lfp_channel_info_path': join(output_path, probe_idx + '_channels.npy'),
         'surface_channel': probe_info['surface_channel'],
         'reference_channels': [191]
     }

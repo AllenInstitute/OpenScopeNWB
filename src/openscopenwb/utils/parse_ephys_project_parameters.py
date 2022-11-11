@@ -219,6 +219,7 @@ def get_module_types(project_dict):
             probe_modules.append(module)
     return session_modules, probe_modules
 
+
 def get_project(project_dict):
     """Gets the project associated with the session
 

@@ -13,14 +13,16 @@ def lims_subject_info(session_id):
     dob = ""
     donor_name = post_gres.get_e_sess_donor_info(session_id)[0]
     print(donor_name)
-    donor_info = requests.get('http://lims2/donors/info/details.json?external_donor_name=' + donor_name)
+    donor_info = requests.get(
+        'http://lims2/donors/info/details.json?external_donor_name=' +
+        donor_name)
     donor_json = json.loads(donor_info.text)
     genotype = donor_json[0]['full_genotype']
     if donor_json[0]['gender_id'] == 2:
         gender = "F"
     else:
         gender = "M"
-    dob = donor_json[0]['date_of_birth'] 
+    dob = donor_json[0]['date_of_birth']
     id = donor_json[0]['id']
     info = {
         'gender': gender,
@@ -29,7 +31,7 @@ def lims_subject_info(session_id):
         'name': donor_name,
         'id': id
     }
-    return info 
+    return info
 
 
 def lims_o_subject_info(session_id):
@@ -38,14 +40,16 @@ def lims_o_subject_info(session_id):
     dob = ""
     donor_name = post_gres.get_o_sess_donor_info(session_id)[0]
     print(donor_name)
-    donor_info = requests.get('http://lims2/donors/info/details.json?external_donor_name=' + donor_name)
+    donor_info = requests.get(
+        'http://lims2/donors/info/details.json?external_donor_name=' +
+        donor_name)
     donor_json = json.loads(donor_info.text)
     genotype = donor_json[0]['full_genotype']
     if donor_json[0]['gender_id'] == 2:
         gender = "F"
     else:
         gender = "M"
-    dob = donor_json[0]['date_of_birth'] 
+    dob = donor_json[0]['date_of_birth']
     id = donor_json[0]['id']
     info = {
         'gender': gender,
@@ -54,7 +58,8 @@ def lims_o_subject_info(session_id):
         'name': donor_name,
         'id': id
     }
-    return info 
+    return info
+
 
 def sanity_check(allen_path, session_id):
     probes = post_gres.get_sess_probes(session_id)
@@ -85,7 +90,6 @@ def sanity_check(allen_path, session_id):
         if alt_probe_directory != []:
             alt_probe_directory = alt_probe_directory[0]
 
-
         if queue_directory != []:
             queue_directory = queue_directory[0]
 
@@ -112,33 +116,33 @@ def sanity_check(allen_path, session_id):
                 np.load(glob(join(alt_probe_directory,
                         "spike_times.npy"))[0])
                 spike_directory = glob(join(
-                                    alt_probe_directory,
-                                    "spike_times.npy"))[0]
+                    alt_probe_directory,
+                    "spike_times.npy"))[0]
                 print(alt_probe_directory)
                 print(spike_directory)
                 try:
                     events_directory = glob(join(allen_path,
                                             '*', "*" + probe_idx, 'events',
-                                            'Neuropix*', 'TTL*'))[0]
+                                                 'Neuropix*', 'TTL*'))[0]
                 except IndexError:
                     events_directory = glob(os.path.join(
-                                    base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
+                        base_directory, 'events', 'Neuropix*', 'TTL*'))[0]
                 print(events_directory)
                 file_found = True
                 file_in_parent_folder = True
 
             except FileNotFoundError:
                 print(' Spikes not found for ' +
-                            join(allen_path,
-                                session_id+
-                                "_" +
-                                probe_idx +
-                                "_aligned_" +
-                                "spike_times.npy"))
+                      join(allen_path,
+                           session_id +
+                           "_" +
+                           probe_idx +
+                           "_aligned_" +
+                           "spike_times.npy"))
                 file_found = False
                 file_in_parent_folder = False
 
-        if(queue_directory != []) and not file_in_parent_folder:
+        if (queue_directory != []) and not file_in_parent_folder:
             try:
                 np.load(join(queue_directory, 'spike_times.npy'))
                 alt_spike_directory = glob(join(queue_directory,
@@ -151,14 +155,14 @@ def sanity_check(allen_path, session_id):
                 file_found = False
                 file_in_queue_folder = False
 
-        if(file_in_probe_folder):
+        if (file_in_probe_folder):
             print("file_in_probe_folder")
 
-        elif(file_in_parent_folder):
+        elif (file_in_parent_folder):
             print("file_in_parent_folder")
 
-        elif(file_in_queue_folder):
+        elif (file_in_queue_folder):
             print("file_in_queue_folder")
 
-        if(file_found):
+        if (file_found):
             return True

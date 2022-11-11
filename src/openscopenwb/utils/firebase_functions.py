@@ -36,15 +36,15 @@ def upload_o_session(project_id, session_id):
 
     Returns
     -------
-    """    
+    """
     ref = db.reference('/Sessions')
     sessions = ref.get()
     meta_dict = post_gres.get_o_sess_info(session_id)
 
     for key in sessions.items():
         if key == session_id:
-            ref.update({project_id: { session_id: {
-                'name':  meta_dict['name'],
+            ref.update({project_id: {session_id: {
+                'name': meta_dict['name'],
                 'date': meta_dict['date'],
                 'mouse': meta_dict['mouse'],
                 'stim': meta_dict['stim'],
@@ -55,7 +55,6 @@ def upload_o_session(project_id, session_id):
                 'type': meta_dict['type'],
                 'experiments': meta_dict['experiments']
             }}})
-
 
 
 def upload_session(project_id, session_id):
@@ -79,13 +78,13 @@ def upload_session(project_id, session_id):
         # print(key)
         if key == session_id:
             # print(session_id)
-            ref.update({project_id: { session_id: {
-                                   'session_date': meta_dict['date'],
-                                   'session_mouse': meta_dict['mouse'],
-                                   'session_stimulus_type': meta_dict['stim'],
-                                   'session_img_depth': meta_dict['img'],
-                                   'session_operator': meta_dict['operator'],
-                                   'session_equipment': meta_dict['equip']}}})
+            ref.update({project_id: {session_id: {
+                'session_date': meta_dict['date'],
+                'session_mouse': meta_dict['mouse'],
+                'session_stimulus_type': meta_dict['stim'],
+                'session_img_depth': meta_dict['img'],
+                'session_operator': meta_dict['operator'],
+                'session_equipment': meta_dict['equip']}}})
 
 
 def upload_project(project_id):
@@ -100,15 +99,14 @@ def upload_project(project_id):
     -------
     """
     start(get_creds())
-    #init_project(project_id)
+    # init_project(project_id)
     meta_dict = post_gres.get_e_proj_info(project_id)
     for session in meta_dict['sessions']:
         session = str(session)
         session = ''.join((c for c in session if c.isdigit()))
-        init_session(project_id, session)        
+        init_session(project_id, session)
 
         #upload_session(project_id, session)
-
 
 
 def upload_o_project(project_id):
@@ -123,12 +121,12 @@ def upload_o_project(project_id):
     -------
     """
     start(get_creds())
-    #init_project(project_id)
+    # init_project(project_id)
     meta_dict = post_gres.get_o_proj_info(project_id)
     for session in meta_dict['sessions']:
         session = str(session)
         session = ''.join((c for c in session if c.isdigit()))
-        init_o_session(project_id, session)        
+        init_o_session(project_id, session)
 
 
 def init_project(project_id):
@@ -144,7 +142,7 @@ def init_project(project_id):
     """
     ref = db.reference('/Projects')
     meta_dict = post_gres.get_e_proj_info(project_id)
-    #print(meta_dict)
+    # print(meta_dict)
     ref.update({project_id: meta_dict})
 
 
@@ -161,8 +159,8 @@ def init_o_project(project_id):
     """
     ref = db.reference('/Projects')
     meta_dict = post_gres.get_o_proj_info(project_id)
-    #print(meta_dict)
-    ref.update({project_id: meta_dict})   
+    # print(meta_dict)
+    ref.update({project_id: meta_dict})
 
 
 def init_session(project_id, session_id):
@@ -181,7 +179,7 @@ def init_session(project_id, session_id):
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_e_sess_info(session_id)
     #print('init session')
-    #print(meta_dict)
+    # print(meta_dict)
     ref.update(meta_dict)
 
 
@@ -201,7 +199,7 @@ def init_o_session(project_id, session_id):
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_o_sess_info(session_id)
     #print('init session')
-    #print(meta_dict)
+    # print(meta_dict)
     ref.update(meta_dict)
 
 
@@ -223,10 +221,8 @@ def update_o_session(project_id, session_id):
     status = view_session(project_id, session_id)['status']
     meta_dict['status'] = status
     #print('init session')
-    #print(meta_dict)
-    ref.update(meta_dict)    
-
-
+    # print(meta_dict)
+    ref.update(meta_dict)
 
 
 def update_session(project_id, session_id):
@@ -247,9 +243,8 @@ def update_session(project_id, session_id):
     status = view_session(project_id, session_id)['status']
     meta_dict['status'] = status
     #print('init session')
-    #print(meta_dict)
+    # print(meta_dict)
     ref.update(meta_dict)
-
 
 
 def update_project_status(project_id, status):
@@ -347,14 +342,18 @@ def view_project(project_id):
 
 
 def get_experiments(project_id, session_id):
-    ref = db.reference('/Sessions/' + project_id +'/' + session_id + '/experiments')
+    ref = db.reference(
+        '/Sessions/' +
+        project_id +
+        '/' +
+        session_id +
+        '/experiments')
     experiments = ref.get()
     exp_list = []
     for experiment in experiments:
         if experiment != "Metadata":
             exp_list.append(experiment)
-    return exp_list    
-
+    return exp_list
 
 
 def get_sessions(project_id):
@@ -380,7 +379,7 @@ def get_sessions(project_id):
 
 
 def update_ephys_statuses(projectID):
-    """Updates all initalized statuses to converting 
+    """Updates all initalized statuses to converting
 
     Parameters
     ----------
@@ -402,8 +401,9 @@ def update_ephys_statuses(projectID):
             session_list.append(session)
     return session_list
 
+
 def update_ophys_statuses(projectID):
-    """Updates all initalized statuses to converting 
+    """Updates all initalized statuses to converting
 
     Parameters
     ----------
@@ -426,9 +426,8 @@ def update_ophys_statuses(projectID):
     return session_list
 
 
-
 def update_ophys_RAW_statuses(projectID):
-    """Updates all initalized statuses to converting 
+    """Updates all initalized statuses to converting
 
     Parameters
     ----------
@@ -452,7 +451,7 @@ def update_ophys_RAW_statuses(projectID):
 
 
 def get_dandi_statuses(projectID):
-    """Grabs all sessions that are ready to be uploaded to dandi 
+    """Grabs all sessions that are ready to be uploaded to dandi
 
     Parameters
     ----------

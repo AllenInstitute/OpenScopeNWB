@@ -121,7 +121,6 @@ def get_e_sess_all(session_id):
     return info_list
 
 
-
 def get_o_sess_directory(session_id):
     """Gets a specific session's filepath
 
@@ -269,8 +268,9 @@ def get_sess_probes(session_id):
                 probe_name = probe_name_status[0][0]
                 probe_storage = probe_name_status[0][2]
                 print(probe_storage)
-                if (probe_status == 'passed' or probe_status == 'created') and probe_storage is not None:
-                    if(probe_status) == 'passed':
+                if (probe_status == 'passed' or probe_status ==
+                        'created') and probe_storage is not None:
+                    if (probe_status) == 'passed':
                         print(probe_name)
                     else:
                         print(probe_name + " is created, but not passed")
@@ -317,7 +317,7 @@ def get_e_sess_donor_info(session_id):
     EPHYS_SESSION_QRY = """
     SELECT sp.donor_id
     FROM ecephys_sessions es
-        JOIN specimens sp ON sp.id = es.specimen_id    
+        JOIN specimens sp ON sp.id = es.specimen_id
     WHERE es.id = {}
     """
     DONOR_NAME_QRY = """
@@ -350,7 +350,7 @@ def get_o_sess_donor_info(session_id):
     OPHYS_SESSION_QRY = """
     SELECT sp.donor_id
     FROM ophys_sessions os
-        JOIN specimens sp ON sp.id = os.specimen_id    
+        JOIN specimens sp ON sp.id = os.specimen_id
     WHERE os.id = {}
     """
     DONOR_NAME_QRY = """
@@ -380,7 +380,7 @@ def get_o_sess_donor_info(session_id):
 
 
 def get_o_sess_dff(session_id):
-    QRY = """                
+    QRY = """
     SELECT wkf.storage_directory || wkf.filename AS dff_file
     FROM ophys_experiments oe
                 JOIN well_known_files wkf ON wkf.attachable_id = oe.id
@@ -392,13 +392,13 @@ def get_o_sess_dff(session_id):
     lims_query = QRY.format(session_id)
     cur.execute(lims_query)
 
-
     info_list = []
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
     return info_list
+
 
 def get_e_sess_info(session_id):
     """Gets a specific session's information
@@ -526,7 +526,6 @@ def get_o_sess_info(session_id):
     return meta_dict
 
 
-
 def get_e_sess_sync(session_id):
     QRY = f"""
     SELECT wkf.storage_directory || wkf.filename AS sync_file
@@ -542,14 +541,12 @@ def get_e_sess_sync(session_id):
     lims_query = QRY.format(session_id)
     cur.execute(lims_query)
 
-
     info_list = []
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
-    return info_list[0][0]   
-
+    return info_list[0][0]
 
 
 def get_o_sess_sync(session_id):
@@ -567,14 +564,12 @@ def get_o_sess_sync(session_id):
     lims_query = QRY.format(session_id)
     cur.execute(lims_query)
 
-
     info_list = []
     if cur.rowcount == 0:
         raise Exception("No data was found for ID {}".format(session_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
     return info_list
-
 
 
 def get_e_proj_info(project_id):
