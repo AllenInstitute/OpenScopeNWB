@@ -58,6 +58,18 @@ def add_stim_to_nwb(
     stim_path,
     nwb_path
 ):
+    """Adds Stim info to an NWB 
+
+    Parameters
+    ----------
+    stim_path: str
+    The stim's location
+    nwb_path: str
+    The current nwb's location
+
+    Returns
+    -------
+    """
     stimulus_columns_to_drop = [
         "colorSpace", "depth", "interpolate", "pos", "rgbPedestal", "tex",
         "texRes", "flipHoriz", "flipVert", "rgb", "signalDots"
@@ -71,5 +83,6 @@ def add_stim_to_nwb(
     with NWBHDF5IO(nwb_path, "r+", load_namespaces=True) as nwbfile:
         input_nwb = nwbfile.read()
         nwb_temp = stimulus_table.to_nwb(nwbfile=input_nwb)
-        nwb_temp = add_stimulus_ophys_timestamps(nwb_temp, stimulus_table.value['start_time'].values)
+        nwb_temp = add_stimulus_ophys_timestamps(
+            nwb_temp, stimulus_table.value['start_time'].values)
         nwbfile.write(nwb_temp)

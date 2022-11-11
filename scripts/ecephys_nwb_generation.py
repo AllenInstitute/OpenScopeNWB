@@ -25,10 +25,9 @@ from openscopenwb.utils import firebase_functions as fb
 
 from datetime import datetime
 
+
 def convert_session(session_id, project):
     warnings.filterwarnings("ignore", message="numpy.dtype size changed")
-
-
 
     # dir = os.path.dirname(__file__)
     # project_parameter_json = os.path.join(dir, "project_json",
@@ -106,9 +105,9 @@ def convert_session(session_id, project):
                     module, module_params, input_json)
 
                 command_string = sf.generate_module_cmd(
-                                    module,
-                                    input_json,
-                                    output_json
+                    module,
+                    input_json,
+                    output_json
                 )
                 logging.debug("Starting Session Level Module: " + module)
                 logging.debug(command_string)
@@ -126,9 +125,9 @@ def convert_session(session_id, project):
                     module_params = osnjson.create_module_input(
                         module, module_params, input_json)
                     command_string = sf.generate_module_cmd(
-                                        module,
-                                        input_json,
-                                        output_json
+                        module,
+                        input_json,
+                        output_json
                     )
                     old_last_unit = module_params['last_unit_id']
                 logging.debug("Starting Probe Level Module:: " + module)
@@ -181,9 +180,10 @@ def convert_session(session_id, project):
 
                 #ecephys_nwb_trials.add_trials_to_nwb(trial_params)
 '''
+
+
 def write_subject_to_nwb(session_id, module_params):
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
-    
 
 
 if __name__ == "__main__":
@@ -193,5 +193,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args.project)
     write_subject_to_nwb(
-        module_params = convert_session(session_id = args.session_id, project=args.project), session_id=args.session_id
+        module_params=convert_session(session_id=args.session_id, project=args.project), session_id=args.session_id
     )

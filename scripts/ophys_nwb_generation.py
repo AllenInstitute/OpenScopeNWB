@@ -18,7 +18,7 @@ from glob import glob
 # from openscopenwb.utils import script_functions as sf
 import ophys_nwb_stim as stim
 from allensdk.brain_observatory.behavior.ophys_experiment import \
-     OphysExperiment as ophys
+    OphysExperiment as ophys
 from pynwb import NWBHDF5IO
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
@@ -43,7 +43,20 @@ dir = os.path.dirname(__file__)
 # project_info = popp.parse_json(project_parameter_json)
 # ophys_experiment_ids = popp.get_ids(project_info)
 
+
 def gen_ophys(experiment_id, file_path):
+    """Calls functions to write ophys NWB 
+
+    Parameters
+    ----------
+    experiment_id: int
+    The experiment_id for the plane
+    file_path: str
+    The output nwb's location
+
+    Returns
+    -------
+    """
     key = experiment_id
     ophys_experiment_id = int(key)
     ophys_nwb = ophys.from_lims(ophys_experiment_id=ophys_experiment_id,
@@ -54,13 +67,36 @@ def gen_ophys(experiment_id, file_path):
 
 
 def add_data_to_nwb(csv_path, nwb_path):
-    stim.add_stim_to_nwb(csv_path, nwb_path)  
+    """Adds Stim info to an NWB 
+
+    Parameters
+    ----------
+    csv_path: str
+    The stim's location
+    nwb_path: str
+    The current nwb's location
+
+    Returns
+    -------
+    """
+    stim.add_stim_to_nwb(csv_path, nwb_path)
 
 
 def add_subject_to_nwb(session_id, experiment_id, nwb_path):
+    """Adds Stim info to an NWB 
+
+    Parameters
+    ----------
+    session_id: str
+    The 10 digit session id 
+    nwb_path: str
+    The current nwb's location
+
+    Returns
+    -------
+    """
     subject_info = allen.lims_o_subject_info(session_id)
-    # TODO: Calculate mouse age 
-    subject_dob = datetime.strptime(subject_info['dob'][:10],'%Y-%m-%d')
+    subject_dob = datetime.strptime(subject_info['dob'][:10], '%Y-%m-%d')
     subject_date = postgres.get_o_sess_info(session_id)['date']
     subject_date = datetime.strptime(subject_date[:10], '%Y-%m-%d')
     duration = subject_date - subject_dob
@@ -81,33 +117,36 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     with NWBHDF5IO(nwb_path, "r+", load_namespaces=True) as nwbfile:
         input_nwb = nwbfile.read()
         input_nwb.subject = Subject(
-            subject_id= str(session_id),
-            age = subject['age_in_days'],
-            species = 'Mus musculus',
-            sex = subject['sex'],
-            genotype = subject['full_genotype'],
-            description = str(subject_info['id'])
+            subject_id=str(session_id),
+            age=subject['age_in_days'],
+            species='Mus musculus',
+            sex=subject['sex'],
+            genotype=subject['full_genotype'],
+            description=str(subject_info['id'])
         )
         nwbfile.write(input_nwb)
-
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
-    parser.add_argument('--raw', type= str)
+    parser.add_argument('--raw', type=str)
     parser.add_argument('--val', type=int)
+    parser.add_argument('--final', type=str)
     args = parser.parse_args()
     session_id = args.session_id
     experiment_id = args.experiment_id
     experiment_id = int(experiment_id)
     raw_flag = args.raw
+    final = args.final
     print(raw_flag)
     val = args.val
     json_in = generate_ophys_json(experiment_id)
-    input_json =  r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_in.json"
-    output_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + str(experiment_id) + "_out.json"
+    input_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + \
+        str(experiment_id) + "_in.json"
+    output_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + \
+        str(experiment_id) + "_out.json"
     with open(input_json, "w") as outfile:
         outfile.write(json_in)
     command_string = sf.generate_module_cmd(
@@ -117,33 +156,40 @@ if __name__ == "__main__":
     )
     subprocess.check_call(command_string)
     file_path = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb'
-    if raw_flag: 
-        file_path =  file_path + '/' + str(experiment_id) + 'raw_data.nwb'
+    if raw_flag:
+        file_path = file_path + '/' + str(experiment_id) + 'raw_data.nwb'
     else:
-        file_path =  file_path + '/' + str(experiment_id) + '.nwb'
+        file_path = file_path + '/' + str(experiment_id) + '.nwb'
     gen_ophys(experiment_id, file_path)
     json_in = json.loads(json_in)
     main_dir = postgres.get_o_sess_directory(session_id)
     main_dir = main_dir[0]
     ellipse_path = glob(join(main_dir, "eye_tracking", "*_ellipse.h5"))[0]
 
-    data_json_path = glob(join(main_dir,"*_Behavior_*.json"))[0]
+    data_json_path = glob(join(main_dir, "*_Behavior_*.json"))[0]
     sync_path = glob(join(main_dir, "*.h5"))[0]
-    motion_path = glob(join(main_dir, 'ophys_experiment_' + str(experiment_id), 'processed', '*_suite2p_motion_output.h5'))[0]
+    motion_path = glob(
+        join(
+            main_dir,
+            'ophys_experiment_' +
+            str(experiment_id),
+            'processed',
+            '*_suite2p_motion_output.h5'))[0]
     tracking_params = {
-        'ellipse_path': ellipse_path, 
+        'ellipse_path': ellipse_path,
         'sync_path': sync_path,
         'nwb_path': file_path,
         'data_json': data_json_path
     }
-    add_data_to_nwb(json_in['output_stimulus_table_path'],file_path)
+    add_data_to_nwb(json_in['output_stimulus_table_path'], file_path)
     add_subject_to_nwb(session_id, experiment_id, file_path)
-    eye_tracking.add_tracking_to_ophys_nwb(tracking_params)    
+    eye_tracking.add_tracking_to_ophys_nwb(tracking_params)
     raw_params = {
         'nwb_path': file_path,
         'suite_2p': motion_path,
         'time': postgres.get_o_sess_info(session_id)['date'],
-        'plane': str(experiment_id)
+        'plane': str(experiment_id),
+        'final': final
     }
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag == "True":
@@ -151,15 +197,25 @@ if __name__ == "__main__":
         raw_nwb.process_suit2p(raw_params)
         #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
         print("dandi cmd")
-        #print(shlex.split(cmd))
-        #subprocess.call(shlex.split(cmd))
+        # print(shlex.split(cmd))
+        # subprocess.call(shlex.split(cmd))
         print('upload done')
-        slurm_job.dandi_ophys_upload(file_path, session_id, experiment_id, 'True', val)
-        #os.remove(file_path)
-    else: 
+        slurm_job.dandi_ophys_upload(
+            file_path,
+            session_id,
+            experiment_id,
+            'True',
+            val,
+            final)
+    else:
         print("Processing without RAW")
-        slurm_job.dandi_ophys_upload(file_path, session_id, experiment_id, 'False', val)
+        slurm_job.dandi_ophys_upload(
+            file_path,
+            session_id,
+            experiment_id,
+            'False',
+            val,
+            final)
         #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
-        #print(shlex.split(cmd))
-        #subprocess.call(shlex.split(cmd))
-
+        # print(shlex.split(cmd))
+        # subprocess.call(shlex.split(cmd))

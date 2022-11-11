@@ -9,7 +9,7 @@ from openscopenwb.utils import firebase_sync as fire_sync
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import allen_functions as allen
-from openscopenwb.utils import sync_functions as sync 
+from openscopenwb.utils import sync_functions as sync
 from pathlib import Path
 from ecephys_nwb_generation import write_subject_to_nwb
 
@@ -41,7 +41,7 @@ for project in e_proj_list:
     if project == "OpenScopeIllusion":
         proj_dandi_value = "000248"
     elif project == "OpenScopeGlobalLocalOddBall":
-        proj_dandi_value = "000253" 
+        proj_dandi_value = "000253"
     missing_list = fire_sync.compare_sessions(project)
     print("List of sessions to upload: ")
     print(missing_list)
@@ -51,7 +51,7 @@ for project in e_proj_list:
     tmp_update_list = postgres.get_e_proj_info(project)['sessions']
     for sess in tmp_update_list:
         tmp_val = fire_sync.compare_session(project, sess)
-        if tmp_val != []: 
+        if tmp_val != []:
             update_list.append(sess)
     print("List of Sessions to Update: ")
     print(update_list)
@@ -73,7 +73,8 @@ for project in e_proj_list:
     print("List of Sessions to convert: ")
     print(conversion_list)
     for session in conversion_list:
-        cmd = dir + '/bash/ecephys.sh ' + "-s " + str(session) +" -p " + project
+        cmd = dir + '/bash/ecephys.sh ' + "-s " + \
+            str(session) + " -p " + project
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")
@@ -86,7 +87,7 @@ for project in e_proj_list:
 
 for project in o_proj_list:
     if project == 'OpenScopeDendriteCoupling':
-      proj_dandi_value = '000336'
+        proj_dandi_value = '000336'
     missing_list = fire_sync.compare_o_sessions(project)
     print("List of sessions to upload: ")
     print(missing_list)
@@ -96,7 +97,7 @@ for project in o_proj_list:
     tmp_update_list = postgres.get_o_proj_info(project)['sessions']
     for sess in tmp_update_list:
         tmp_val = fire_sync.compare_o_session(project, sess)
-        if tmp_val != []: 
+        if tmp_val != []:
             update_list.append(sess)
     print("List of Sessions to Update: ")
     print(update_list)
@@ -108,7 +109,9 @@ for project in o_proj_list:
     for session in conversion_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
-            cmd = dir + '/bash/ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + str(experiment) + ' -v ' + str(proj_dandi_value)
+            cmd = dir + '/bash/ophys.sh ' + "-s " + \
+                str(session) + " -p " + project + " -e " + \
+                str(experiment) + ' -v ' + str(proj_dandi_value)
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Conversion Running")
@@ -119,14 +122,20 @@ for project in o_proj_list:
         print(session)
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
-            cmd = dir + '/bash/raw_ophys.sh ' + "-s " + str(session) +" -p " + project + " -e " + str(experiment) + ' -v ' + str(proj_dandi_value)
+            if experiment == exp_list[-1]:
+                cmd = dir + '/bash/raw_ophys.sh ' + "-s " + str(session) + " -p " + project + " -e " + str(
+                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "final"
+            else:
+                cmd = dir + '/bash/raw_ophys.sh ' + "-s " + str(session) + " -p " + project + " -e " + str(
+                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + 'not_final'
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
-            fb.update_session_status(project, session, "Raw Conversion Running")
+            fb.update_session_status(
+                project, session, "Raw Conversion Running")
 
 # 1193163594
 #exp_list = postgres.get_sess_experiments('1212553658')
-#for experiment in exp_list:
+# for experiment in exp_list:
 #    if experiment == 1212705242:
 #        cmd = dir + '/bash/ophys.sh ' + "-s " + '1212553658 '+ "-e " + str(experiment)
 #        subprocess.call(shlex.split(cmd))

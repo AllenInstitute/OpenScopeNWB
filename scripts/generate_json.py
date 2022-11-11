@@ -12,7 +12,7 @@ from allensdk.brain_observatory.behavior.data_objects.metadata\
     .ophys_experiment_metadata.ophys_session_id import \
     OphysSessionId
 from allensdk.brain_observatory.behavior.data_files import \
-     StimulusFile
+    StimulusFile
 
 
 def get_path(session_id):
@@ -55,13 +55,13 @@ def generate_ephys_json(session_id, project):
     date = datetime.today().strftime('%Y-%m-%d-%H-%M')
     json_data = {}
     json_data['modules'] = [
-    "allensdk.brain_observatory.ecephys.align_timestamps",
-    "allensdk.brain_observatory.ecephys.stimulus_table",
-    "allensdk.brain_observatory.extract_running_speed",
-    'allensdk.brain_observatory.ecephys.lfp_subsampling',
-    'allensdk.brain_observatory.ecephys.optotagging_table',
-    #'allensdk.brain_observatory.gaze_mapping',
-    "allensdk.brain_observatory.ecephys.write_nwb"
+        "allensdk.brain_observatory.ecephys.align_timestamps",
+        "allensdk.brain_observatory.ecephys.stimulus_table",
+        "allensdk.brain_observatory.extract_running_speed",
+        'allensdk.brain_observatory.ecephys.lfp_subsampling',
+        'allensdk.brain_observatory.ecephys.optotagging_table',
+        # 'allensdk.brain_observatory.gaze_mapping',
+        "allensdk.brain_observatory.ecephys.write_nwb"
     ]
     output_path = r"/allen/programs/mindscope/workgroups/openscope/" + \
                   "openscopedata2022/" + \

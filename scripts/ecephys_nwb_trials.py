@@ -34,7 +34,7 @@ def add_trials_to_nwb(trial_params):
     frame_times = sync_dataset.extract_frame_times(
                 strategy=trial_params['frame_time_strategy'])
     update_glob_stim(stim_file)
-    stimulus_tabler, spon_tabler = create_partial_funcs(trial_params, 
+    stimulus_tabler, spon_tabler = create_partial_funcs(trial_params,
                                    stim_file)
 
     stim_table_full = ephys_pre_spikes.create_stim_table(

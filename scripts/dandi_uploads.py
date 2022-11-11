@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 import dandi
-from  dandi.dandiapi import DandiAPIClient as dandi
+from dandi.dandiapi import DandiAPIClient as dandi
 from dandi import validate as validate
 import argparse
-import os 
+import os
 import json
 
 
 def get_creds():
-    cred_file = open(r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
+    cred_file = open(
+        r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
     cred_json = json.load(cred_file)
     print(cred_json['api_key'])
     print('cred')
     return cred_json['api_key']
-
 
 
 def set_env():
@@ -21,6 +21,28 @@ def set_env():
 
 
 if __name__ == "__main__":
+    """Uploads an NWB 
+
+    Parameters
+    ----------
+    dandi_url: str
+    The dandiset's location
+    dandi_file: str
+    The current nwb's location
+    dandi_val: str
+    The dandi set's id
+    sess_id: str
+    The 10 digit session id for our data
+    exp_id: str
+    The experiment id for the session's plane
+    raw: str
+    Whether to include RAW data
+    final: str
+    Whether this is the final plane for the sess
+
+    Returns
+    -------
+    """
     print("Uploading")
     parser = argparse.ArgumentParser()
     parser.add_argument('--dandi_url', type=str)
@@ -29,6 +51,7 @@ if __name__ == "__main__":
     parser.add_argument('--sess_id', type=str)
     parser.add_argument('--exp_id', type=str)
     parser.add_argument('--raw', type=str)
+    parser.add_argument('--final', type=str)
     args = parser.parse_args()
     set_env()
     validate.validate(args.dandi_file)
@@ -37,13 +60,22 @@ if __name__ == "__main__":
     dandi_dataset = dandi_set.get_dandiset('000' + args.dandi_val)
     raw = args.raw
 
-
-    #TODO: Implement a flag check for if file exists and then use replace if it does 
+    # TODO: Implement a flag check for if file exists and then use replace if
+    # it does
     if raw == 'True':
-        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.sess_id + '/' + args.exp_id  + '_raw.nwb', "dandiset": str(dandi_dataset)} )
+        status = dandi_dataset.iter_upload_raw_asset(
+            args.dandi_file,
+            asset_metadata={
+                'path': args.sess_id + '/' + args.sess_id + '/' + args.exp_id + '_raw.nwb',
+                "dandiset": str(dandi_dataset)})
     else:
-        status = dandi_dataset.iter_upload_raw_asset(args.dandi_file, asset_metadata = {'path': args.sess_id + '/' + args.exp_id  + '.nwb', "dandiset": str(dandi_dataset)} )
+        status = dandi_dataset.iter_upload_raw_asset(
+            args.dandi_file,
+            asset_metadata={
+                'path': args.sess_id + '/' + args.exp_id + '.nwb',
+                "dandiset": str(dandi_dataset)})
     print("STATUS")
     print(list(status))
+    os.remove(args.dandi_file)
     #file = dandi_file(args.dandi_file, args.dandi_file)
     #file.upload(dandiset = dandi_set.get_dandiset(args.dandi_val), metadata = {})
