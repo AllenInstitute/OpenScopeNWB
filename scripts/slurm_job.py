@@ -97,7 +97,7 @@ def generate_ophys_nwb(session_id, experiment_id, raw, val, final):
                  ' --final {}'.format(final))
 
 
-def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw, val, final):
+def dandi_ophys_upload(file, project_id, session_id, experiment_id, subject_id, raw, val, final):
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
@@ -130,6 +130,7 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw, val, fi
                  r'scripts/dandi_uploads.py'
                  ' --sess_id {}'.format(session_id) +
                  ' --dandi_file {}'.format(file) +
+                 ' --project_id {}'.format(project_id) +
                  ' --exp_id {}'.format(experiment_id) +
                  ' --subject_id {}'.format(subject_id) + 
                  ' --raw {}'.format(raw) +

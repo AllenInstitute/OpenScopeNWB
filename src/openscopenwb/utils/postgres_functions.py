@@ -524,6 +524,7 @@ def get_o_sess_info(session_id):
     meta_dict['dandi'] = 'Not Yet Uploaded'
     meta_dict['path'] = get_o_sess_directory(session_id)[0]
     meta_dict['type'] = 'Ophys'
+    meta_dict['notes'] = 'none'
     meta_dict['experiments'] = get_sess_experiments(session_id)
     meta_dict['status'] = {'status': 'Not Converted'}
 

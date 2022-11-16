@@ -123,6 +123,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('--project_id', type=str)
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
     parser.add_argument('--raw', type=str)

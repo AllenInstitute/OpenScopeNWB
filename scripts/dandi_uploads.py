@@ -2,10 +2,13 @@
 import dandi
 from dandi.dandiapi import DandiAPIClient as dandi
 from dandi import validate as validate
+
 import argparse
 import os
 import json
 
+from openscopenwb.utils import firebase_functions as fb
+ 
 
 def get_creds():
     cred_file = open(
@@ -29,10 +32,14 @@ if __name__ == "__main__":
     The current nwb's location
     dandi_val: str
     The dandi set's id
+    project_id: str
+    The project name for the data 
     sess_id: str
     The 10 digit session id for our data
     exp_id: str
     The experiment id for the session's plane
+    subject_id: str
+    The mouse id for the session
     raw: str
     Whether to include RAW data
     final: str
@@ -46,9 +53,10 @@ if __name__ == "__main__":
     parser.add_argument('--dandi_url', type=str)
     parser.add_argument('--dandi_file', type=str)
     parser.add_argument('--dandi_val', type=str)
+    parser.add_argument('--project_id', type=str)
+    parser.add_argument('--subject_id', type=str)
     parser.add_argument('--sess_id', type=str)
     parser.add_argument('--exp_id', type=str)
-    parser.add_argument('--subject_id', type=str)
     parser.add_argument('--raw', type=str)
     parser.add_argument('--final', type=str)
     args = parser.parse_args()
@@ -73,3 +81,6 @@ if __name__ == "__main__":
     print("STATUS")
     print(list(status))
     os.remove(args.dandi_file)
+    
+    if args.final == 'True':
+        fb.update_session_dandi(args.project_id, args.session_id, "sub_" + args.subject_id + '/' + args.sess_id)
