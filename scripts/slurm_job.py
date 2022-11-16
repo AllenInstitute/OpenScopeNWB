@@ -20,27 +20,6 @@ logging.basicConfig(filename="std.log",
                     filemode='a')
 dir = os.path.dirname(__file__)
 
-'''
-def generate_ophys_nwb(session_id):
-    project_parameter_json = gen_json(session_id)
-    project_info = popp.parse_json(project_parameter_json)
-    ophys_experiment_ids = popp.get_ids(project_info)
-    for key in ophys_experiment_ids:
-        ophys_experiment_id = int(key)
-        ophys_session_id = int(ophys_experiment_ids[key])
-        ophys_nwb = ophys.from_lims(ophys_experiment_id=ophys_experiment_id,
-                    skip_eye_tracking=True)
-        ophys_nwb = ophys_nwb.to_nwb()
-        file_path = r"//allen/programs/braintv/production/openscope/"
-                    openscopedata2022/" + str(session_id) +  '/'
-        file_path = os.path.join(file_path, str(ophys_experiment_id) + \
-                    'raw_data.nwb')
-        with NWBHDF5IO(file_path, mode='w') as io:
-            io.write(ophys_nwb)
-
-
-'''
-
 
 def generate_ephys_nwb(session_id, project):
     conda_environment = 'openscopenwb'
@@ -107,8 +86,6 @@ def generate_ophys_nwb(session_id, experiment_id, raw, val, final):
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
-    print(dir)
-    print(raw)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -120,7 +97,7 @@ def generate_ophys_nwb(session_id, experiment_id, raw, val, final):
                  ' --final {}'.format(final))
 
 
-def dandi_ophys_upload(file, session_id, experiment_id, raw, val, final):
+def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw, val, final):
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
@@ -147,8 +124,6 @@ def dandi_ophys_upload(file, session_id, experiment_id, raw, val, final):
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
-    print(dir)
-    print(raw)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -156,6 +131,7 @@ def dandi_ophys_upload(file, session_id, experiment_id, raw, val, final):
                  ' --sess_id {}'.format(session_id) +
                  ' --dandi_file {}'.format(file) +
                  ' --exp_id {}'.format(experiment_id) +
+                 ' --subject_id {}'.format(subject_id) + 
                  ' --raw {}'.format(raw) +
                  ' --dandi_val {}'.format(val) +
                  ' --final {}'.format(final))

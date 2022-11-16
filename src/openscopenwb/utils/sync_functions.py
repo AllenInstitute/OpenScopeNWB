@@ -12,7 +12,6 @@ def sync_test(session_id):
     long_flag = False
     syncdata = Dataset(postgres.get_e_sess_sync(session_id))
     print(postgres.get_e_sess_sync(session_id))
-    # syncdata = Dataset(r'/allen/programs/mindscope/workgroups/np-exp/1213341633_637908_20220922/1213341633_637908_20220922.sync')
     # Grab the stim running line that tells us when visual stimuli were on the
     # screen
     stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),

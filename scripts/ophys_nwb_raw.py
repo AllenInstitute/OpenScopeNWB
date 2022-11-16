@@ -27,9 +27,6 @@ def process_suit2p(raw_params):
     print("Processing timeseries data")
     with h5py.File(raw_params['suite_2p'], "r") as suite2p:
         data = suite2p['data']
-        print(data[0])
-        print(data[1])
-        print(data[2])
         wrapped_data = H5DataIO(
             data=data,
             compression='gzip',
@@ -48,11 +45,5 @@ def process_suit2p(raw_params):
             unit='SIunit',
             rate=10.71
         )
-#        ts = TimeSeries(
-#            name = 'raw_suite2p_motion_corrected',
-#            data = wrapped_data,
-#            unit = 'SIunit'        ,
-#            rate = 10.71
-#        )
         input_nwb.add_acquisition(ts)
         io.write(input_nwb)

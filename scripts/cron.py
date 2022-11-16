@@ -23,15 +23,6 @@ from os.path import join
 
 dir = os.path.dirname(__file__) or '.'
 curr_dir = Path(__file__).parent
-print(curr_dir)
-print("directory")
-print(dir)
-# ephys_list = fb.update_ephys_statuses()
-#session_id = 1172129291
-# session_id = 762602078
-# cmd = './bash/ecephys.sh ' + "-s " + str(session_id)
-# subprocess.call(shlex.split(cmd))
-# OpenScopeIllusion
 
 e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball"]
 o_proj_list = ["OpenScopeDendriteCoupling"]
@@ -60,16 +51,6 @@ for project in e_proj_list:
     conversion_list = fb.update_ephys_statuses(project)
     print("List of pre-sanity checked sessions: ")
     print(conversion_list)
-    '''
-    for session in conversion_list:
-        print("Sanity Checking")
-        allen_path = postgres.get_e_sess_directory(session)
-        if allen.sanity_check(allen_path, session):
-            print("sanity check passed for: " + session)
-        else:
-            print("sanity check failed for: " + session)
-            conversion_list.remove(session)
-    '''
     print("List of Sessions to convert: ")
     print(conversion_list)
     for session in conversion_list:
@@ -132,12 +113,3 @@ for project in o_proj_list:
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(
                 project, session, "Raw Conversion Running")
-
-# 1193163594
-#exp_list = postgres.get_sess_experiments('1212553658')
-# for experiment in exp_list:
-#    if experiment == 1212705242:
-#        cmd = dir + '/bash/ophys.sh ' + "-s " + '1212553658 '+ "-e " + str(experiment)
-#        subprocess.call(shlex.split(cmd))
-# print(postgres.get_e_sess_sync('1213341633'))
-# print(sync.sync_test('1213341633'))

@@ -36,8 +36,7 @@ if __name__ == "__main__":
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
 
-    # TODO: Implement a flag check for if file exists and then use replace if
-    # it does
+
     status_probes = []
     status = dandi_dataset.iter_upload_raw_asset(
         args.dandi_file,

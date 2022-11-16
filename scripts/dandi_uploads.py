@@ -11,8 +11,6 @@ def get_creds():
     cred_file = open(
         r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
     cred_json = json.load(cred_file)
-    print(cred_json['api_key'])
-    print('cred')
     return cred_json['api_key']
 
 
@@ -21,7 +19,7 @@ def set_env():
 
 
 if __name__ == "__main__":
-    """Uploads an NWB 
+    """Uploads an NWB to dandi 
 
     Parameters
     ----------
@@ -60,23 +58,18 @@ if __name__ == "__main__":
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset('000' + args.dandi_val)
     raw = args.raw
-
-    # TODO: Implement a flag check for if file exists and then use replace if
-    # it does
     if raw == 'True':
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '_raw.nwb',
+                'path': "sub_" + args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '_raw.nwb',
                 "dandiset": str(dandi_dataset)})
     else:
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '.nwb',
+                'path': "sub_" + args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '.nwb',
                 "dandiset": str(dandi_dataset)})
     print("STATUS")
     print(list(status))
     os.remove(args.dandi_file)
-    #file = dandi_file(args.dandi_file, args.dandi_file)
-    #file.upload(dandiset = dandi_set.get_dandiset(args.dandi_val), metadata = {})

@@ -36,12 +36,6 @@ logging.basicConfig(filename="std.log",
                     level=logging.DEBUG,
                     filemode='a')
 dir = os.path.dirname(__file__)
-# project_parameter_json = os.path.join(dir, "project_json",
-#                                      "test_ophys_project_parameter_json.json")
-
-# project_parameter_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/scripts/deciphering_variability/project_json/test_ophys_project_parameter_json.json'
-# project_info = popp.parse_json(project_parameter_json)
-# ophys_experiment_ids = popp.get_ids(project_info)
 
 
 def gen_ophys(experiment_id, file_path):
@@ -140,7 +134,6 @@ if __name__ == "__main__":
     experiment_id = int(experiment_id)
     raw_flag = args.raw
     final = args.final
-    print(raw_flag)
     val = args.val
     json_in = generate_ophys_json(experiment_id)
     input_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + \
@@ -197,9 +190,6 @@ if __name__ == "__main__":
     if raw_flag == "True":
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
-        #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
-        # print(shlex.split(cmd))
-        # subprocess.call(shlex.split(cmd))
         slurm_job.dandi_ophys_upload(
             file_path,
             session_id,
@@ -207,7 +197,6 @@ if __name__ == "__main__":
             subject_id,
             'True',
             val,
-            subject_id,
             final)
     else:
         print("Processing without RAW")
@@ -219,6 +208,3 @@ if __name__ == "__main__":
             'False',
             val,
             final)
-        #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
-        # print(shlex.split(cmd))
-        # subprocess.call(shlex.split(cmd))

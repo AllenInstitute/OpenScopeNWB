@@ -68,19 +68,11 @@ def add_eye_tracking_nwb(eye_tracking_df, nwb_file):
         angle=eye_tracking_df['cr_phi'].values,
         timestamps=eye_tracking
     )
-    print("TEST")
-    print(eye_tracking_df['likely_blink'].values)
-    print(eye_tracking_df['likely_blink'])
-    print(eye_tracking_df['likely_blink'].dtype)
-    print(eye_tracking_df['likely_blink'].values.dtype)
+
     for i in range(0, len(eye_tracking_df['likely_blink'].values)):
         if eye_tracking_df['likely_blink'].values[i] is np.nan:
-            print(i)
             eye_tracking_df['likely_blink'].values[i] = True
-    print(eye_tracking_df['likely_blink'].values.dtype)
     eye_tracking_np = eye_tracking_df['likely_blink'].to_numpy(dtype=bool)
-    print(eye_tracking_np)
-    print(eye_tracking_np.dtype)
     likely_blink = TimeSeries(timestamps=eye_tracking,
                               data=eye_tracking_np,
                               name='likely_blink',
@@ -113,7 +105,6 @@ def trim_meta_data(data_file):
 
 def proc_eye_tracking(eye_data, frame_times, z_threshold, dilation_frames):
     n_sync = len(frame_times)
-    print(n_sync)
     n_eye_frames = len(eye_data.index)
 
     # If n_sync exceeds n_eye_frames by <= 15,
@@ -151,9 +142,6 @@ def proc_eye_tracking(eye_data, frame_times, z_threshold, dilation_frames):
     eye_areas_raw = eye_areas.copy()
 
     for i in range(1, len(likely_blinks)):
-        print('likely blinks')
-        print(len(likely_blinks))
-        print(likely_blinks)
         if likely_blinks[i] == True:
             pupil_areas[i] = np.nan
             cr_areas[i] = np.nan
@@ -202,7 +190,6 @@ def from_data_file(ellipse_file, sync_file, data_json_path):
     data_file = load_eye_tracking_hdf(ellipse_file)
     if (includes_meta_data(data_json)):
         data_file = trim_meta_data(data_file)
-    print(data_file)
     eye_tracking_data = proc_eye_tracking(
         data_file,
         frame_times,
@@ -216,9 +203,7 @@ def add_tracking_to_nwb(tracking_params):
     ellipse_file = tracking_params['ellipse_path']
     sync_file = tracking_params['sync_path']
     nwb_file = tracking_params['nwb_path']
-    write_nwb_path = nwb_file.replace("spike_times.nwb", "spike_times_re.nwb")
     data_json_path = tracking_params['data_json']
-   #eye_df = EyeTrackingTable.from_data_file(ellipse_file, sync_file)
     eye_df = from_data_file(ellipse_file, sync_file, data_json_path)
     io = NWBHDF5IO(nwb_file, "r+", load_namespaces=True)
     input_nwb = io.read()
@@ -229,10 +214,8 @@ def add_tracking_to_nwb(tracking_params):
 def add_tracking_to_ophys_nwb(tracking_params):
     ellipse_file = tracking_params['ellipse_path']
     sync_file = tracking_params['sync_path']
-    print(sync_file)
     nwb_file = tracking_params['nwb_path']
     data_json_path = tracking_params['data_json']
-   #eye_df = EyeTrackingTable.from_data_file(ellipse_file, sync_file)
     eye_df = from_o_data_file(ellipse_file, sync_file, data_json_path)
     io = NWBHDF5IO(nwb_file, "r+", load_namespaces=True)
     input_nwb = io.read()
