@@ -75,9 +75,7 @@ def upload_session(project_id, session_id):
     meta_dict = post_gres.get_e_sess_info(session_id)
 
     for key in sessions.items():
-        # print(key)
         if key == session_id:
-            # print(session_id)
             ref.update({project_id: {session_id: {
                 'session_date': meta_dict['date'],
                 'session_mouse': meta_dict['mouse'],
@@ -99,14 +97,12 @@ def upload_project(project_id):
     -------
     """
     start(get_creds())
-    # init_project(project_id)
     meta_dict = post_gres.get_e_proj_info(project_id)
     for session in meta_dict['sessions']:
         session = str(session)
         session = ''.join((c for c in session if c.isdigit()))
         init_session(project_id, session)
 
-        #upload_session(project_id, session)
 
 
 def upload_o_project(project_id):
@@ -121,7 +117,6 @@ def upload_o_project(project_id):
     -------
     """
     start(get_creds())
-    # init_project(project_id)
     meta_dict = post_gres.get_o_proj_info(project_id)
     for session in meta_dict['sessions']:
         session = str(session)
@@ -142,7 +137,6 @@ def init_project(project_id):
     """
     ref = db.reference('/Projects')
     meta_dict = post_gres.get_e_proj_info(project_id)
-    # print(meta_dict)
     ref.update({project_id: meta_dict})
 
 
@@ -159,7 +153,6 @@ def init_o_project(project_id):
     """
     ref = db.reference('/Projects')
     meta_dict = post_gres.get_o_proj_info(project_id)
-    # print(meta_dict)
     ref.update({project_id: meta_dict})
 
 
@@ -178,8 +171,6 @@ def init_session(project_id, session_id):
     """
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_e_sess_info(session_id)
-    #print('init session')
-    # print(meta_dict)
     ref.update(meta_dict)
 
 
@@ -198,8 +189,6 @@ def init_o_session(project_id, session_id):
     """
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_o_sess_info(session_id)
-    #print('init session')
-    # print(meta_dict)
     ref.update(meta_dict)
 
 
@@ -220,8 +209,6 @@ def update_o_session(project_id, session_id):
     meta_dict = post_gres.get_o_sess_info(session_id)
     status = view_session(project_id, session_id)['status']
     meta_dict['status'] = status
-    #print('init session')
-    # print(meta_dict)
     ref.update(meta_dict)
 
 
@@ -242,8 +229,6 @@ def update_session(project_id, session_id):
     meta_dict = post_gres.get_e_sess_info(session_id)
     status = view_session(project_id, session_id)['status']
     meta_dict['status'] = status
-    #print('init session')
-    # print(meta_dict)
     ref.update(meta_dict)
 
 
@@ -275,7 +260,6 @@ def update_session_status(project_id, session_id, status):
     Returns
     -------
     """
-    # fb = start(get_creds())
     ref = db.reference('/Sessions/' + project_id + "/" + session_id +
                        "/status/")
     ref.update({"status": status})
@@ -298,7 +282,6 @@ def view_session(project_id, session_id):
     """
     ref = db.reference('/Sessions/' + str(project_id) + '/' + str(session_id))
     meta_dict = ref.get()
-    print(meta_dict)
     return meta_dict
 
 
