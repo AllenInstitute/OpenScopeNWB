@@ -41,7 +41,7 @@ def generate_ephys_nwb(session_id, project):
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
-        job_name='openscope_test',
+        job_name='openscope_ephys_nwb',
         dependency=dict(after=65541, afterok=34987),
         mem='128gb',
         partition='braintv',
@@ -78,7 +78,7 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
-        job_name='openscope_test',
+        job_name='openscope_ophys_nwb',
         dependency=dict(after=65541, afterok=34987),
         mem='128gb',
         partition='braintv',
@@ -90,6 +90,7 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                  r'scripts/ophys_nwb_generation.py'
+                 ' --project_id {}'.format(project_id) +
                  ' --session_id {}'.format(session_id) +
                  ' --experiment_id {}'.format(experiment_id) +
                  ' --raw {}'.format(raw) +
@@ -116,7 +117,7 @@ def dandi_ophys_upload(file, project_id, session_id, experiment_id, subject_id, 
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
-        job_name='openscope_test',
+        job_name='openscope_dandi_upload',
         dependency=dict(after=65541, afterok=34987),
         mem='128gb',
         partition='braintv',

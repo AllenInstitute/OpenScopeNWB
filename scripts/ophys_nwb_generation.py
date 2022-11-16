@@ -193,6 +193,7 @@ if __name__ == "__main__":
         raw_nwb.process_suit2p(raw_params)
         slurm_job.dandi_ophys_upload(
             file_path,
+            args.project_id,
             session_id,
             experiment_id,
             subject_id,
@@ -203,6 +204,7 @@ if __name__ == "__main__":
         print("Processing without RAW")
         slurm_job.dandi_ophys_upload(
             file_path,
+            args.project_id,
             session_id,
             experiment_id,
             subject_id,
