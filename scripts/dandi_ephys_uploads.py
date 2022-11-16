@@ -28,9 +28,10 @@ if __name__ == "__main__":
     parser.add_argument('--dandi_file', type=str)
     parser.add_argument('--dandi_val', type=str)
     parser.add_argument('--sess_id', type=str)
+    parser.add_argument('--subject_id', type=str)
     args = parser.parse_args()
     set_env()
-    validate.validate(args.dandi_file)
+    print(validate.validate(args.dandi_file))
     dandi_set = dandi()
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
@@ -41,7 +42,7 @@ if __name__ == "__main__":
     status = dandi_dataset.iter_upload_raw_asset(
         args.dandi_file,
         asset_metadata={
-            'path': args.sess_id + '/' + args.sess_id + '.nwb',
+            'path': args.subject_id + '/' + args.sess_id + '/' + args.sess_id + '.nwb',
             "dandiset": str(dandi_dataset)})
     dir = os.path.dirname(args.dandi_file)
     probes = ["probeA", 'probeB', 'probeC', 'probeD', 'probeE', 'probeF']
@@ -53,7 +54,7 @@ if __name__ == "__main__":
                     dandi_dataset.iter_upload_raw_asset(
                         i,
                         asset_metadata={
-                            'path': args.sess_id + '/' + probe + '.nwb',
+                            'path': args.subject_id + '/' +  args.sess_id + '/' + probe + '.nwb',
                             "dandiset": str(dandi_dataset)}))
     print(list(status))
     for i in status_probes:

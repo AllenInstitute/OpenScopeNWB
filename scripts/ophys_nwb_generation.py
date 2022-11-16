@@ -117,7 +117,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     with NWBHDF5IO(nwb_path, "r+", load_namespaces=True) as nwbfile:
         input_nwb = nwbfile.read()
         input_nwb.subject = Subject(
-            subject_id=str(session_id),
+            subject_id=str(subject_info['id']),
             age=subject['age_in_days'],
             species='Mus musculus',
             sex=subject['sex'],
@@ -181,6 +181,8 @@ if __name__ == "__main__":
         'nwb_path': file_path,
         'data_json': data_json_path
     }
+    subject_info = allen.lims_o_subject_info(session_id)
+    subject_id = subject_info['id']
     add_data_to_nwb(json_in['output_stimulus_table_path'], file_path)
     add_subject_to_nwb(session_id, experiment_id, file_path)
     eye_tracking.add_tracking_to_ophys_nwb(tracking_params)
@@ -196,16 +198,16 @@ if __name__ == "__main__":
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
         #cmd = dir + '/dandi_uploads.py ' + "--sess_id " + str(session_id)  + " --exp_id " + str(experiment_id) + " --raw " + "True" + ' --dandi_file ' + file_path + ' --dandi_url ' + dandi_url + ' --val' + str(val)
-        print("dandi cmd")
         # print(shlex.split(cmd))
         # subprocess.call(shlex.split(cmd))
-        print('upload done')
         slurm_job.dandi_ophys_upload(
             file_path,
             session_id,
             experiment_id,
+            subject_id,
             'True',
             val,
+            subject_id,
             final)
     else:
         print("Processing without RAW")
@@ -213,6 +215,7 @@ if __name__ == "__main__":
             file_path,
             session_id,
             experiment_id,
+            subject_id,
             'False',
             val,
             final)

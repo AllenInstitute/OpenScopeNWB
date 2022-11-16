@@ -50,6 +50,7 @@ if __name__ == "__main__":
     parser.add_argument('--dandi_val', type=str)
     parser.add_argument('--sess_id', type=str)
     parser.add_argument('--exp_id', type=str)
+    parser.add_argument('--subject_id', type=str)
     parser.add_argument('--raw', type=str)
     parser.add_argument('--final', type=str)
     args = parser.parse_args()
@@ -66,13 +67,13 @@ if __name__ == "__main__":
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': args.sess_id + '/' + args.sess_id + '/' + args.exp_id + '_raw.nwb',
+                'path': args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '_raw.nwb',
                 "dandiset": str(dandi_dataset)})
     else:
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': args.sess_id + '/' + args.exp_id + '.nwb',
+                'path': args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '.nwb',
                 "dandiset": str(dandi_dataset)})
     print("STATUS")
     print(list(status))
