@@ -59,7 +59,7 @@ def generate_ephys_nwb(session_id, project):
                  ' --project {}'.format(project))
 
 
-def generate_ophys_nwb(session_id, experiment_id, raw, val, final):
+def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
     conda_environment = 'ophys_nwb'
 
     python_path = os.path.join(
