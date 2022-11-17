@@ -482,7 +482,7 @@ def get_o_sess_info(session_id):
     OPHYS_SESSION_QRY = """
     SELECT os.id,
         os.name,
-        os.specimen_id,
+        sp.external_specimen_name,
         os.equipment_id,
         os.stimulus_name,
         os.date_of_acquisition,
@@ -490,6 +490,7 @@ def get_o_sess_info(session_id):
         os.imaging_depth_id,
         os.workflow_state
     FROM ophys_sessions os
+        JOIN specimens sp ON sp.id = os.specimen_id
     WHERE os.id = {}
     """
     cur = get_psql_cursor(get_cred_location())
