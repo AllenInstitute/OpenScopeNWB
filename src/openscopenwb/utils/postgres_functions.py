@@ -458,6 +458,7 @@ def get_e_sess_info(session_id):
     meta_dict['type'] = 'Ecephys'
     meta_dict['status'] = {'status': 'Not Converted'}
     meta_dict['notes'] = 'none'
+    meta_dict['dandi'] = 'Not Yet Uploaded'
     try:
         meta_dict['probes'] = get_sess_probes(session_id)
     except Exception:
@@ -481,13 +482,15 @@ def get_o_sess_info(session_id):
     OPHYS_SESSION_QRY = """
     SELECT os.id,
         os.name,
-        os.specimen_id,
+        sp.external_specimen_name,
         os.equipment_id,
         os.stimulus_name,
         os.date_of_acquisition,
         os.operator_id,
-    os.imaging_depth_id
+        os.imaging_depth_id,
+        os.workflow_state
     FROM ophys_sessions os
+        JOIN specimens sp ON sp.id = os.specimen_id
     WHERE os.id = {}
     """
     cur = get_psql_cursor(get_cred_location())
@@ -518,8 +521,11 @@ def get_o_sess_info(session_id):
     meta_dict['operator'] = info_list[6]
     meta_dict['equip'] = info_list[3]
     meta_dict['id'] = info_list[0]
+    meta_dict['workflow'] = info_list[8]
+    meta_dict['dandi'] = 'Not Yet Uploaded'
     meta_dict['path'] = get_o_sess_directory(session_id)[0]
     meta_dict['type'] = 'Ophys'
+    meta_dict['notes'] = 'none'
     meta_dict['experiments'] = get_sess_experiments(session_id)
     meta_dict['status'] = {'status': 'Not Converted'}
 

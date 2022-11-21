@@ -211,6 +211,24 @@ def update_o_session(project_id, session_id):
     meta_dict['status'] = status
     ref.update(meta_dict)
 
+def update_session_dandi(project_id, session_id, path):
+    """Updates a specific sessions's information while keeping current status
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+    path: str
+    The path on dandi for the session
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id + '/dandi')
+    ref.update(path)
+
 
 def update_session(project_id, session_id):
     """Updates a specific sessions's information while keeping current status

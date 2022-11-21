@@ -11,6 +11,7 @@ if __name__ == '__main__':
     slurm_job.generate_ophys_nwb(
         sys.argv[1],
         sys.argv[2],
-        'False',
         sys.argv[3],
+        'False',
+        sys.argv[4],
         "not final")

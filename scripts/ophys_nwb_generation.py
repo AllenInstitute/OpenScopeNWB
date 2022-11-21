@@ -123,6 +123,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('--project_id', type=str)
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
     parser.add_argument('--raw', type=str)
@@ -192,6 +193,7 @@ if __name__ == "__main__":
         raw_nwb.process_suit2p(raw_params)
         slurm_job.dandi_ophys_upload(
             file_path,
+            args.project_id,
             session_id,
             experiment_id,
             subject_id,
@@ -202,6 +204,7 @@ if __name__ == "__main__":
         print("Processing without RAW")
         slurm_job.dandi_ophys_upload(
             file_path,
+            args.project_id,
             session_id,
             experiment_id,
             subject_id,
