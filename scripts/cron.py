@@ -54,6 +54,8 @@ for project in e_proj_list:
     for session in conversion_list:
         flag = sync.sync_test(session)
         if flag:
+            print("Long Frame!")
+            print(session)
             long_conversion_list.append(session)
             conversion_list.remove(session)
     print(conversion_list)
