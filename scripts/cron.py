@@ -39,6 +39,7 @@ for project in e_proj_list:
     for session in missing_list:
         fb.init_session(project, session)
     update_list = []
+    long_conversion_list = []
     tmp_update_list = postgres.get_e_proj_info(project)['sessions']
     for sess in tmp_update_list:
         tmp_val = fire_sync.compare_session(project, sess)
@@ -50,6 +51,11 @@ for project in e_proj_list:
         fb.update_session(project, session)
     conversion_list = fb.update_ephys_statuses(project)
     print("List of pre-sanity checked sessions: ")
+    for session in conversion_list:
+        flag = sync.sync_test(session)
+        if flag:
+            long_conversion_list.append(session)
+            conversion_list.remove(session)
     print(conversion_list)
     print("List of Sessions to convert: ")
     print(conversion_list)
@@ -59,12 +65,19 @@ for project in e_proj_list:
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")
-    dandi_list = fb.get_dandi_statuses(project)
+    dandi_list = fb.get_ecephys_upload_sessions(project)
     print(dandi_list)
-    for session in dandi_list:
-        cmd = dir + '/bash/dandi.sh ' + "-d " + proj_dandi_value
+    print("List of Long Frame Sessions to convert: ")
+    for session in long_conversion_list:
+        cmd = dir + '/bash/long_ecephys.sh ' + "-s " + \
+            str(session) + " -p " + project
+        print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
-        fb.update_session_status(project, session, "Conversion Running")
+        fb.update_session_status(project, session, "Conversion Running")        
+    # for session in dandi_list:
+    #    cmd = dir + '/bash/dandi.sh ' + "-d " + proj_dandi_value
+    #    subprocess.call(shlex.split(cmd))
+    #    fb.update_session_status(project, session, "Conversion Running")
 
 for project in o_proj_list:
     if project == 'OpenScopeDendriteCoupling':

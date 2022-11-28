@@ -70,17 +70,18 @@ if __name__ == "__main__":
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': "sub_" + args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '_raw.nwb',
+                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + 'sess_' + args.sess_id  + 'exp_' + args.experiment_id + 'raw_ophys.nwb',
                 "dandiset": str(dandi_dataset)})
     else:
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': "sub_" + args.subject_id + '/' + args.sess_id + '/' + args.exp_id + '.nwb',
+                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + 'sess_' + args.sess_id  + 'exp_' + args.experiment_id + 'ophys.nwb',
                 "dandiset": str(dandi_dataset)})
     print("STATUS")
     print(list(status))
     os.remove(args.dandi_file)
     
     if args.final == 'True':
-        fb.update_session_dandi(args.project_id, args.session_id, "sub_" + args.subject_id + '/' + args.sess_id)
+        fb.update_session_dandi(args.project_id, args.sess_id, "sub_" + args.subject_id + '/' + args.sess_id)
+    fb.update_session_status(args.project_id, args.sess_id, "Uploaded")

@@ -6,6 +6,7 @@ import warnings
 import argparse
 # import ecephys_nwb_trials
 import ecephys_nwb_eye_tracking
+import dandi_ephys_uploads as dandi
 
 from os.path import join
 
@@ -87,6 +88,7 @@ def convert_session(session_id, project):
 
 def write_subject_to_nwb(session_id, module_params):
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
+    fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])    
 
 
 if __name__ == "__main__":
@@ -98,3 +100,4 @@ if __name__ == "__main__":
     write_subject_to_nwb(
         module_params=convert_session(session_id=args.session_id, project=args.project), session_id=args.session_id
     )
+

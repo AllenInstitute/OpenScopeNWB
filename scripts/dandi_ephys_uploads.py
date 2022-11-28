@@ -2,6 +2,7 @@
 from dandi.dandiapi import DandiAPIClient as dandi
 from dandi.files import LocalAsset as dandi_file
 from dandi import validate as validate
+from openscopenwb.utils import firebase_functions as fb
 from glob import glob
 from os.path import join
 import argparse
@@ -41,7 +42,7 @@ if __name__ == "__main__":
     status = dandi_dataset.iter_upload_raw_asset(
         args.dandi_file,
         asset_metadata={
-            'path': args.subject_id + '/' + args.sess_id + '/' + args.sess_id + '.nwb',
+            'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '_ecephys.nwb',
             "dandiset": str(dandi_dataset)})
     dir = os.path.dirname(args.dandi_file)
     probes = ["probeA", 'probeB', 'probeC', 'probeD', 'probeE', 'probeF']
@@ -53,7 +54,7 @@ if __name__ == "__main__":
                     dandi_dataset.iter_upload_raw_asset(
                         i,
                         asset_metadata={
-                            'path': args.subject_id + '/' +  args.sess_id + '/' + probe + '.nwb',
+                            'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '+' + probe + '_secephys.nwb',
                             "dandiset": str(dandi_dataset)}))
     print(list(status))
     for i in status_probes:

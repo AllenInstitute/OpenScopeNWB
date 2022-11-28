@@ -22,6 +22,45 @@ logging.basicConfig(filename="std.log",
 dir = os.path.dirname(__file__)
 
 
+def generate_long_ephys_nwb(session_id, project):
+    conda_environment = 'long_nwb'
+
+    python_path = os.path.join(
+        '/allen',
+        'programs',
+        'mindscope',
+        'workgroups',
+        'openscope',
+        'ahad',
+        'Conda_env',
+        conda_environment,
+        'bin',
+        'python'
+    )
+    print(session_id)
+
+    slurm = Slurm(
+        array=range(3, 4),
+        cpus_per_task=12,
+        job_name='openscope_ephys_nwb',
+        dependency=dict(after=65541, afterok=34987),
+        mem='128gb',
+        partition='braintv',
+        time="06:00:00",
+        output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
+    )
+    dir = os.path.dirname(__file__)
+    print(dir)
+
+    slurm.sbatch(python_path +
+                 r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
+                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
+                 r'scripts/ecephys_nwb_generation.py'
+                 ' --session_id {}'.format(session_id) +
+                 ' --project {}'.format(project))
+
+
+
 def generate_ephys_nwb(session_id, project):
     conda_environment = 'openscopenwb'
 
