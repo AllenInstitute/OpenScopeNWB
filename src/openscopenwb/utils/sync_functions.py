@@ -41,6 +41,8 @@ def sync_test(session_id):
     photodiode_times_fixed = sync.fix_unexpected_edges(
         photodiode_times_on_off, cycle=60)
 
+
+    # fix blips in the line: THIS version accounts for long times
     photodiode_times_fixed_no_long = sync.fix_unexpected_edges_no_long(
         photodiode_times_on_off, cycle=60)
     # find the first diode edges after each flip_vsync
@@ -54,4 +56,4 @@ def sync_test(session_id):
         if i[0] != i[1]:
             print(i)
             long_flag = True
-    print(long_flag)
+    return(long_flag)

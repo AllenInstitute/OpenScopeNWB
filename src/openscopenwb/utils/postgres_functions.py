@@ -3,6 +3,8 @@ from psycopg2 import connect
 import json
 import os
 
+from openscopenwb.utils import allen_functions as allen
+
 
 def get_cred_location():
     """Gets content of firebase credential file
@@ -446,6 +448,8 @@ def get_e_sess_info(session_id):
     meta_dict = {}
     if isinstance(info_list[1], (datetime, date)):
         info_list[1] = info_list[1].isoformat()
+    
+    subject = allen.lims_subject_info(session_id)
 
     meta_dict['name'] = info_list[0]
     meta_dict['date'] = info_list[1]
@@ -459,6 +463,8 @@ def get_e_sess_info(session_id):
     meta_dict['status'] = {'status': 'Not Converted'}
     meta_dict['notes'] = 'none'
     meta_dict['dandi'] = 'Not Yet Uploaded'
+    meta_dict['allen'] = 'Not Yet Converted'
+    meta_dict['genotype'] = subject['genotype']
     try:
         meta_dict['probes'] = get_sess_probes(session_id)
     except Exception:
@@ -513,6 +519,7 @@ def get_o_sess_info(session_id):
     meta_dict = {}
     if isinstance(info_list[5], (datetime, date)):
         info_list[5] = info_list[5].isoformat()
+    subject = allen.lims_o_subject_info(session_id)
     meta_dict['name'] = info_list[1]
     meta_dict['date'] = info_list[5]
     meta_dict['mouse'] = info_list[2]
@@ -526,6 +533,7 @@ def get_o_sess_info(session_id):
     meta_dict['path'] = get_o_sess_directory(session_id)[0]
     meta_dict['type'] = 'Ophys'
     meta_dict['notes'] = 'none'
+    meta_dict['genotype'] = subject['genotype']
     meta_dict['experiments'] = get_sess_experiments(session_id)
     meta_dict['status'] = {'status': 'Not Converted'}
 

@@ -246,7 +246,13 @@ def update_session(project_id, session_id):
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_e_sess_info(session_id)
     status = view_session(project_id, session_id)['status']
+    notes = view_session(project_id, session_id)['notes']
+    allen_dir = view_session(project_id, session_id)['allen']
+    dandi = view_session(project_id, session_id)['dandi']
     meta_dict['status'] = status
+    meta_dict['notes'] = notes
+    meta_dict['allen'] = allen_dir
+    meta_dict['dandi'] = dandi    
     ref.update(meta_dict)
 
 
@@ -281,6 +287,26 @@ def update_session_status(project_id, session_id, status):
     ref = db.reference('/Sessions/' + project_id + "/" + session_id +
                        "/status/")
     ref.update({"status": status})
+
+
+def update_session_dir(project_id, session_id, path):
+    """Updates a session's conversion status
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id + "/" + session_id +
+                       "/allen/")
+    ref.update(path)
+
+
 
 
 def view_session(project_id, session_id):
@@ -377,6 +403,73 @@ def get_sessions(project_id):
         if session != "Metadata":
             sess_list.append(session)
     return sess_list
+
+
+def get_ecephys_upload_sessions(project_id):
+    """Returns all converted but not uploaded sessions of a project
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    sess_list: list
+    A list of all the sessions
+    """
+    ref = db.reference('/Sessions/' + project_id )
+    sessions = ref.get()
+    sess_list = []
+    for session, value in sessions.items():
+        if value['allen'] != 'Not Yet Converted' and value['type'] == "Ecephys" and value['dandi'] == 'Not Yet Uploaded':
+            sess_list.append(session)
+    return sess_list
+
+
+def get_ophys_uploaded_sessions(project_id):
+    """Returns all ophys sessions with all their files on LIMS
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    sess_list: list
+    A list of all the sessions
+    """
+    ref = db.reference('/Sessions/' + project_id )
+    sessions = ref.get()
+    sess_list = []
+    for session, value in sessions.items():
+        if value['workflow'] == 'uploaded' and value['type'] == "Ophys" and value['dandi'] == 'Not Yet Uploaded':
+            sess_list.append(session)
+    return sess_list    
+
+
+def update_queue_list(session_id):
+    """Updates all the queue  to add the current sess
+
+    Parameters
+    ----------
+    session_id: str
+    The sessions's ID value
+    Returns
+    -------
+    """
+    ref = db.reference('/Jobs')
+    sessions = ref.get()    
+    sess_list = []
+    if sessions is not None:
+        for session in sessions:
+            sess_list.append(session)
+    if session_id not in sess_list:
+        sess_list.append(session_id)
+
+        ref.update(sess_list)
+
 
 
 def update_ephys_statuses(projectID):
