@@ -63,7 +63,7 @@ for project in e_proj_list:
     print(conversion_list)
     for session in conversion_list:
         cmd = dir + '/bash/ecephys.sh ' + "-s " + \
-            str(session) + " -p " + project
+            str(session) + " -p " + project + " -l " + "False"
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")
@@ -71,8 +71,8 @@ for project in e_proj_list:
     print(dandi_list)
     print("List of Long Frame Sessions to convert: ")
     for session in long_conversion_list:
-        cmd = dir + '/bash/long_ecephys.sh ' + "-s " + \
-            str(session) + " -p " + project
+        cmd = dir + '/bash/ecephys.sh ' + "-s " + \
+            str(session) + " -p " + project + " -l " + "True"
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")        
