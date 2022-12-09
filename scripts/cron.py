@@ -105,9 +105,14 @@ for project in o_proj_list:
     for session in conversion_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
-            cmd = dir + '/bash/ophys.sh ' + "-s " + \
-                str(session) + " -p " + project + " -e " + \
-                str(experiment) + ' -v ' + str(proj_dandi_value)
+            if experiment != exp_list[-1]:
+                cmd = dir + '/bash/ophys.sh ' + "-s " + \
+                    str(session) + " -p " + project + " -e " + \
+                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f' + "False"
+            else:
+                 cmd = dir + '/bash/ophys.sh ' + "-s " + \
+                    str(session) + " -p " + project + " -e " + \
+                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f' + "True"               
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Conversion Running")
@@ -119,11 +124,11 @@ for project in o_proj_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
             if experiment == exp_list[-1]:
-                cmd = dir + '/bash/raw_ophys.sh ' + "-s " + str(session) + " -p " + project + " -e " + str(
-                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "final"
+                cmd = dir + '/bash/raw_ophys.sh ' + " -p " + project + + "-s " + str(session) + " -e " + str(
+                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "False"
             else:
-                cmd = dir + '/bash/raw_ophys.sh ' + "-s " + str(session) + " -p " + project + " -e " + str(
-                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + 'not_final'
+                cmd = dir + '/bash/raw_ophys.sh ' +  " -p " + project + "-s " + str(session) + " -e " + str(
+                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + 'True'
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(

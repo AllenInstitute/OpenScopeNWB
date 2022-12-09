@@ -13,6 +13,7 @@ syncdata = Dataset(
 # screen
 stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),
                                   syncdata.get_falling_edges('stim_running', 'seconds'))
+stim_running_f = stim_running_f[stim_running_f>stim_running_r[0]]
 # Get vsyncs that tell us when the graphics card buffer was flipped
 vsyncs = syncdata.get_falling_edges('vsync_stim', units='seconds')
 vsyncs = vsyncs[(stim_running_r[0] <= vsyncs) & (vsyncs < stim_running_f[0])]

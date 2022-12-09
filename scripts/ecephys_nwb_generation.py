@@ -88,7 +88,8 @@ def convert_session(session_id, project):
 
 def write_subject_to_nwb(session_id, module_params):
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
-    fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])    
+    fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])   
+     
 
 
 if __name__ == "__main__":
