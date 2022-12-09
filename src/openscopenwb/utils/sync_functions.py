@@ -16,12 +16,20 @@ def sync_test(session_id):
     # screen
     stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),
                                       syncdata.get_falling_edges('stim_running', 'seconds'))
+
+    # Filter out any falling edges from before the first rising
+    stim_running_f = stim_running_f[stim_running_f>stim_running_r[0]]
+
     # Get vsyncs that tell us when the graphics card buffer was flipped
     vsyncs = syncdata.get_falling_edges('vsync_stim', units='seconds')
+    print("Syncs")
+    print (vsyncs)
     vsyncs = vsyncs[(stim_running_r[0] <= vsyncs) &
                     (vsyncs < stim_running_f[0])]
     # These are the vsyncs that are associated with a diode flip
     flip_vsyncs = vsyncs[::60]
+    print("VSYNCS")
+    print(vsyncs)
     # Get diode edges
     photodiode_times = np.sort(np.concatenate([
         syncdata.get_rising_edges('stim_photodiode', 'seconds'),

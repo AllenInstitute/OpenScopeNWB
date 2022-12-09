@@ -5,9 +5,11 @@ from dandi import validate as validate
 from openscopenwb.utils import firebase_functions as fb
 from glob import glob
 from os.path import join
+from os.path import dirname
 import argparse
 import os
 import json
+import shutil
 
 
 def get_creds():
@@ -37,7 +39,6 @@ if __name__ == "__main__":
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
 
-
     status_probes = []
     status = dandi_dataset.iter_upload_raw_asset(
         args.dandi_file,
@@ -59,3 +60,8 @@ if __name__ == "__main__":
     print(list(status))
     for i in status_probes:
         print(list(i))
+
+    fb.start(fb.get_creds())
+    base_dir = dirname(dirname(dirname(args.dandi_file)))
+    output_dir = join(base_dir,"outputs")
+    shutil.rmtree(output_dir)

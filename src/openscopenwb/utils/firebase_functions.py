@@ -302,7 +302,7 @@ def update_session_dir(project_id, session_id, path):
     Returns
     -------
     """
-    ref = db.reference('/Sessions/' + project_id + "/" + session_id +
+    ref = db.reference('/Sessions/' + str(project_id) + "/" + str(session_id) +
                        "/allen/")
     ref.update(path)
 
