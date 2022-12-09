@@ -6,6 +6,7 @@ import logging
 import sys
 import inspect
 from openscopenwb.utils import firebase_functions as fb
+from openscopenwb.utils import postgres_functions as postgres
 
 
 # from openscopenwb.utils import parse_ophys_project_parameters as popp
@@ -78,9 +79,7 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         'bin',
         'python'
     )
-    experiments = fb.get_experiments(project_id, session_id)
-    if int(experiment_id) == int(experiments[-1]):
-        final = 'True'
+    experiments = postgres.get_sess_experiments(session_id)
 
     slurm = Slurm(
         array=range(3, 4),

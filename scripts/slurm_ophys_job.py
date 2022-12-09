@@ -14,4 +14,4 @@ if __name__ == '__main__':
         sys.argv[3],
         'False',
         sys.argv[4],
-        "not final")
+        sys.argv[5])
