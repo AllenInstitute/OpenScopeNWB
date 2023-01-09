@@ -187,6 +187,8 @@ if __name__ == "__main__":
         'plane': str(experiment_id),
         'final': final
     }
+    print("SLURM ID")
+    print(os.environ.get('SLURM_JOBID'))
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag == "True":
         print("Processing Raw")

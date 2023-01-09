@@ -920,6 +920,7 @@ def ecephys_optotagging_table(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
+    print (module_params['project'])
     if module_params['project'] == 'OpenScopeGlobalLocalOddball':
         print("GLO")
         conditions = {
@@ -1113,7 +1114,9 @@ def ecephys_lfp_subsampling(module_params):
         return module_params, input_json_write_dict
     else:
         module_params['lfp_list'].append(input_json_write_dict)
-        if module_params['project'] == "OpenScopeGlobalLocalOddBall":
+        print("PROJECT")
+        print(module_params['project'])
+        if module_params['project'] == "OpenScopeGlobalLocalOddball":
             input_json_write_dict = \
                 {
                     'lfp_subsampling': {

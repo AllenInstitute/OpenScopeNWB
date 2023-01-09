@@ -42,6 +42,7 @@ def generate_ephys_nwb(session_id, project, long):
         'python'
     )
     print(session_id)
+    print(project)
 
     slurm = Slurm(
         array=range(3, 4),

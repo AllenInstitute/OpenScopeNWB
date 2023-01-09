@@ -70,13 +70,13 @@ if __name__ == "__main__":
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + 'sess_' + args.sess_id  + 'exp_' + args.exp_id + 'raw_ophys.nwb',
+                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id  + 'exp_' + args.exp_id + '+raw_ophys.nwb',
                 "dandiset": str(dandi_dataset)})
     else:
         status = dandi_dataset.iter_upload_raw_asset(
             args.dandi_file,
             asset_metadata={
-                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + 'sess_' + args.sess_id  + 'exp_' + args.exp_id + 'ophys.nwb',
+                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id  + 'exp_' + args.exp_id + 'ophys.nwb',
                 "dandiset": str(dandi_dataset)})
     print("STATUS")
     print(list(status))
