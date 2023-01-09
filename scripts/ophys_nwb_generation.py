@@ -23,6 +23,7 @@ from pynwb import NWBHDF5IO
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
+from openscopenwb.utils import firebase_functions as fb 
 import ecephys_nwb_eye_tracking as eye_tracking
 import ophys_nwb_raw as raw_nwb
 from generate_json import generate_ophys_json
@@ -189,6 +190,9 @@ if __name__ == "__main__":
     }
     print("SLURM ID")
     print(os.environ.get('SLURM_JOBID'))
+
+    slurm_id = os.environ.get('SLURM_JOBID')
+    fb.update_curr_job(slurm_id)
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag == "True":
         print("Processing Raw")
@@ -201,7 +205,8 @@ if __name__ == "__main__":
             subject_id,
             'True',
             val,
-            final)
+            final
+        )
     else:
         print("Processing without RAW")
         slurm_job.dandi_ophys_upload(
