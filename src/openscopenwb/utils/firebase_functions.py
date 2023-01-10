@@ -520,6 +520,18 @@ def update_ophys_statuses(projectID):
     return session_list
 
 
+def get_curr_job():
+    ref = db.reference('/Job/id')
+    job_id = ref.get()
+    job_id = job_id
+    return job_id
+
+
+def update_curr_job(id):
+    ref = db.reference('/Job/id')
+    ref.update(id)
+
+
 def update_ophys_RAW_statuses(projectID):
     """Updates all initalized statuses to converting
 
