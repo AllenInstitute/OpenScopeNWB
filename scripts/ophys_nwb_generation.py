@@ -193,6 +193,7 @@ if __name__ == "__main__":
 
     slurm_id = os.environ.get('SLURM_JOBID')
     fb.update_curr_job(slurm_id)
+    
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
     if raw_flag == "True":
         print("Processing Raw")

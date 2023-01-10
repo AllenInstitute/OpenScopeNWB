@@ -521,6 +521,15 @@ def update_ophys_statuses(projectID):
 
 
 def get_curr_job():
+    """Gets the current job id
+    We use this to feed it to slurm
+    to handle job scheduling
+
+    Parameters
+    ----------
+    Returns
+    -------
+    """
     ref = db.reference('/Job/id')
     job_id = ref.get()
     job_id = job_id
@@ -528,6 +537,15 @@ def get_curr_job():
 
 
 def update_curr_job(id):
+    """Updates the current job id
+
+    Parameters
+    ----------
+    id: str
+    The job's ID value
+    Returns
+    -------
+    """
     ref = db.reference('/Job/id')
     ref.update(id)
 
