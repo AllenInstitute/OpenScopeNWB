@@ -42,6 +42,7 @@ def generate_ephys_nwb(session_id, project, long):
         'python'
     )
     print(session_id)
+    print(project)
 
     slurm = Slurm(
         array=range(3, 4),
@@ -120,11 +121,12 @@ def dandi_ophys_upload(file, project_id, session_id, experiment_id, subject_id, 
         'python'
     )
 
+    slurm_id_old = fb.get_curr_job()
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
         job_name='openscope_dandi_upload',
-        dependency=dict(after=65541, afterok=34987),
+        dependency=dict(after=slurm_id_old, afterok=34987),
         mem='128gb',
         partition='braintv',
         time="01:50:00",

@@ -55,7 +55,7 @@ if __name__ == "__main__":
                     dandi_dataset.iter_upload_raw_asset(
                         i,
                         asset_metadata={
-                            'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '+' + probe + '_secephys.nwb',
+                            'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '+' + probe + '_ecephys.nwb',
                             "dandiset": str(dandi_dataset)}))
     print(list(status))
     for i in status_probes:
