@@ -110,7 +110,12 @@ def rename_sessions(Raw, dandi_id):
         match = re.search(r'exp_(\d+)', selected_path)
         if match:
             exp_number = match.group(1)
-        session_number = session_number + "_acq-" + exp_number + "-raw"
+        
+        # Rename session if raw
+        if raw:
+            session_number = session_number + "_acq-" + exp_number + "-raw"
+        else:
+            session_number = session_number + "_acq-" + exp_number
 
         base_path = "/allen/programs/mindscope/workgroups/openscope/openscopedata2022/ophys"
         directory_path = os.path.join(base_path, session_number)
@@ -153,6 +158,8 @@ def rename_sessions(Raw, dandi_id):
         print(organized_nwbfiles, flush=True)
         dandi_upload(paths=[str(x)
                      for x in organized_nwbfiles], dandi_instance='dandi')
+                     
+        # The sleep is needed to prevent the dandi server from rejecting the upload
         time.sleep(600)
 
         rmtree(path=directory_path)

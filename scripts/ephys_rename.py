@@ -26,8 +26,16 @@ from dandi.download import download as dandi_download
 from dandi.upload import upload as dandi_upload
 
 
-
 def get_creds():
+    '''Gets DANDI API key from .cred file
+    
+    Parameters
+    ----------
+    Returns
+    ----------
+    cred_json['api_key']: str
+        DANDI API key
+    '''
     cred_file = open(
         r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
     cred_json = json.load(cred_file)
@@ -35,20 +43,14 @@ def get_creds():
 
 
 def set_env():
+    '''Sets DANDI API key as environment variable
+    
+    Parameters
+    ----------
+    Returns
+    ----------
+    '''
     os.environ['DANDI_API_KEY'] = get_creds()
-
-
-def get_nwb_info(nwb):
-    session_time = nwb.session_start_time
-    sub = nwb.subject
-    probes = set(nwb.devices.keys())
-    n_units = len(nwb.units)
-    stim_types = set(nwb.intervals.keys())
-    stim_tables = [nwb.intervals[table_name] for table_name in nwb.intervals]
-    # gets highest value among final "stop times" of all stim tables in intervals
-    session_end = max([table.stop_time[-1] for table in stim_tables if len(table) > 1])
-
-    return [session_time, sub.specimen_name, sub.sex, sub.age_in_days, sub.genotype, probes, stim_types, n_units, session_end]
 
 
 def rename_sessions(probe=False, dandi_id):
@@ -76,9 +78,7 @@ def rename_sessions(probe=False, dandi_id):
         print(f"Examining file {file.identifier}")
         print(file.path)
 
-        # get basic file metadata
-        row = [file.identifier, file.size, file.path]
-
+        # Get the file URL
         base_url = file.client.session.head(file.base_download_url)
         file_url = base_url.headers['Location']
         selected_path = path
@@ -89,6 +89,7 @@ def rename_sessions(probe=False, dandi_id):
         session_number = None
         probe_letter = None
 
+        # Get the relevant IDs from the path
         match = re.search(r'sub_(\d+)', selected_path)
         if match:
             specimen_number = match.group(1)
@@ -101,6 +102,7 @@ def rename_sessions(probe=False, dandi_id):
         if match:
             exp_number = match.group(1)
 
+        # Check if a probe letter is present
         match = re.search(r'probe([A-Za-z])', selected_path)
         if match:
             probe_letter = match.group(1)
@@ -118,11 +120,14 @@ def rename_sessions(probe=False, dandi_id):
         file.download(os.path.join(directory_path, filename))
         downloaded_files = glob(os.path.join(directory_path, "*.nwb"))[0]
 
-        dandi_download(urls='https://dandiarchive.org/dandiset/000253/draft', output_dir=dandi_path, get_metadata=True, get_assets=False)
+        dandi_download(urls='https://dandiarchive.org/dandiset/000253/draft', 
+                       output_dir=dandi_path, get_metadata=True, get_assets=False)
         dandi_organize(paths=directory_path, dandiset_path=dandi_path_set)
 
         dst = os.path.join(directory_path, dandi_id, "dandiset.yaml")
         src = glob(os.path.join(dandi_path_set, "*.yaml"))[0]
+
+        # Move the dandiset.yaml file to the correct location
         shutil.move(src, dst)
 
         organized_files = glob(os.path.join(dandi_path_set, "sub-*", "*.nwb"))
@@ -142,6 +147,8 @@ def rename_sessions(probe=False, dandi_id):
             dandi_stem_split = dandi_stem.split("_")
             dandi_stem_split.insert(1, f"ses-{session_id}")
             corrected_name = "_".join(dandi_stem_split) + ".nwb"
+
+            # Make sure conventions are followed
             if probe:
                 corrected_name = corrected_name.replace("_ecephys.nwb", '')
                 file_path.rename(file_path.parent /
@@ -152,6 +159,8 @@ def rename_sessions(probe=False, dandi_id):
         organized_nwbfiles = glob(join(dandi_path_set,  "sub-*", "*.nwb"))
         print(organized_nwbfiles, flush=True)
         dandi_upload(paths=[str(x) for x in organized_nwbfiles], dandi_instance='dandi')
+
+        # The sleep is needed to prevent the dandi server from rejecting the upload
         time.sleep(600)
 
         rmtree(path=directory_path)
@@ -161,4 +170,4 @@ def rename_sessions(probe=False, dandi_id):
 
 
 if __name__ == '__main__':
-  rename(True, "000253")
+    rename_session(True, "000253")
