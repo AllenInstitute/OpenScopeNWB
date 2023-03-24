@@ -4,7 +4,7 @@ import re
 import fsspec
 import h5py
 import pandas as pd
-import json 
+import json
 import shutil
 import time
 
@@ -20,43 +20,61 @@ from shutil import rmtree
 
 
 from dandi.dandiapi import DandiAPIClient as dandi
-#from pynwb.base import ImageReferences
+# from pynwb.base import ImageReferences
 from dandi.organize import organize as dandi_organize
 from dandi.download import download as dandi_download
 from dandi.upload import upload as dandi_upload
 
+
 def get_creds():
-    cred_file = open(
-        r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
-    cred_json = json.load(cred_file)
-    return cred_json['api_key']
+    """
+    Gets DANDI API key from .cred file
+
+    Returns
+    -------
+    str
+        DANDI API key
+    """
+    cred_file_path = (
+        "/allen/programs/mindscope/workgroups/openscope/"
+        "ahad/test_cron/OpenScopeNWB-feature-firebase_testing/"
+        "src/openscopenwb/utils/.cred/dandi.json"
+    )
+    with open(cred_file_path) as cred_file:
+        cred_json = json.load(cred_file)
+    return cred_json["api_key"]
 
 
 def set_env():
+    '''Sets DANDI API key as environment variable
+
+    Parameters
+    ----------
+    Returns
+    ----------
+    '''
     os.environ['DANDI_API_KEY'] = get_creds()
 
-def get_nwb_info(nwb):
-        session_time = nwb.session_start_time
-        sub = nwb.subject
-        probes = set(nwb.devices.keys())
-        n_units = len(nwb.units)
-        stim_types = set(nwb.intervals.keys())
-        stim_tables = [nwb.intervals[table_name] for table_name in nwb.intervals]
-        # gets highest value among final "stop times" of all stim tables in intervals
-        session_end = max([table.stop_time[-1] for table in stim_tables if len(table) > 1])
 
-        return [session_time, sub.specimen_name, sub.sex, sub.age_in_days, sub.genotype, probes, stim_types, n_units, session_end]
+def rename_sessions(Raw, dandi_id):
+    """Downloads, renames, and reuploads sessions on dandi
 
-
-
-
-def rename():
+    Parameters
+    ----------
+    Raw: bool
+        If True, only RAW files will be renamed
+    dandi_id: str
+        Dandi ID of the dandiset to be renamed
+    Returns
+    -------
+    """
+    # set up dandi client
     set_env()
-    dandiset_id = "000336"
+    dandiset_id = dandi_id
     authenticate = True
     dandi_api_key = os.environ['DANDI_API_KEY']
-    my_dandiset = dandiapi.DandiAPIClient(token=dandi_api_key).get_dandiset(dandiset_id)
-    # get experimental information from within nwb file
+    my_dandiset = dandiapi.DandiAPIClient(
+        token=dandi_api_key).get_dandiset(dandiset_id)
 
     # set up streaming filesystem
     fs = fsspec.filesystem("http")
@@ -65,19 +83,24 @@ def rename():
     for file in my_dandiset.get_assets():
         path = file.path
         # skip files that aren't main session files
-        if "raw" not in file.path or "exp" not in file.path:
-            continue
+        if raw:
+            if "raw" not in file.path or "exp" not in file.path:
+                continue
+        else:
+            if "exp" not in file.path:
+                continue
 
-        print(f"Examining file {file.identifier}")    
+        print(f"Examining file {file.identifier}")
         print(file.path)
-        # get basic file metadata
-        row = [file.identifier, file.size, file.path]
-        
+
+        # get file url
         base_url = file.client.session.head(file.base_download_url)
         file_url = base_url.headers['Location']
         selected_path = path
         filename = selected_path.split("/")[-1]
         file = my_dandiset.get_asset_by_path(selected_path)
+
+        # grab relevant IDs from file path
         match = re.search(r'sub_(\d+)', selected_path)
         if match:
             specimen_number = match.group(1)
@@ -88,28 +111,30 @@ def rename():
         if match:
             exp_number = match.group(1)
         session_number = session_number + "_acq-" + exp_number + "-raw"
+
         base_path = "/allen/programs/mindscope/workgroups/openscope/openscopedata2022/ophys"
         directory_path = os.path.join(base_path, session_number)
         dandi_path = os.path.abspath(directory_path)
         dandi_path_set = dandi_path + "/" + dandiset_id
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
-            #os.makedirs(dandi_path)
             os.makedirs(dandi_path_set)
-            #os.makedirs(os.path.join(directory_path, dandiset_id))
-            #os.makedirs(os.path.join(directory_path, dandiset_id, "sub-" + specimen_number))
         file.download(f"{directory_path}/{filename}")
+
         downloaded_files = glob(join(directory_path, "*.nwb"))[0]
         file_path = Path(downloaded_files)
-        dandi_download(urls='https://dandiarchive.org/dandiset/000336/draft', output_dir=str( dandi_path), get_metadata=True, get_assets=False)
-        dandi_organize(paths= directory_path, dandiset_path = dandi_path_set)
-        dst = directory_path +'/' + "sub-" + specimen_number
+        dandi_download(urls='https://dandiarchive.org/dandiset/000336/draft',
+                       output_dir=str(dandi_path), get_metadata=True, get_assets=False)
+        dandi_organize(paths=directory_path, dandiset_path=dandi_path_set)
+        dst = directory_path + '/' + "sub-" + specimen_number
         src = directory_path + "/" + dandiset_id + "/" + "sub-" + specimen_number
-        #shutil.move(src, dst)
-        #dandi_organize(paths= directory_path, dandiset_path = dandi_path_set)
-        organized_files = glob(join(dandi_path_set,  "sub-" + specimen_number, "*.nwb"))
+        shutil.move(src, dst)
+
+        organized_files = glob(
+            join(dandi_path_set,  "sub-" + specimen_number, "*.nwb"))
         print(dandi_path_set, flush=True)
-        print(join(dandi_path_set,  "sub-" + specimen_number) + "-exp-" + exp_number, flush=True)
+        print(join(dandi_path_set,  "sub-" + specimen_number) +
+              "-exp-" + exp_number, flush=True)
         print(organized_files, flush=True)
         for organized_nwbfile in organized_files:
             file_path = Path(organized_nwbfile)
@@ -123,16 +148,15 @@ def rename():
                 dandi_stem_split.insert(1, f"ses-{session_id}")
                 corrected_name = "_".join(dandi_stem_split) + ".nwb"
                 file_path.rename(file_path.parent / corrected_name)
-        organized_nwbfiles = glob(join(dandi_path_set,  "sub-" + specimen_number, "*.nwb"))
+        organized_nwbfiles = glob(
+            join(dandi_path_set,  "sub-" + specimen_number, "*.nwb"))
         print(organized_nwbfiles, flush=True)
-        dandi_upload(paths=[str(x) for x in organized_nwbfiles], dandi_instance='dandi')
+        dandi_upload(paths=[str(x)
+                     for x in organized_nwbfiles], dandi_instance='dandi')
         time.sleep(600)
 
         rmtree(path=directory_path)
 
 
-
-
-
 if __name__ == '__main__':
-  rename()
+    rename()
