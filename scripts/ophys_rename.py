@@ -158,7 +158,7 @@ def rename_sessions(Raw, dandi_id):
         print(organized_nwbfiles, flush=True)
         dandi_upload(paths=[str(x)
                      for x in organized_nwbfiles], dandi_instance='dandi')
-                     
+
         # The sleep is needed to prevent the dandi server from rejecting the upload
         time.sleep(600)
 
@@ -166,4 +166,4 @@ def rename_sessions(Raw, dandi_id):
 
 
 if __name__ == '__main__':
-    rename()
+    rename_sessions(True, "000336")
