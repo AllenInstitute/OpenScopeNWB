@@ -3,6 +3,7 @@ import subprocess
 import shlex
 import h5py
 import matplotlib.pyplot as plt
+import re
 
 from requests import post
 from openscopenwb.utils import firebase_sync as fire_sync
@@ -89,6 +90,17 @@ for project in e_proj_list:
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")        
 
+    # Trigger uploads for sessions with upload status
+    print("List of sessions to upload")
+    upload_list = fb.get_dandi_statuses()
+    for session in upload_list:
+        dandi_file = fb.view_session(project, sess)['allen']
+        match = re.search(r'specimen_(\d+)', fb.view_session(project, sess)['path'])
+        if match:
+            specimen_number = match.group(1)
+        with open("dandi_ephys_uploads.py") as upload:
+            code = compile(upload.read(), "dandi_ephys_uploads.py", "exec")
+            exec(code, {"dandi_val": proj_dandi_value, "sess_id":session, "dandi_file": dandi_file, "subject_id": specimen_number})
 
 for project in o_proj_list:
     if project == 'OpenScopeDendriteCoupling':
@@ -112,6 +124,9 @@ for project in o_proj_list:
     print(update_list)
     for session in update_list:
         fb.update_o_session(project, session)
+
+
+    
         
     # Find and convert sessions which are ready 
     conversion_list = fb.update_ophys_statuses(project)

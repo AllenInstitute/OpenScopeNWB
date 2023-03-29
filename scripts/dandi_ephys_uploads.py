@@ -31,6 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('--dandi_file', type=str)
     parser.add_argument('--dandi_val', type=str)
     parser.add_argument('--sess_id', type=str)
+    parser.add_argument('--project_id', type=str)
     parser.add_argument('--subject_id', type=str)
     args = parser.parse_args()
     set_env()
@@ -40,10 +41,11 @@ if __name__ == "__main__":
     dandi_dataset = dandi_set.get_dandiset(args.dandi_val)
 
     status_probes = []
+    path = 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '_ecephys.nwb'
     status = dandi_dataset.iter_upload_raw_asset(
         args.dandi_file,
         asset_metadata={
-            'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '_ecephys.nwb',
+            'path': path,
             "dandiset": str(dandi_dataset)})
     dir = os.path.dirname(args.dandi_file)
     probes = ["probeA", 'probeB', 'probeC', 'probeD', 'probeE', 'probeF']
@@ -62,6 +64,8 @@ if __name__ == "__main__":
         print(list(i))
 
     fb.start(fb.get_creds())
+    fb.update_session_status(args.project_id, args.sess_id, "Uploaded")
+    fb.update_session_dandi(args.project_id, args.sess_id, path)
     base_dir = dirname(dirname(dirname(args.dandi_file)))
     output_dir = join(base_dir,"outputs")
     shutil.rmtree(output_dir)

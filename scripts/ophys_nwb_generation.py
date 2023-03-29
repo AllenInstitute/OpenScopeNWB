@@ -189,9 +189,10 @@ if __name__ == "__main__":
         'final': final
     }
     print("SLURM ID")
-    print(os.environ.get('SLURM_JOBID'))
+    print(os.environ.get('SLURM_JOBID'), flush=True)
 
     slurm_id = os.environ.get('SLURM_JOBID')
+    fb.start(fb.get_creds())
     fb.update_curr_job(slurm_id)
     
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)

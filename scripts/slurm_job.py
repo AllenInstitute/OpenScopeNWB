@@ -81,12 +81,12 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         'python'
     )
     experiments = postgres.get_sess_experiments(session_id)
-
+    slurm_id_old = fb.get_curr_job()['id']
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
         job_name='openscope_ophys_nwb',
-        dependency=dict(after=65541, afterok=34987),
+        dependency=dict(after=slurm_id_old, afterok=34987),
         mem='128gb',
         partition='braintv',
         time="01:50:00",
@@ -120,13 +120,11 @@ def dandi_ophys_upload(file, project_id, session_id, experiment_id, subject_id, 
         'bin',
         'python'
     )
-
-    slurm_id_old = fb.get_curr_job()
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
         job_name='openscope_dandi_upload',
-        dependency=dict(after=slurm_id_old, afterok=34987),
+        dependency=dict(after=65541, afterok=34987),
         mem='128gb',
         partition='braintv',
         time="01:50:00",
