@@ -24,6 +24,20 @@ dir = os.path.dirname(__file__)
 
 
 def generate_ephys_nwb(session_id, project, long):
+    '''Generates an ephys nwb for a given session_id and project
+    
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+    project: str
+    The project's name in LIMS
+    long: str
+    Whether the session has long frames
+
+    Returns
+    -------
+    '''
     if long == "True":
         conda_environment = 'long_nwb'
     else:
@@ -66,6 +80,26 @@ def generate_ephys_nwb(session_id, project, long):
 
 
 def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
+    '''Generates an ophys nwb for a given experiment
+    
+    Parameters
+    ----------
+    session_id: int
+    The sessions's id value
+    project_d: str
+    The project's name in LIMS
+    experiment_id: str
+    The experiment's id in LIMS
+    raw: str
+    Whether the session will have raw data
+    val: str
+    The project's dandi value
+    final: str
+    Whether the experiment is the final of the session
+
+    Returns
+    -------
+    '''
     conda_environment = 'ophys_nwb'
 
     python_path = os.path.join(
@@ -107,6 +141,26 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
 
 
 def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final):
+    '''Generates an ophys nwb for a given session_id and project
+    
+    Parameters
+    ----------
+    file: str
+    The experiment file's nwb path
+    session_id: int
+    The sessions's id value
+    experiment_id: str
+    The experiment's id in LIMS
+    subject_id: str
+    The subject's DONOR id in LIMS
+    raw: str
+    Whether the session will have raw data
+    final: str
+    Whether the experiment is the final of the session
+
+    Returns
+    -------
+    '''
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
@@ -142,41 +196,7 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final)
                  ' --raw {}'.format(raw) +
                  ' --final {}'.format(final))
 
-'''
-if __name__ == '__main__':
-    conda_environment = 'openscopenwb'
 
-    python_path = os.path.join(
-        '/allen',
-        'programs',
-        'mindscope',
-        'workgroups',
-        'openscope',
-        'ahad',
-        'Conda_env',
-        conda_environment,
-        'bin',
-        'python'
-    )
-
-
-    slurm = Slurm(
-        array=range(3, 4),
-        cpus_per_task=12,
-        job_name='openscope_fix_nwb',
-        dependency=dict(after=65541, afterok=34987),
-        mem='128gb',
-        partition='braintv',
-        time="60:00:00",
-        output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
-    )
-    dir = os.path.dirname(__file__)
-    slurm.sbatch(python_path +
-                 r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
-                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                 r'scripts/ephys_rename.py')
-
-'''
 
 if __name__ == '__main__':
     conda_environment = 'openscopenwb'
