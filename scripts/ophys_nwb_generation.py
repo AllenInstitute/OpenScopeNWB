@@ -117,8 +117,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
             species='Mus musculus',
             sex=subject['sex'],
             genotype=subject['full_genotype'],
-            #description="external: " + str(subject_info['name']) + " donor_id: " + str(subject_info['id']) + "specimen_id: " + str(specimen_id),
-            description=str(subject_info['name'])        
+            description="external: " + str(subject_info['name']) + " donor_id: " + str(subject_info['id']) + " specimen_id: " + str(specimen_id),
         )
         nwbfile.write(input_nwb)
 
