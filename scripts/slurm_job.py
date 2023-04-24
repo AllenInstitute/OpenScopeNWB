@@ -28,7 +28,7 @@ def generate_ephys_nwb(session_id, project, long):
     
     Parameters
     ----------
-    session_id: int
+    session_id: str
     The sessions's id value
     project: str
     The project's name in LIMS
@@ -84,7 +84,7 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
     
     Parameters
     ----------
-    session_id: int
+    session_id: str
     The sessions's id value
     project_d: str
     The project's name in LIMS
@@ -147,7 +147,7 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final)
     ----------
     file: str
     The experiment file's nwb path
-    session_id: int
+    session_id: str
     The sessions's id value
     experiment_id: str
     The experiment's id in LIMS
