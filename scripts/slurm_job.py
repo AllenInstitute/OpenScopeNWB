@@ -24,6 +24,20 @@ dir = os.path.dirname(__file__)
 
 
 def generate_ephys_nwb(session_id, project, long):
+    '''Generates an ephys nwb for a given session_id and project
+    
+    Parameters
+    ----------
+    session_id: str
+    The sessions's id value
+    project: str
+    The project's name in LIMS
+    long: str
+    Whether the session has long frames
+
+    Returns
+    -------
+    '''
     if long == "True":
         conda_environment = 'long_nwb'
     else:
@@ -66,6 +80,26 @@ def generate_ephys_nwb(session_id, project, long):
 
 
 def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
+    '''Generates an ophys nwb for a given experiment
+    
+    Parameters
+    ----------
+    session_id: str
+    The sessions's id value
+    project_d: str
+    The project's name in LIMS
+    experiment_id: str
+    The experiment's id in LIMS
+    raw: bool
+    Whether the session will have raw data
+    val: str
+    The project's dandi value
+    final: bool
+    Whether the experiment is the final of the session
+
+    Returns
+    -------
+    '''
     conda_environment = 'ophys_nwb'
 
     python_path = os.path.join(
@@ -81,18 +115,23 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         'python'
     )
     experiments = postgres.get_sess_experiments(session_id)
+    fb.start(fb.get_creds())
     slurm_id_old = fb.get_curr_job()['id']
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
         job_name='openscope_ophys_nwb',
-        dependency=dict(after=slurm_id_old, afterok=34987),
+        dependency=dict(after=slurm_id_old),
         mem='128gb',
         partition='braintv',
         time="01:50:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
+    if final == "True":
+        final = True
+    else:
+        final = False
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -105,7 +144,27 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
                  ' --final {}'.format(final))
 
 
-def dandi_ophys_upload(file, project_id, session_id, experiment_id, subject_id, raw, val, final):
+def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final):
+    '''Generates an ophys nwb for a given session_id and project
+    
+    Parameters
+    ----------
+    file: str
+    The experiment file's nwb path
+    session_id: str
+    The sessions's id value
+    experiment_id: str
+    The experiment's id in LIMS
+    subject_id: str
+    The subject's DONOR id in LIMS
+    raw: bool
+    Whether the session will have raw data
+    final: bool
+    Whether the experiment is the final of the session
+
+    Returns
+    -------
+    '''
     conda_environment = 'openscopenwb'
 
     python_path = os.path.join(
@@ -124,22 +183,55 @@ def dandi_ophys_upload(file, project_id, session_id, experiment_id, subject_id, 
         array=range(3, 4),
         cpus_per_task=12,
         job_name='openscope_dandi_upload',
-        dependency=dict(after=65541, afterok=34987),
         mem='128gb',
         partition='braintv',
         time="01:50:00",
+        output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
+    )
+
+    dir = os.path.dirname(__file__)
+    slurm.sbatch(python_path +
+                 r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
+                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
+                 r'scripts/dandi_uploads.py'
+                 ' --session_id {}'.format(session_id) +
+                 ' --nwb_folder_path {}'.format(file) +
+                 ' --experiment_id {}'.format(experiment_id) +
+                 ' --subject_id {}'.format(subject_id) + 
+                 ' --raw {}'.format(raw) +
+                 ' --final {}'.format(final))
+
+
+
+if __name__ == '__main__':
+    conda_environment = 'openscopenwb'
+
+    python_path = os.path.join(
+        '/allen',
+        'programs',
+        'mindscope',
+        'workgroups',
+        'openscope',
+        'ahad',
+        'Conda_env',
+        conda_environment,
+        'bin',
+        'python'
+    )
+
+
+    slurm = Slurm(
+        array=range(3, 4),
+        cpus_per_task=12,
+        job_name='openscope_fix_nwb',
+        dependency=dict(after=65541, afterok=34987),
+        mem='128gb',
+        partition='braintv',
+        time="60:00:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                 r'scripts/dandi_uploads.py'
-                 ' --sess_id {}'.format(session_id) +
-                 ' --dandi_file {}'.format(file) +
-                 ' --project_id {}'.format(project_id) +
-                 ' --exp_id {}'.format(experiment_id) +
-                 ' --subject_id {}'.format(subject_id) + 
-                 ' --raw {}'.format(raw) +
-                 ' --dandi_val {}'.format(val) +
-                 ' --final {}'.format(final))
+                 r'scripts/ophys_rename.py')

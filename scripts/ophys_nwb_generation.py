@@ -94,6 +94,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     subject_dob = datetime.strptime(subject_info['dob'][:10], '%Y-%m-%d')
     subject_date = postgres.get_o_sess_info(session_id)['date']
     subject_date = datetime.strptime(subject_date[:10], '%Y-%m-%d')
+    specimen_id = postgres.get_o_sess_spec_info(session_id)
     duration = subject_date - subject_dob
     duration = duration.total_seconds()
     duration = divmod(duration, 86400)
@@ -101,23 +102,22 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     days = 'P' + str(days) + 'D'
     subject = {
         'age_in_days': days,
-        'specimen_name': subject_info['name'],
         'full_genotype': subject_info['genotype'],
         'sex': subject_info['gender'],
         'strain': "Transgenic",
         'stimulus_name': 'Ophys Dendrite',
         'species': 'Mus musculus',
-        'donor_id': subject_info['id']
+        'subject_id': subject_info['name']
     }
     with NWBHDF5IO(nwb_path, "r+", load_namespaces=True) as nwbfile:
         input_nwb = nwbfile.read()
         input_nwb.subject = Subject(
-            subject_id=str(subject_info['id']),
+            subject_id=str(subject_info['name']),
             age=subject['age_in_days'],
             species='Mus musculus',
             sex=subject['sex'],
             genotype=subject['full_genotype'],
-            description=str(subject_info['id'])
+            description="external: " + str(subject_info['name']) + " donor_id: " + str(subject_info['id']) + " specimen_id: " + str(specimen_id),
         )
         nwbfile.write(input_nwb)
 
@@ -151,6 +151,7 @@ if __name__ == "__main__":
     )
     subprocess.check_call(command_string)
     file_path = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb'
+    file_folder = file_path
     if raw_flag:
         file_path = file_path + '/' + str(experiment_id) + 'raw_data.nwb'
     else:
@@ -177,7 +178,7 @@ if __name__ == "__main__":
         'data_json': data_json_path
     }
     subject_info = allen.lims_o_subject_info(session_id)
-    subject_id = subject_info['id']
+    subject_id = subject_info['name']
     add_data_to_nwb(json_in['output_stimulus_table_path'], file_path)
     add_subject_to_nwb(session_id, experiment_id, file_path)
     eye_tracking.add_tracking_to_ophys_nwb(tracking_params)
@@ -196,27 +197,26 @@ if __name__ == "__main__":
     fb.update_curr_job(slurm_id)
     
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
+
+    
     if raw_flag == "True":
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
         slurm_job.dandi_ophys_upload(
-            file_path,
-            args.project_id,
-            session_id,
-            experiment_id,
-            subject_id,
-            'True',
-            val,
-            final
+            file = file_folder,
+            session_id = session_id,
+            experiment_id = experiment_id,
+            subject_id = subject_id,
+            raw = 'True',
+            final = final
         )
     else:
         print("Processing without RAW")
         slurm_job.dandi_ophys_upload(
-            file_path,
-            args.project_id,
-            session_id,
-            experiment_id,
-            subject_id,
-            'False',
-            val,
-            final)
+            file = file_folder,
+            session_id = session_id,
+            experiment_id = experiment_id,
+            subject_id = subject_id,
+            raw = 'False',
+            final = final
+        )
