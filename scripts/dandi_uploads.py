@@ -16,7 +16,7 @@ import json
 from os.path import join
 from glob import glob
 
-
+import shutil
 
 
 from openscopenwb.utils import firebase_functions as fb
@@ -32,8 +32,13 @@ def get_creds():
 def set_env():
     os.environ['DANDI_API_KEY'] = get_creds()
 def automatic_dandi_upload(
-    #dandiset_id: str,
-    #nwb_folder_path: str,
+    dandiset_id: str,
+    nwb_folder_path: str,
+    session_id,
+    experiment_id,
+    subject_id,
+    raw, 
+    final
     #dandiset_folder_path: str,
     #version: str = "draft",
     #staging: bool = False,
@@ -67,7 +72,7 @@ def automatic_dandi_upload(
         Defaults to False.
     """
     set_env()
-    dandiset_path = r'/allen/programs/mindscope/workgroups/openscope/openscopedata2022/1189887297/2023-02-01-11-02/nwb_path/1189887297'
+    dandiset_path = nwb_folder_path
     assert os.getenv("DANDI_API_KEY"), (
         "Unable to find environment variable 'DANDI_API_KEY'. "
         "Please retrieve your token from DANDI and set this environment variable."
@@ -76,32 +81,74 @@ def automatic_dandi_upload(
     #url_base = "https://gui-staging.dandiarchive.org" if staging else "https://dandiarchive.org"
     #dandiset_url = f"{url_base}/dandiset/{dandiset_id}/{version}"
 
+    directory_path = os.path.join(nwb_folder_path, experiment_id)
+    dandi_path = os.path.abspath(directory_path)
+    dandi_path_set = directory_path  + "/" + dandiset_id
+    print("PATHS: ", directory_path, dandi_path, dandi_path_set)
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+        os.makedirs(dandi_path_set)
 
-    #dandi_organize(paths=str(dandiset_path), dandiset_path=str(dandiset_path)))
-    organized_nwbfiles = glob(join(dandiset_path, 'sub-1177693335',  "*.nwb" ))
-    dandi_download(urls=r'https://dandiarchive.org/dandiset/000248/draft/', output_dir=str(dandiset_path), get_metadata=True, get_assets=False)
+
+    src = os.path.join(nwb_folder_path, experiment_id + "raw_data.nwb")
+    dst = os.path.join(directory_path, experiment_id + ".nwb")
+
+    # Move the nwb file to the session directory
+    shutil.move(src, dst)
+    
+
+    dandi_download(urls=r'https://dandiarchive.org/dandiset/000336/draft/', output_dir=str(dandi_path), get_metadata=True, get_assets=False)
+    dandi_organize(paths=str(directory_path), dandiset_path=str(dandi_path_set))
+    organized_nwbfiles = glob(join(directory_path, dandiset_id,  'sub-' + subject_id,  "*.nwb" ))
+    print("ORIGINAL ORGANIZED: ", organized_nwbfiles, flush=True)
     print(organized_nwbfiles)
     for organized_nwbfile in organized_nwbfiles:
         file_path = Path(organized_nwbfile)
         if "ses" not in file_path.stem:
             with NWBHDF5IO(path=file_path, mode="r", load_namespaces=True) as io:
                 nwbfile = io.read()
-                session_id = nwbfile.session_id
+                session_id = session_id
             dandi_stem = file_path.stem
             dandi_stem_split = dandi_stem.split("_")
-            dandi_stem_split.insert(1, f"ses-{session_id}")
-            corrected_name = "_".join(dandi_stem_split) + ".nwb"
+            if raw == True:
+                dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}raw")
+            else:
+                dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}")
+            corrected_name = "_".join(dandi_stem_split)  + ".nwb"
             file_path.rename(file_path.parent / corrected_name)
-    organized_nwbfiles = glob(join(dandiset_path, 'sub-1177693335',  "*.nwb" ))
+    organized_nwbfiles = glob(join(directory_path, dandiset_id,  'sub-' + subject_id,  "*.nwb" ))
+    print("ORGANIZED: ", organized_nwbfiles, flush=True)
+    dandi_upload(paths=[str(x)
+                     for x in organized_nwbfiles], dandi_instance='dandi')
     print(organized_nwbfiles)
-    dandi_upload(paths=[str(x) for x in organized_nwbfiles], dandi_instance='dandi')
+   # dandi_upload(paths=[str(x) for x in organized_nwbfiles], dandi_instance='dandi')
+    if args.final == True:
+        fb.update_session_dandi("OpenScopeDendriteCoupling", session_id, "sub_" + args.subject_id + '/' + session_id)
+    fb.update_session_status("OpenScopeDendriteCoupling", args.session_id, "Uploaded")
     #organized_nwbfiles = dandiset_path.rglob("*.nwb")
    # print(organized_nwbfiles)
 
    
 
 if __name__ == '__main__':
-    automatic_dandi_upload()
+    print("Uploading")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--nwb_folder_path', type=str)
+    parser.add_argument('--dandiset_id', type=str)
+    parser.add_argument('--subject_id', type=str)
+    parser.add_argument('--session_id', type=str)
+    parser.add_argument('--experiment_id', type=str)
+    parser.add_argument('--raw', type=str)
+    parser.add_argument('--final', type=str)
+    args = parser.parse_args()
+    nwb_folder_path = args.nwb_folder_path
+    dandiset_id = args.dandiset_id
+    subject_id = args.subject_id
+    session_id = args.session_id
+    experiment_id = args.experiment_id
+    raw = args.raw
+    final = args.final
+    automatic_dandi_upload(nwb_folder_path = nwb_folder_path, dandiset_id = "000336", subject_id = subject_id, session_id = session_id, experiment_id = experiment_id, raw = raw, final = final)
 
 '''
 if __name__ == "__main__":

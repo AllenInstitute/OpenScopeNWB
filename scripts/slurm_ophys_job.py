@@ -12,6 +12,6 @@ if __name__ == '__main__':
         sys.argv[1],
         sys.argv[2],
         sys.argv[3],
-        'False',
+        False,
         sys.argv[4],
         sys.argv[5])

@@ -90,11 +90,11 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
     The project's name in LIMS
     experiment_id: str
     The experiment's id in LIMS
-    raw: str
+    raw: bool
     Whether the session will have raw data
     val: str
     The project's dandi value
-    final: str
+    final: bool
     Whether the experiment is the final of the session
 
     Returns
@@ -128,6 +128,10 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
+    if final == "True":
+        final = True
+    else:
+        final = False
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -153,9 +157,9 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final)
     The experiment's id in LIMS
     subject_id: str
     The subject's DONOR id in LIMS
-    raw: str
+    raw: bool
     Whether the session will have raw data
-    final: str
+    final: bool
     Whether the experiment is the final of the session
 
     Returns
@@ -184,6 +188,7 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final)
         time="01:50:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
+
     dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
