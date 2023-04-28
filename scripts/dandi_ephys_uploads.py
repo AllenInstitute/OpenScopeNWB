@@ -21,6 +21,15 @@ from pynwb import NWBHDF5IO
 
 
 def get_creds():
+    """Gets the DANDI API key from the credentials file
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    cred_json['api_key'] : str
+    """
 
     cred_file = open(
         r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
@@ -31,10 +40,39 @@ def get_creds():
 
 
 def set_env():
+    """Sets the environment variable for the DANDI API key
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    """
     os.environ['DANDI_API_KEY'] = get_creds()
 
 
 if __name__ == "__main__":
+    """Uploads all probes from a session 
+
+    Parameters
+    ----------
+    nwb_folder_path: str
+    The path to the folder containing the nwb files
+    dandiset_id: str
+    The dandiset's id value
+    sess_id: str
+    The session's id value
+    project_id: str
+    The project's id string from LIMS (e.g. 'OpenScopeDendriteCoupling')
+    subject_id: str
+    The subject's SIX DIGIT DONOR id value
+
+    Returns
+    -------
+    sess_list: list
+    A list of all the sessions
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--nwb_folder_path', type=str)
     parser.add_argument('--dandiset_id', type=str)
