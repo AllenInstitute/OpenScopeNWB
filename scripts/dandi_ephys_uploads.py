@@ -21,7 +21,7 @@ from pynwb import NWBHDF5IO
 
 
 def get_creds():
-    
+
     cred_file = open(
         r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
     cred_json = json.load(cred_file)
@@ -36,7 +36,6 @@ def set_env():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dandi_url', type=str)
     parser.add_argument('--nwb_folder_path', type=str)
     parser.add_argument('--dandiset_id', type=str)
     parser.add_argument('--sess_id', type=str)
@@ -46,41 +45,14 @@ if __name__ == "__main__":
     set_env()
     nwb_folder_path = args.nwb_folder_path
     dandiset_id = args.dandiset_id
-    subject_id = args.subject_id
     dandi_set = dandi()
     dandi_set.dandi_authenticate()
     dandi_dataset = dandi_set.get_dandiset(dandiset_id)
     session_id = args.sess_id
-    '''
-    status_probes = []
-    path = 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '_ecephys.nwb'
-    status = dandi_dataset.iter_upload_raw_asset(
-        args.dandi_file,
-        asset_metadata={
-            'path': path,
-            "dandiset": str(dandi_dataset)})
-    dir = os.path.dirname(args.dandi_file)
-    probes = ["probeA", 'probeB', 'probeC', 'probeD', 'probeE', 'probeF']
-    for i in glob(join(dir, "*" + 'probe' + "*.nwb")):
-        for probe in probes:
-            if probe in i:
-                print(i, probe)
-                status_probes.append(
-                    dandi_dataset.iter_upload_raw_asset(
-                        i,
-                        asset_metadata={
-                            'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + '+' + probe + '_ecephys.nwb',
-                            "dandiset": str(dandi_dataset)}))
-    print(list(status))
-    for i in status_probes:
-        print(list(i))
+    project_id = args.project_id
+    subject_id = args.subject_id
+  
 
-    fb.start(fb.get_creds())
-
-    base_dir = dirname(dirname(dirname(args.dandi_file)))
-    output_dir = join(base_dir,"outputs")
-    shutil.rmtree(output_dir)
-    '''
     set_env()
     dandiset_path = nwb_folder_path
     assert os.getenv("DANDI_API_KEY"), (
@@ -88,9 +60,7 @@ if __name__ == "__main__":
         "Please retrieve your token from DANDI and set this environment variable."
     )
 
-    #url_base = "https://gui-staging.dandiarchive.org" if staging else "https://dandiarchive.org"
-    #dandiset_url = f"{url_base}/dandiset/{dandiset_id}/{version}"
-
+    # Create the session directory
     directory_path = os.path.join(nwb_folder_path)
     dandi_path = os.path.abspath(directory_path)
     dandi_path_set = directory_path  + "/" + dandiset_id
@@ -100,6 +70,7 @@ if __name__ == "__main__":
         os.makedirs(dandi_path_set)
 
 
+    # Rename the nwb file to include the session id
     src = os.path.join(nwb_folder_path,  "spike_times.nwb")
     dst = os.path.join(directory_path, session_id + ".nwb")
 
@@ -109,10 +80,9 @@ if __name__ == "__main__":
 
     dandi_download(urls=r'https://dandiarchive.org/dandiset/' + dandiset_id + '/draft/', output_dir=str(dandi_path), get_metadata=True, get_assets=False)
     dandi_organize(paths=str(directory_path), dandiset_path=str(dandi_path_set))
+
+    # We need to add ses to file names manually when using dandi_organize
     organized_nwbfiles = glob(join(directory_path, dandiset_id,  'sub-*' ,  "*.nwb" ))
-    print("ALT ORG: ", glob(join(directory_path, dandiset_id, )), flush=True)
-    print("ORIGINAL ORGANIZED: ", organized_nwbfiles, flush=True)
-    print(organized_nwbfiles)
     for organized_nwbfile in organized_nwbfiles:
         file_path = Path(organized_nwbfile)
         if "ses" not in file_path.stem:
@@ -125,9 +95,12 @@ if __name__ == "__main__":
             dandi_stem_split.insert(1, f"ses-{session_id}")
             corrected_name = "_".join(dandi_stem_split)  + ".nwb"
             file_path.rename(file_path.parent / corrected_name)
+    # Verify that the files are organized correctly
     organized_nwbfiles = glob(join(directory_path, dandiset_id,  'sub-*' ,  "*.nwb" ))
     print("ORGANIZED: ", organized_nwbfiles, flush=True)
     dandi_upload(paths=[str(x)
                      for x in organized_nwbfiles], dandi_instance='dandi')
     print(organized_nwbfiles)
+
+    # Update the session status in firebase
     fb.update_session_status(args.project_id, args.sess_id, "Uploaded")
