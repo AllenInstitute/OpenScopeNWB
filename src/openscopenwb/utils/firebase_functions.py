@@ -52,6 +52,7 @@ def upload_o_session(project_id, session_id):
                 'operator': meta_dict['operator'],
                 'equipment': meta_dict['equip'],
                 'path': meta_dict['path'],
+                'status': meta_dict['status'],
                 'type': meta_dict['type'],
                 'experiments': meta_dict['experiments']
             }}})
@@ -207,9 +208,19 @@ def update_o_session(project_id, session_id):
     """
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_o_sess_info(session_id)
-    status = view_session(project_id, session_id)['status']
-    meta_dict['status'] = status
-    ref.update(meta_dict)
+    print(meta_dict)
+    try: 
+        status = view_session(project_id, session_id)['status']
+        notes = view_session(project_id, session_id)['notes']
+        #allen_dir = view_session(project_id, session_id)['path']
+        dandi = view_session(project_id, session_id)['dandi']
+        meta_dict['status'] = status
+        meta_dict['notes'] = notes
+        #meta_dict['path'] = allen_dir
+        meta_dict['dandi'] = dandi    
+        ref.update(meta_dict)
+    except KeyError:
+        ref.update(meta_dict)
 
 def update_session_dandi(project_id, session_id, path):
     """Updates a specific sessions's information while keeping current status
@@ -427,6 +438,29 @@ def get_ecephys_upload_sessions(project_id):
     return sess_list
 
 
+def get_ecephys_upload_sessions(project_id):
+    """Reconverts all uploaded sessions of a project
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    sess_list: list
+    A list of all the sessions
+    """
+    ref = db.reference('/Sessions/' + project_id )
+    sessions = ref.get()
+    sess_list = []
+    for session, value in sessions.items():
+        if value['allen'] == 'Uploaded' and value['type'] == "Ecephys":
+            update_session_status(project_id, session, "Converting")
+            sess_list.append(session)
+    return sess_list
+
+
 def get_ophys_uploaded_sessions(project_id):
     """Returns all ophys sessions with all their files on LIMS
 
@@ -546,8 +580,9 @@ def update_curr_job(id):
     Returns
     -------
     """
+    print("INPUT", id)
     ref = db.reference('/Job/id')
-    ref.update(id)
+    ref.update({"id": id})
 
 
 def update_ophys_RAW_statuses(projectID):
@@ -590,6 +625,6 @@ def get_dandi_statuses(projectID):
     sessions = ref.get()
     session_list = []
     for session, value in sessions.items():
-        if value['status']['status'] == "Initalizing Upload" and value['type'] == "Ecephys":
+        if value['status']['status'] == "Initializing Upload" and value['type'] == "Ecephys":
             session_list.append(session, value['nwb_location'])
     return session_list
