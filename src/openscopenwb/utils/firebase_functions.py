@@ -192,6 +192,34 @@ def init_o_session(project_id, session_id):
     meta_dict = post_gres.get_o_sess_info(session_id)
     ref.update(meta_dict)
 
+    
+def get_portion_of_o_sess(project_id):
+    """Gets a portion of a specific session's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id)
+    sessions = ref.get()
+    sess_list_flag_present = []
+    sess_list_flag_not_present = []
+    sess_flags = []
+    for session, value in sessions.items():
+        if value['workflow'] ==  'uploaded' and value['fails'] == ['No Flags']:
+            sess_list_flag_present.append(session)
+    for session, value in sessions.items():
+        if value['workflow'] ==  'uploaded' and value['fails'] != ['No Flags']:
+            sess_list_flag_not_present.append(session)
+            sess_flags.append((session, value['fails']))
+    sess_len = len(sess_list_flag_present)
+    sess_no_flag_len = len(sess_list_flag_not_present)
+    return "Number of sessions with no Flag:" + str(len(sess_list_flag_present)) + "Number of sessions with Flags " + str(len(sess_list_flag_not_present)) + "List of flags: " + str(sess_flags)
+    
 
 def update_o_session(project_id, session_id):
     """Updates a specific sessions's information while keeping current status
@@ -209,18 +237,15 @@ def update_o_session(project_id, session_id):
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_o_sess_info(session_id)
     print(meta_dict)
-    try: 
-        status = view_session(project_id, session_id)['status']
-        notes = view_session(project_id, session_id)['notes']
-        #allen_dir = view_session(project_id, session_id)['path']
-        dandi = view_session(project_id, session_id)['dandi']
-        meta_dict['status'] = status
-        meta_dict['notes'] = notes
-        #meta_dict['path'] = allen_dir
-        meta_dict['dandi'] = dandi    
-        ref.update(meta_dict)
-    except KeyError:
-        ref.update(meta_dict)
+
+    status = view_session(project_id, session_id)['status']
+    notes = view_session(project_id, session_id)['notes']
+    dandi = view_session(project_id, session_id)['dandi']
+    meta_dict['status'] = status
+    meta_dict['notes'] = notes
+    meta_dict['dandi'] = dandi    
+    ref.update(meta_dict)
+
 
 def update_session_dandi(project_id, session_id, path):
     """Updates a specific sessions's information while keeping current status
