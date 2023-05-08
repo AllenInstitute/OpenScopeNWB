@@ -7,6 +7,7 @@ import tifftools
 from PIL import Image
 import subprocess
 
+
 def merge_tiff_files(file_paths, output_path):
     """ Concats a list of tiff files into a single tiff file
 
@@ -20,9 +21,6 @@ def merge_tiff_files(file_paths, output_path):
     Returns
     -------
     """
-
-    if os.path.exists(output_path):
-        raise Exception("Output file already exists. Please choose a different path.")
     
     tifftools.tiff_concat(file_paths, output_path)
 
@@ -50,7 +48,10 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
             offset = image.shape[0]/2 - np.argmax(np.correlate(image[i], image[i+1], mode='same'))
             offsets.append(offset)
             i += 2
-        offset = int(np.round(np.mean(offsets)))
+        if len(offsets) == 0:
+            offset = 384
+        else:
+            offset = int(np.round(np.mean(offsets)))
     if do_align: 
         if offset > 0:
             # move every line by offset/2
@@ -63,6 +64,7 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
                 i += 2
 
             image_aligned = image_aligned[:, 1:image_aligned.shape[1]-offset]
+            print("Shape of aligned image: ", image_aligned.shape)
             return offset, image_aligned
         else:
             return offset, image
