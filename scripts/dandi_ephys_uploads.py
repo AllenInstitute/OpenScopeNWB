@@ -3,6 +3,7 @@ from dandi.dandiapi import DandiAPIClient as dandi
 from dandi.files import LocalAsset as dandi_file
 from dandi import validate as validate
 from openscopenwb.utils import firebase_functions as fb
+from openscopenwb.utils import clean_up_functions as cuf
 from glob import glob
 from os.path import join
 from os.path import dirname
@@ -20,23 +21,6 @@ from pathlib import Path
 from pynwb import NWBHDF5IO
 
 
-def get_creds():
-    """Gets the DANDI API key from the credentials file
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-    cred_json['api_key'] : str
-    """
-
-    cred_file = open(
-        r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
-    cred_json = json.load(cred_file)
-    print(cred_json['api_key'])
-    print('cred')
-    return cred_json['api_key']
 
 
 def set_env():
@@ -49,7 +33,6 @@ def set_env():
     -------
 
     """
-    os.environ['DANDI_API_KEY'] = get_creds()
 
 
 if __name__ == "__main__":
@@ -80,7 +63,7 @@ if __name__ == "__main__":
     parser.add_argument('--project_id', type=str)
     parser.add_argument('--subject_id', type=str)
     args = parser.parse_args()
-    set_env()
+    os.environ['DANDI_API_KEY'] = cuf.get_creds()
     nwb_folder_path = args.nwb_folder_path
     dandiset_id = args.dandiset_id
     dandi_set = dandi()
@@ -91,7 +74,6 @@ if __name__ == "__main__":
     subject_id = args.subject_id
   
 
-    set_env()
     dandiset_path = nwb_folder_path
     assert os.getenv("DANDI_API_KEY"), (
         "Unable to find environment variable 'DANDI_API_KEY'. "
