@@ -87,7 +87,7 @@ for stack in stacks:
     ROIs = 2
     image_dim = 768
     spacer = 24
-    chunk_size = 300
+    chunk_size = 1
     chunk_num = int(np.ceil(num_frames / chunk_size))
     print(f"Stack will be processed in {chunk_num} chunks")
 
@@ -113,8 +113,8 @@ for stack in stacks:
             continue        
 
         # split and average 2 rois - single planes
-        offset, roi1[i,:,:] = align_phase(tiff_array[:,:image_dim,:].mean(axis=0))
-        offset, roi2[i,:,:] = align_phase(tiff_array[:,image_dim+spacer:2*image_dim+spacer,:].mean(axis=0))
+        offset, roi1[i,:] = align_phase(tiff_array[:image_dim,:])
+        offset, roi2[i,:] = align_phase(tiff_array[:image_dim+spacer:2*image_dim+spacer,:])
         tif_file = f"/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/roi_{i+1}_1.tif"
         with tifffile.TiffWriter(tif_file, bigtiff=True) as tif:
             tif.write(roi1[i,:,:])
