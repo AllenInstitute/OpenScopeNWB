@@ -119,6 +119,7 @@ for stack in stacks:
         with tifffile.TiffWriter(tif_file, bigtiff=True) as tif:
             tif.write(roi1[i,:,:])
         merge_tiff_files([tif_file], "/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/merged.tif")
+        os.remove(tif_file)
 
         #rois_1.append(roi1)
         #rois_2.append(roi2)
