@@ -23,6 +23,17 @@ def dandi_prep():
     yield test_dict
 
 def test_dandi_download(dandi_prep):
+    """Tests the dandi download function and verifies the outputs directory exists
+
+    Parameters
+    ----------
+    dandi_prep: dict
+    A dictionary containing the dandiset_id, session_id, project_id, and subject_id
+
+    Returns
+    -------
+
+    """
     os.environ['DANDI_API_KEY'] = cuf.get_creds()
 
     dandi_download(urls=r'https://dandiarchive.org/dandiset/' + dandi_prep['dandiset_id']
@@ -32,6 +43,17 @@ def test_dandi_download(dandi_prep):
 
 
 def test_dandi_upload(dandi_prep):
+    """Tests the dandi upload function and verifies the sub-{subject} directory exists
+
+    Parameters
+    ----------
+    dandi_prep: dict
+    A dictionary containing the dandiset_id, session_id, project_id, and subject_id
+
+    Returns
+    -------
+    """
+
     os.environ['DANDI_API_KEY'] = cuf.get_creds()
     cmd = "./scripts/dandi_ephys_uploads.py --nwb_folder_path " + dandi_prep['file_path'] + \
           " --dandiset_id " + dandi_prep['dandiset_id'] + " --sess_id " + \
