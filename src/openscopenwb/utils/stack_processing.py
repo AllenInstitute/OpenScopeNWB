@@ -8,13 +8,13 @@ from PIL import Image
 import subprocess
 
 
-def merge_tiff_files(file_paths, output_path):
+def merge_tiff_files(tif_data, output_path):
     """ Concats a list of tiff files into a single tiff file
 
     Parameters
     ----------
-    file_paths : list
-        List of file paths to tiff files
+    tif_data : list
+        List of coordinates from a tiff file
     output_path : str
         Path to output file
     
@@ -22,7 +22,10 @@ def merge_tiff_files(file_paths, output_path):
     -------
     """
     
-    tifftools.tiff_concat(file_paths, output_path)
+    with tifffile.TiffWriter(output_path, bigtiff = True, append=True) as tif:
+
+        # Save the image data as a new page in the TIFF file
+        tif.save(tif_data)
 
 
 # Credit to Natalia for this function from https://github.com/nataliaorlova/meso_tools.git
@@ -40,6 +43,8 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
         2D numpy array representing phase-aligned image
     """
     # calculate mean offset in the frame:
+    if image.shape[0] % 2 != 0:
+        raise ValueError("Image must have an even number of rows")
     if not offset :
         # calculate mean offset in the frame:
         offsets = []
@@ -51,20 +56,22 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
         if len(offsets) == 0:
             offset = 384
         else:
-            offset = int(np.round(np.mean(offsets)))
+            offset = int(np.mean(offsets))
     if do_align: 
         if offset > 0:
             # move every line by offset/2
+            print("Image Shape: ", image.shape, flush=True)
             image_aligned = np.zeros((image.shape[0], int(image.shape[1]+offset)))
+            print("Aligened Image Shape: ", image_aligned.shape, flush=True)
 
             i=0
             while i < len(image)-1: # loop over each pair of lines to insert original data with offset
-                image_aligned[i,: 0-offset] = image[i, :]
-                image_aligned[i+1, offset:] = image[i+1]
+                image_aligned[i,: (0-offset)] = image[i]
+                image_aligned[i+1,  offset:] = image[i+1]
                 i += 2
 
             image_aligned = image_aligned[:, 1:image_aligned.shape[1]-offset]
-            print("Shape of aligned image: ", image_aligned.shape)
+            print("Image aligned: ", image_aligned, image_aligned.shape, flush=True)
             return offset, image_aligned
         else:
             return offset, image
@@ -101,7 +108,7 @@ for stack in stacks:
 
         # load chunk of tiff:
         frame_start = chunk_size*i 
-        frame_end = chunk_size*(i+1)
+        frame_end = chunk_size*(i+1) +1
 
         # handling of the last chunk 
         if frame_end > num_frames:
@@ -115,13 +122,10 @@ for stack in stacks:
             continue        
 
         # split and average 2 rois - single planes
-        offset, roi1[i,:] = align_phase(tiff_array[:image_dim,:])
-        offset, roi2[i,:] = align_phase(tiff_array[:image_dim+spacer:2*image_dim+spacer,:])
-        tif_file = f"/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/roi_{i+1}_1.tif"
-        with tifffile.TiffWriter(tif_file, bigtiff=True) as tif:
-            tif.write(roi1[i,:,:])
-        merge_tiff_files([tif_file], "/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/merged.tif")
-        os.remove(tif_file)
+        offset, roi1[i,:] = align_phase(tiff_array[:image_dim, :768])
+        #offset, roi2[i,:] = align_phase(tiff_array[image_dim+spacer:image_dim*2+spacer, :769])
+ 
+        merge_tiff_files(roi1[i,:], "/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/merged.tif")
 
         #rois_1.append(roi1)
         #rois_2.append(roi2)
