@@ -59,18 +59,20 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
             offset = int(np.mean(offsets))
     if do_align: 
         if offset > 0:
+            return offset, image
             # move every line by offset/2
             print("Image Shape: ", image.shape, flush=True)
             image_aligned = np.zeros((image.shape[0], int(image.shape[1]+offset)))
             print("Aligened Image Shape: ", image_aligned.shape, flush=True)
+            print( "Offset: ", offset, flush=True)
 
             i=0
             while i < len(image)-1: # loop over each pair of lines to insert original data with offset
-                image_aligned[i,: (0-offset)] = image[i]
-                image_aligned[i+1,  offset:] = image[i+1]
+                image_aligned[i,: int(np.round(0-offset))] = image[i, :]
+                image_aligned[i+1,  int(np.round(offset)):] = image[i+1]
                 i += 2
 
-            image_aligned = image_aligned[:, 1:image_aligned.shape[1]-offset]
+            image_aligned = image_aligned[:, 1:image_aligned.shape[1]-int(np.round(offset))]
             print("Image aligned: ", image_aligned, image_aligned.shape, flush=True)
             return offset, image_aligned
         else:
@@ -108,7 +110,7 @@ for stack in stacks:
 
         # load chunk of tiff:
         frame_start = chunk_size*i 
-        frame_end = chunk_size*(i+1) +1
+        frame_end = chunk_size*(i+1)
 
         # handling of the last chunk 
         if frame_end > num_frames:
@@ -122,7 +124,7 @@ for stack in stacks:
             continue        
 
         # split and average 2 rois - single planes
-        offset, roi1[i,:] = align_phase(tiff_array[:image_dim, :768])
+        offset, roi1[i,:] = align_phase(tiff_array[:image_dim: , :768])
         #offset, roi2[i,:] = align_phase(tiff_array[image_dim+spacer:image_dim*2+spacer, :769])
  
         merge_tiff_files(roi1[i,:], "/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/merged.tif")
