@@ -4,9 +4,9 @@ import numpy as np
 import matplotlib.pyplot as pl
 import tifffile
 import tifftools
-from PIL import Image
 import subprocess
-
+from PIL import Image
+from skimage.io import imsave
 
 def merge_tiff_files(tif_data, output_path):
     """ Concats a list of tiff files into a single tiff file
@@ -59,7 +59,7 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
             offset = int(np.mean(offsets))
     if do_align: 
         if offset > 0:
-            return offset, image
+            return 0, image
             # move every line by offset/2
             print("Image Shape: ", image.shape, flush=True)
             image_aligned = np.zeros((image.shape[0], int(image.shape[1]+offset)))
@@ -76,7 +76,7 @@ def align_phase(image : np.array, do_align : bool = True, offset : Union[int, No
             print("Image aligned: ", image_aligned, image_aligned.shape, flush=True)
             return offset, image_aligned
         else:
-            return offset, image
+            return 0, image
     else:
         return offset
 
@@ -127,8 +127,10 @@ for stack in stacks:
         offset, roi1[i,:] = align_phase(tiff_array[:image_dim: , :768])
         #offset, roi2[i,:] = align_phase(tiff_array[image_dim+spacer:image_dim*2+spacer, :769])
  
+        # We need to create a tiff file if it's the first frame
+        # Else we can just merge 
         merge_tiff_files(roi1[i,:], "/allen/programs/mindscope/workgroups/openscope/ahad/test_tiff/merged.tif")
-
+        
         #rois_1.append(roi1)
         #rois_2.append(roi2)
 
