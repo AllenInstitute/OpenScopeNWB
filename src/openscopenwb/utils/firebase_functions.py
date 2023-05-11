@@ -52,6 +52,7 @@ def upload_o_session(project_id, session_id):
                 'operator': meta_dict['operator'],
                 'equipment': meta_dict['equip'],
                 'path': meta_dict['path'],
+                'status': meta_dict['status'],
                 'type': meta_dict['type'],
                 'experiments': meta_dict['experiments']
             }}})
@@ -191,6 +192,34 @@ def init_o_session(project_id, session_id):
     meta_dict = post_gres.get_o_sess_info(session_id)
     ref.update(meta_dict)
 
+    
+def get_portion_of_o_sess(project_id):
+    """Gets a portion of a specific session's information
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    """
+    ref = db.reference('/Sessions/' + project_id)
+    sessions = ref.get()
+    sess_list_flag_present = []
+    sess_list_flag_not_present = []
+    sess_flags = []
+    for session, value in sessions.items():
+        if value['workflow'] ==  'uploaded' and value['fails'] == ['No Flags']:
+            sess_list_flag_present.append(session)
+    for session, value in sessions.items():
+        if value['workflow'] ==  'uploaded' and value['fails'] != ['No Flags']:
+            sess_list_flag_not_present.append(session)
+            sess_flags.append((session, value['fails']))
+    sess_len = len(sess_list_flag_present)
+    sess_no_flag_len = len(sess_list_flag_not_present)
+    return "Number of sessions with no Flag:" + str(len(sess_list_flag_present)) + "Number of sessions with Flags " + str(len(sess_list_flag_not_present)) + "List of flags: " + str(sess_flags)
+    
 
 def update_o_session(project_id, session_id):
     """Updates a specific sessions's information while keeping current status
@@ -207,9 +236,16 @@ def update_o_session(project_id, session_id):
     """
     ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     meta_dict = post_gres.get_o_sess_info(session_id)
+    print(meta_dict)
+
     status = view_session(project_id, session_id)['status']
+    notes = view_session(project_id, session_id)['notes']
+    dandi = view_session(project_id, session_id)['dandi']
     meta_dict['status'] = status
+    meta_dict['notes'] = notes
+    meta_dict['dandi'] = dandi    
     ref.update(meta_dict)
+
 
 def update_session_dandi(project_id, session_id, path):
     """Updates a specific sessions's information while keeping current status
@@ -427,6 +463,29 @@ def get_ecephys_upload_sessions(project_id):
     return sess_list
 
 
+def get_ecephys_upload_sessions(project_id):
+    """Reconverts all uploaded sessions of a project
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+
+    Returns
+    -------
+    sess_list: list
+    A list of all the sessions
+    """
+    ref = db.reference('/Sessions/' + project_id )
+    sessions = ref.get()
+    sess_list = []
+    for session, value in sessions.items():
+        if value['allen'] == 'Uploaded' and value['type'] == "Ecephys":
+            update_session_status(project_id, session, "Converting")
+            sess_list.append(session)
+    return sess_list
+
+
 def get_ophys_uploaded_sessions(project_id):
     """Returns all ophys sessions with all their files on LIMS
 
@@ -546,8 +605,9 @@ def update_curr_job(id):
     Returns
     -------
     """
+    print("INPUT", id)
     ref = db.reference('/Job/id')
-    ref.update(id)
+    ref.update({"id": id})
 
 
 def update_ophys_RAW_statuses(projectID):
@@ -590,6 +650,6 @@ def get_dandi_statuses(projectID):
     sessions = ref.get()
     session_list = []
     for session, value in sessions.items():
-        if value['status']['status'] == "Initalizing Upload" and value['type'] == "Ecephys":
+        if value['status']['status'] == "Initializing Upload" and value['type'] == "Ecephys":
             session_list.append(session, value['nwb_location'])
     return session_list

@@ -20,17 +20,13 @@ import shutil
 
 
 from openscopenwb.utils import firebase_functions as fb
+from openscopenwb.utils import clean_up_functions as cuf
  
 
-def get_creds():
-    cred_file = open(
-        r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
-    cred_json = json.load(cred_file)
-    return cred_json['api_key']
 
 
 def set_env():
-    os.environ['DANDI_API_KEY'] = get_creds()
+    os.environ['DANDI_API_KEY'] = cuf.get_creds()
 def automatic_dandi_upload(
     dandiset_id: str,
     nwb_folder_path: str,
@@ -122,6 +118,7 @@ def automatic_dandi_upload(
                      for x in organized_nwbfiles], dandi_instance='dandi')
     print(organized_nwbfiles)
    # dandi_upload(paths=[str(x) for x in organized_nwbfiles], dandi_instance='dandi')
+    fb.start(fb.get_creds())
     if args.final == True:
         fb.update_session_dandi("OpenScopeDendriteCoupling", session_id, "sub_" + args.subject_id + '/' + session_id)
     fb.update_session_status("OpenScopeDendriteCoupling", args.session_id, "Uploaded")

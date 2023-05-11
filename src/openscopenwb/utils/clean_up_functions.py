@@ -1,5 +1,12 @@
 import numpy as np
+import json
 
+
+def get_creds():
+    cred_file = open(
+        r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
+    cred_json = json.load(cred_file)
+    return cred_json['api_key']
 
 def clean_up_nan_and_inf(value):
     """ Replaces Nan and inf values with -1
