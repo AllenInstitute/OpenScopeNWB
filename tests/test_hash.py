@@ -9,7 +9,7 @@ import h5py
 import openscopenwb.create_module_input_json as osnjson
 
 from openscopenwb.utils import script_functions as sf
-from openscopenwb.utils import parse_project_parameters as ppp
+from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from pynwb import NWBHDF5IO
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -167,6 +167,7 @@ def test_run_modules(project_param_json_path, tmpdir):
             output_json = os.path.join(json_directory, session + '-' + module
                                        + '-output.json')
             if module == "allensdk.brain_observatory.ecephys.align_timestamps":
+                print(session_params, input_json, output_json)
                 align_times(session_params, input_json, output_json)
                 data_out = json.load(open(input_json, 'r'))
                 probes = data_out['probes'][0]

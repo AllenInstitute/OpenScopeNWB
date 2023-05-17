@@ -1,0 +1,23 @@
+{
+  "probes": {
+    "762602078":  ["probeA","probeB", "probeC", "probeD", "probeE", "probeF"]
+  },
+  "modules": [
+    "allensdk.brain_observatory.ecephys.align_timestamps",
+    "allensdk.brain_observatory.ecephys.stimulus_table",
+    "allensdk.brain_observatory.extract_running_speed",
+    "allensdk.brain_observatory.ecephys.write_nwb"
+  ],
+  "sessions":{
+    "762602078": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_744915204/ecephys_session_762602078/"
+  },
+  "lims": true,
+  "output_path": "//allen/programs/mindscope/workgroups/openscope/ahad/test_script/outputs",
+  "nwb_path": "//allen/programs/mindscope/workgroups/openscope/ahad/test_script/NWB",
+  "input_json": "//allen/programs/mindscope/workgroups/openscope/ahad/test_script/JSON",
+  "output_json": "//allen/programs/mindscope/workgroups/openscope/ahad/test_script/JSON",
+  "session_dir": "//allen/programs/braintv/production/neuralcoding/prod0/specimen_699733581/ecephys_session_715093703/",
+  "trim_discontiguous_frame_times": false,
+  "last_unit_id": 0,
+  "string": "Hello World"
+}

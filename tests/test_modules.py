@@ -60,7 +60,7 @@ def test_ecephys_stim_table(session_param_prep, tmpdir):
     params, test_json = ecephys_mod.stimulus_table(session_param_prep)
     assert test_json['stimulus_pkl_path'] == \
         os.path.join(session_param_prep['base_directory'],
-                     "test.stim.pkl")
+                     "stim.pkl")
     assert test_json['sync_h5_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      "test.sync")
@@ -76,7 +76,7 @@ def test_running_speed(session_param_prep, tmpdir):
     params, test_json = ecephys_mod.extract_running_speed(session_param_prep)
     assert test_json['stimulus_pkl_path'] == \
         os.path.join(session_param_prep['base_directory'],
-                     "test.stim.pkl")
+                     "stim.pkl")
     assert test_json['sync_h5_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      "test.sync")
