@@ -1,0 +1,39 @@
+{
+  "probes": {
+  "773418906":  ["probeA","ProbeB", "probeC", "probeD", "probeE", "probeF"],
+  "746083955":  ["probeA","ProbeB", "probeC", "probeD", "probeE", "probeF"],
+  "719161530":  ["probeA", "probeB", "probeC", "probeD", "probeE", "probeF"],
+  "750332458":  ["probeA", "probeB", "probeC", "probeD", "probeE", "probeF"],
+  "754312389":  ["probeA", "probeB", "probeC", "probeD", "probeE", "probeF"],
+  "762602078":  ["probeA","ProbeB", "probeC", "probeD", "probeE", "probeF"],
+  "789848216":  ["probeA","ProbeB", "probeC", "probeD", "probeE", "probeF"],
+  "816200189":  ["probeA","ProbeB", "probeC", "probeD", "probeE"],
+  "829720705":  ["probeA", "probeC", "probeD", "probeE", "probeF"]
+  },
+  "modules": [
+    "allensdk.brain_observatory.ecephys.align_timestamps",
+    "allensdk.brain_observatory.ecephys.stimulus_table",
+    "allensdk.brain_observatory.extract_running_speed",
+    "allensdk.brain_observatory.ecephys.write_nwb"
+  ],
+  "sessions":{
+    "773418906": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_757329624/ecephys_session_773418906/",
+    "746083955": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_726170935/ecephys_session_746083955/",
+    "719161530": "//allen/programs/braintv/production/neuralcoding/prod0/specimen_703279284/ecephys_session_719161530/",
+    "750332458": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_726141251/ecephys_session_750332458/",
+    "754312389": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_719828690/ecephys_session_754312389/",
+    "762602078": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_744915204/ecephys_session_762602078/",
+    "789848216": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_763808604/ecephys_session_789848216/",
+    "816200189": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_791857608/ecephys_session_816200189/",
+    "829720705": "//allen/programs/braintv/production/neuralcoding/prod56/specimen_811322619/ecephys_session_829720705/"
+},
+  "lims": true,
+  "output_path": "S:\\released_NWB\\outputs",
+  "nwb_path": "S:\\released_NWB\\NWB\\",
+  "input_json": "S:\\released_NWB\\JSON",
+  "output_json": "S:\\released_NWB\\JSON",
+  "session_dir": "//allen/programs/braintv/production/neuralcoding/prod0/specimen_699733581/ecephys_session_715093703/",
+  "trim_discontiguous_frame_times": false,
+  "last_unit_id": 0,
+  "string": "Hello World"
+}
