@@ -11,6 +11,7 @@ from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import sync_functions as sync
+from openscopenwb.utils import dandi_functions as dandi
 from pathlib import Path
 from ecephys_nwb_generation import write_subject_to_nwb
 
@@ -101,6 +102,7 @@ for project in e_proj_list:
         with open("dandi_ephys_uploads.py") as upload:
             code = compile(upload.read(), "dandi_ephys_uploads.py", "exec")
             exec(code, {"dandi_val": proj_dandi_value, "sess_id":session, "dandi_file": dandi_file, "subject_id": specimen_number})
+    dandi.find_dandiset_sessions(project, proj_dandi_value)
 
 for project in o_proj_list:
     if project == 'OpenScopeDendriteCoupling':
@@ -170,3 +172,4 @@ for project in o_proj_list:
             print(fr)
             fb.update_session_status(
                 project, session, "Raw Conversion Running")
+    dandi.find_dandiset_sessions(project, proj_dandi_value)
