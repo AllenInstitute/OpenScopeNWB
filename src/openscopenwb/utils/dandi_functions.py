@@ -24,8 +24,19 @@ from openscopenwb.utils import firebase_functions as fb
 
 from dandi.dandiapi import DandiAPIClient as dandi
 def check_sess_info(project, dandi_id, path):
-    """ 
-    If a path contained a sess_id, return it 
+    """Update a session's dandi location
+
+    Parameters
+    ----------
+    project : str
+        The project id
+    dandi_id : str
+        The dandi id
+    path : str
+        The path to the file
+
+    Returns
+    -------
     """
     if "probe" in path:
         return None
@@ -51,6 +62,18 @@ def check_sess_info(project, dandi_id, path):
         return None
 
 def find_dandiset_sessions(project, dandi_id):
+    """Update a project's dandi locations
+
+    Parameters
+    ----------
+    project : str
+        The project id
+    dandi_id : str
+        The dandi id
+
+    Returns
+    -------
+    """
     os.environ['DANDI_API_KEY'] = cuf.get_creds()
     dandi_api_key = os.environ['DANDI_API_KEY']
     my_dandiset = dandiapi.DandiAPIClient(
