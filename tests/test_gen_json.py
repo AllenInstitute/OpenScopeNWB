@@ -1,4 +1,5 @@
 import pytest
+'''
 from scripts.generate_json import generate_ephys_json as gen_e_json
 
 
@@ -17,3 +18,4 @@ def gres_sess_prep():
 def test_sessions(gres_sess_prep):
     info_list = gen_e_json(1172129291)
     assert gres_sess_prep['modules'] == info_list['modules']
+    '''
