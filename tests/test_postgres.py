@@ -7,8 +7,8 @@ from openscopenwb.utils import postgres_functions as postgres
 def gres_sess_prep():
     test_dict = {
         "name": "20211029_594315_SN2",
-        "date": datetime.datetime(2021, 10, 29, 13, 36, 8),
-        "mouse": 1128695100,
+        "date": '2021-10-29T15:07:27.150000',
+        "mouse": '594315',
         "stim": 'SNR_2',
         "img": None,
         "operator": 51,
