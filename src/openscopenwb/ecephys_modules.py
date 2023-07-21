@@ -959,63 +959,63 @@ def ecephys_optotagging_table(module_params):
         conditions = {
             "0": {
                 "duration": 1,
-                "name": "fast_pulses",
-                "condition": "2 ms pulses at 1 Hz"
+                "name": "data_1Hz",
+                "condition": "just a single pulse of 2.5ms"
             },
             "1": {
                 "duration": 1,
-                "name": "pulse",
-                "condition": "a single 10ms pulse"
+                "name": "data_5Hz",
+                "condition": "1 second of 5Hz pulse train. Each pulse is 2.5 ms wide"
             },
             "2": {
-                "duration": .2,
-                "name": "pulse",
-                "condition": "1 second of 5Hz pulse train. Each pulse is 2 ms wide"
+                "duration": 1,
+                "name": "data_10Hz",
+                "condition": "1 second of 10Hz pulse train. Each pulse is 2 ms wide"
             },
             "3": {
-                "duration": .1,
-                "name": "raised_cosine",
-                "condition": "half-period of a cosine wave"
+                "duration": 1,
+                "name": "data_20Hz",
+                "condition": "1 second of 20Hz pulse train. Each pulse is 2 ms wide"
             },
             "4": {
-                "duration": .05,
-                "name": "5 hz pulse train",
-                "condition": "Each pulse is 10 ms wide"
+                "duration": 1,
+                "name": "data_30Hz",
+                "condition": "1 second of 30Hz pulse train. Each pulse is 2 ms wide"
             },
             "5": {
-                "duration": .033,
-                "name": "40 hz pulse train",
-                "condition": "Each pulse is 6 ms wide"
+                "duration": 1,
+                "name": "data_40Hz",
+                "condition": "1 second of 40Hz pulse train. Each pulse is 2 ms wide"
             },
             "6": {
                 "duration": .025,
-                "name": "fast_pulses",
-                "condition": "1 second of 40 Hz pulse train. Each pulse is 2 ms wide"
+                "name": "data_50Hz",
+                "condition": "1 second of 50 Hz pulse train. Each pulse is 2 ms wide"
             },
             "7": {
                 "duration": 0.02,
-                "name": "pulse",
-                "condition": "a single square pulse"
+                "name": "data_60Hz",
+                "condition": "1 second of 60Hz pulse train. Each pulse is 2 ms wide"
             },
             "8": {
                 "duration": 0.0167,
-                "name": "pulse",
-                "condition": "a single square pulse"
+                "name": "data_80Hz",
+                "condition": "1 second of 80Hz pulse train. Each pulse is 2 ms wide"
             },
             "9": {
                 "duration": .0125,
-                "name": "raised_cosine",
-                "condition": "half-period of a cosine wave"
+                "name": "data_100Hz",
+                "condition": "1 second of 100Hz pulse train. Each pulse is 2 ms wide"
             },
             "10": {
                 "duration": .01,
-                "name": "100 hz pulse train",
-                "condition": "1 second of 100 Hz pulse train. Each pulse is 2 ms wide"
+                "name": "data_square1s",
+                "condition": "1 second square pulse: continuously on for 1s"
             },
             "11": {
                 "duration": 1.0,
-                "name": "Square Pulse",
-                "condition": "1 second square pulse: continuously on for 1s"
+                "name": "data_cosine",
+                "condition": "half period of cosine pulses"
             }
         }
     try:
