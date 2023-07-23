@@ -28,6 +28,21 @@ from datetime import datetime
 
 
 def convert_session(session_id, project):
+    """Calls functions to write ephys NWB session
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+    project: str
+    The project's LIMS ID
+
+    Returns
+    -------
+    module_params: dict
+    Session unique information, used by each module
+    """
+
     warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
     project_csv_json = gen_json.generate_ephys_json(session_id, project)
@@ -87,14 +102,40 @@ def convert_session(session_id, project):
 
 
 def write_subject_to_nwb(session_id, module_params):
+    """Writes subject table information to nwb
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+    module_params: dict
+    Session unique information, used by each module
+
+    Returns
+    -------
+    """
+
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
     fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])   
      
 
 
 if __name__ == "__main__":
+    """Calls functions to write ephys NWB session
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+    project: str
+    The project's LIMS ID
+
+    Returns
+    -------
+    """
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--session_id', type=int)
+    parser.add_argument('--session_id', type=str)
     parser.add_argument('--project', type=str)
     args = parser.parse_args()
     print(args.project)
