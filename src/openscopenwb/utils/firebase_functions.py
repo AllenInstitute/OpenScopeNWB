@@ -5,17 +5,20 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import glob
-
-
-def get_creds():
-    dir = os.path.dirname(__file__)
-    credential_file = glob.glob(os.path.join(dir, '.cred',
-                                'firebase_backend_credentials.json'))
-    cred_json = credential_file[0]
-    return cred_json
+import clean_up_functions as cuf
 
 
 def start(cred_path):
+    """Starts the firebase app
+
+    Parameters
+    ----------
+    cred_path: str
+    The path to the credentials
+
+    Returns
+    -------
+    """
     cred = credentials.Certificate(cred_path)
     app = firebase_admin.initialize_app(cred, {
         'databaseURL':
@@ -97,7 +100,6 @@ def upload_project(project_id):
     Returns
     -------
     """
-    start(get_creds())
     meta_dict = post_gres.get_e_proj_info(project_id)
     for session in meta_dict['sessions']:
         session = str(session)
@@ -117,7 +119,7 @@ def upload_o_project(project_id):
     Returns
     -------
     """
-    start(get_creds())
+    start(cuf.get_firebase_creds())
     meta_dict = post_gres.get_o_proj_info(project_id)
     for session in meta_dict['sessions']:
         session = str(session)
@@ -262,8 +264,9 @@ def update_session_dandi(project_id, session_id, path):
     Returns
     -------
     """
-    ref = db.reference('/Sessions/' + project_id + '/' + session_id + '/dandi')
-    ref.update(path)
+    print(project_id, session_id, path)
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id )
+    ref.update({"dandi": path})
 
 
 def update_session(project_id, session_id):
@@ -405,6 +408,21 @@ def view_project(project_id):
 
 
 def get_experiments(project_id, session_id):
+
+    """Returns all experiments of a session
+
+    Parameters
+    ----------
+    project_id: str
+    The project's LIMS id value
+    session_id: str
+    The session's 10 digit id value
+
+    Returns
+    -------
+    exp_list: list
+    A list of all the experiments
+    """
     ref = db.reference(
         '/Sessions/' +
         project_id +
@@ -508,6 +526,7 @@ def get_ophys_uploaded_sessions(project_id):
     return sess_list    
 
 
+
 def update_queue_list(session_id):
     """Updates all the queue  to add the current sess
 
@@ -530,6 +549,23 @@ def update_queue_list(session_id):
         ref.update(sess_list)
 
 
+def get_ophys_session_workflow(project_id, session_id):
+    """Returns the workflow status of an ophys session 
+
+    Parameters
+    ----------
+    project_id: int
+    The project's id value
+    session_id: int
+    The session's id value
+
+    Returns
+    -------
+    workflow: str
+    The workflow status of the session
+    """
+    workflow = view_session(project_id, session_id)['workflow']
+    return workflow
 
 def update_ephys_statuses(projectID):
     """Updates all initalized statuses to converting
