@@ -3,6 +3,17 @@ import json
 
 
 def get_creds():
+    """Gets the dandi credentials locally
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    api_key: str
+    The api key for dandi
+    """
     cred_file = open(
         r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
     cred_json = json.load(cred_file)
