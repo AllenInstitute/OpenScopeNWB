@@ -3,15 +3,45 @@ from allensdk.brain_observatory.sync_dataset import \
 import allensdk.brain_observatory.ecephys.stimulus_sync as sync
 from openscopenwb.utils import postgres_functions as postgres
 import matplotlib.pyplot as plt
+from glob import glob
+from os.path import join 
 import numpy as np
+import os
 import matplotlib
 matplotlib.use('WebAgg')
 
 
 def sync_test(session_id):
+    """Tests the sync file for a session for long frames
+
+    Parameters
+    ----------
+    session_id: str
+        The session_id for the session
+    
+    Returns
+    -------
+    long_flag: bool
+        True if there are long frames, False otherwise
+    """
     long_flag = False
-    syncdata = Dataset(postgres.get_e_sess_sync(session_id))
-    print(postgres.get_e_sess_sync(session_id))
+    sync_file = postgres.get_e_sess_sync(session_id)
+    sync_exists = os.path.isfile(sync_file)
+    if sync_exists:
+        try: 
+            syncdata = Dataset(sync_file)
+        except:
+            sync_file = postgres.get_e_sess_directory(session_id)
+            print("DIRECTORY", sync_file)
+            sync_file = glob(join(sync_file, '**/**', '*.sync'), recursive=True)
+            print("SYNC: ", sync_file)
+            syncdata = Dataset(max(sync_file, key=os.path.getmtime))           
+    else:
+        sync_file = postgres.get_e_sess_directory(session_id)
+        print("DIRECTORY", sync_file)
+        sync_file = glob(join(sync_file, '**/**', '*.sync'), recursive=True)
+        print("SYNC: ", sync_file)
+        syncdata = Dataset(sync_file[0])
     # Grab the stim running line that tells us when visual stimuli were on the
     # screen
     stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),
