@@ -26,7 +26,8 @@ from openscopenwb.utils import clean_up_functions as cuf
 
 
 def set_env():
-    os.environ['DANDI_API_KEY'] = cuf.get_creds()
+    x = cuf.get_creds()
+    os.environ["DANDI_API_KEY"] = x
 def automatic_dandi_upload(
     dandiset_id: str,
     nwb_folder_path: str,
@@ -109,7 +110,7 @@ def automatic_dandi_upload(
             if raw == True:
                 dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}raw")
             else:
-                dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}")
+                dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}raw")
             corrected_name = "_".join(dandi_stem_split)  + ".nwb"
             file_path.rename(file_path.parent / corrected_name)
     organized_nwbfiles = glob(join(directory_path, dandiset_id,  'sub-' + subject_id,  "*.nwb" ))
@@ -128,6 +129,28 @@ def automatic_dandi_upload(
    
 
 if __name__ == '__main__':
+    """Uploads an NWB to dandi 
+
+    Parameters
+    ----------
+
+    nwb_folder_path: str
+    The current nwb's location
+    dandiset_id: str
+    The dandi set's id
+    session_id: str
+    The 10 digit session id for our data
+    experiment_id: str
+    The experiment id for the session's plane
+    subject_id: str
+    The external donor id for the session
+    raw: bool
+    Whether to include RAW data
+    final: bool
+    Whether this is the final plane for the sess
+
+    Returns
+    -------
     print("Uploading")
     parser = argparse.ArgumentParser()
     parser.add_argument('--nwb_folder_path', type=str)
@@ -135,7 +158,7 @@ if __name__ == '__main__':
     parser.add_argument('--subject_id', type=str)
     parser.add_argument('--session_id', type=str)
     parser.add_argument('--experiment_id', type=str)
-    parser.add_argument('--raw', type=str)
+    parser.add_argument('--raw', type=bool)
     parser.add_argument('--final', type=str)
     args = parser.parse_args()
     nwb_folder_path = args.nwb_folder_path
@@ -145,75 +168,5 @@ if __name__ == '__main__':
     experiment_id = args.experiment_id
     raw = args.raw
     final = args.final
-    automatic_dandi_upload(nwb_folder_path = nwb_folder_path, dandiset_id = "000336", subject_id = subject_id, session_id = session_id, experiment_id = experiment_id, raw = raw, final = final)
+    automatic_dandi_upload(nwb_folder_path = nwb_folder_path, dandiset_id = dandiset_id, subject_id = subject_id, session_id = session_id, experiment_id = experiment_id, raw = raw, final = final)
 
-'''
-if __name__ == "__main__":
-    """Uploads an NWB to dandi 
-
-    Parameters
-    ----------
-    dandi_url: str
-    The dandiset's location
-    dandi_file: str
-    The current nwb's location
-    dandi_val: str
-    The dandi set's id
-    project_id: str
-    The project name for the data 
-    sess_id: str
-    The 10 digit session id for our data
-    exp_id: str
-    The experiment id for the session's plane
-    subject_id: str
-    The mouse id for the session
-    raw: str
-    Whether to include RAW data
-    final: str
-    Whether this is the final plane for the sess
-
-    Returns
-    -------
-    """
-    print("Uploading")
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dandi_url', type=str)
-    parser.add_argument('--dandi_file', type=str)
-    parser.add_argument('--dandi_val', type=str)
-    parser.add_argument('--project_id', type=str)
-    parser.add_argument('--subject_id', type=str)
-    parser.add_argument('--sess_id', type=str)
-    parser.add_argument('--exp_id', type=str)
-    parser.add_argument('--raw', type=str)
-    parser.add_argument('--final', type=str)
-    args = parser.parse_args()
-    set_env()
-    validate.validate(args.dandi_file)
-    dandi_set = dandi()
-    dandi_set.dandi_authenticate()
-    dandi_dataset = dandi_set.get_dandiset('000' + args.dandi_val)
-    raw = args.raw
-    if raw == 'True':
-        status = dandi_dataset.iter_upload_raw_asset(
-            args.dandi_file,
-            asset_metadata={
-                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' + 'sub_' + args.subject_id + '+sess_' + args.sess_id + 'exp_' + args.exp_id + '+raw_ophys.nwb',
-                "dandiset": str(dandi_dataset)})
-    else:
-        status = dandi_dataset.iter_upload_raw_asset(
-            args.dandi_file,
-            asset_metadata={
-                'path': 'sub_' + args.subject_id + '/' 'sub_' + args.subject_id + 'sess_' + args.sess_id + '/' +  'sub_' + args.subject_id + '+sess_' + args.sess_id + 'exp_' + args.exp_id + 'ophys.nwb',
-                "dandiset": str(dandi_dataset)})
-    print("STATUS")
-    print(list(status))
-    os.remove(args.dandi_file)
-    npy_files = glob(args.subject_id + "*.npy")
-    print(npy_files)
-    fb.start(fb.get_creds())
-
-
-    if args.final == 'True':
-        fb.update_session_dandi(args.project_id, args.sess_id, "sub_" + args.subject_id + '/' + args.sess_id)
-    fb.update_session_status(args.project_id, args.sess_id, "Uploaded")
-'''
