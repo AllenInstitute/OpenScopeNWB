@@ -26,7 +26,7 @@ from openscopenwb.utils import clean_up_functions as cuf
 
 
 def set_env():
-    x = cuf.get_creds()
+    x = cuf.get_dandi_creds()
     os.environ["DANDI_API_KEY"] = x
 def automatic_dandi_upload(
     dandiset_id: str,
@@ -68,6 +68,7 @@ def automatic_dandi_upload(
         Whether to remove the dandiset folder path and nwb_folder_path.
         Defaults to False.
     """
+    dandiset_id = "000" + dandiset_id
     set_env()
     dandiset_path = nwb_folder_path
     assert os.getenv("DANDI_API_KEY"), (
@@ -87,7 +88,7 @@ def automatic_dandi_upload(
         os.makedirs(dandi_path_set)
 
 
-    src = os.path.join(nwb_folder_path, experiment_id + "raw_data.nwb")
+    src = os.path.join(nwb_folder_path, experiment_id + ".nwb")
     dst = os.path.join(directory_path, experiment_id + ".nwb")
 
     # Move the nwb file to the session directory
@@ -107,10 +108,10 @@ def automatic_dandi_upload(
                 session_id = session_id
             dandi_stem = file_path.stem
             dandi_stem_split = dandi_stem.split("_")
-            if raw == True:
+            if raw == "True":
                 dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}raw")
             else:
-                dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}raw")
+                dandi_stem_split.insert(1, f"ses-{session_id}-acq-{experiment_id}")
             corrected_name = "_".join(dandi_stem_split)  + ".nwb"
             file_path.rename(file_path.parent / corrected_name)
     organized_nwbfiles = glob(join(directory_path, dandiset_id,  'sub-' + subject_id,  "*.nwb" ))
@@ -120,12 +121,9 @@ def automatic_dandi_upload(
     print(organized_nwbfiles)
    # dandi_upload(paths=[str(x) for x in organized_nwbfiles], dandi_instance='dandi')
     fb.start(fb.get_creds())
-    if args.final == True:
+    if args.final == "True":
         fb.update_session_dandi("OpenScopeDendriteCoupling", session_id, "sub_" + args.subject_id + '/' + session_id)
     fb.update_session_status("OpenScopeDendriteCoupling", args.session_id, "Uploaded")
-    #organized_nwbfiles = dandiset_path.rglob("*.nwb")
-   # print(organized_nwbfiles)
-
    
 
 if __name__ == '__main__':
@@ -151,6 +149,7 @@ if __name__ == '__main__':
 
     Returns
     -------
+    """
     print("Uploading")
     parser = argparse.ArgumentParser()
     parser.add_argument('--nwb_folder_path', type=str)
