@@ -26,6 +26,8 @@ if __name__ == '__main__':
         print("SLURN OPHYS JOB")
         print("arguments")
         print(sys.argv)
+
+
         slurm_jobs.generate_ophys_nwb(
             sys.argv[1],
             sys.argv[2],

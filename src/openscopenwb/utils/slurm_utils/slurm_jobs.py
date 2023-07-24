@@ -125,10 +125,6 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
     dir = os.path.dirname(__file__)
-    if final == "True":
-        final = True
-    else:
-        final = False
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -238,7 +234,7 @@ def add_temp_to_nwb():
 
 
 
-def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final):
+def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final, dandi_set_id):
     '''Generates an ophys nwb for a given session_id and project
     
     Parameters
@@ -284,16 +280,18 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final)
     )
 
     dir = os.path.dirname(__file__)
+
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                 r'scripts/dandi_uploads.py'
+                 r'src/openscopenwb/utils/dandi_utils/dandi_uploads.py'
                  ' --session_id {}'.format(session_id) +
                  ' --nwb_folder_path {}'.format(file) +
                  ' --experiment_id {}'.format(experiment_id) +
                  ' --subject_id {}'.format(subject_id) + 
-                 ' --raw {}'.format(False) +
-                 ' --final {}'.format(final))
+                 ' --raw {}'.format(raw) +
+                 ' --final {}'.format(final)+
+                 ' --dandiset_id {}'.format(dandi_set_id))
 
 
 def nwb_add_templates():
