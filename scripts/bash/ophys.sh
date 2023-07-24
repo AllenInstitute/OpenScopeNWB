@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-while getopts "s:p:e:v:f:" arg; do
+while getopts "s:p:e:r:v:f:" arg; do
   case "$arg" in
     s) Session=$OPTARG;;
     p) Project=$OPTARG;;
@@ -13,6 +13,8 @@ done
 echo $Session
 echo $Project
 echo $Experiment
+echo $Raw
 echo $Val
-ssh ahad.bawany@hpc-login "/allen/programs/mindscope/workgroups/openscope/ahad/Conda_env/openscopenwb/bin/python /allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/scripts/slurm_ophys_job.py" $Project $Session $Experiment $Raw $Val $Final
+echo $Final
+python "/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/slurm_utils/slurm_ophys_job.py" $Project $Session $Experiment $Raw $Val $Final
 exit 1

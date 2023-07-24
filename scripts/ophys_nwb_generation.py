@@ -7,8 +7,8 @@ import sys
 import subprocess
 import json
 import subprocess
+import sys
 import shlex
-import slurm_job
 
 from datetime import datetime
 from os.path import join
@@ -25,6 +25,7 @@ from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import firebase_functions as fb 
+from openscopenwb.utils.slurm_utils import slurm_jobs as slurm_job
 import ecephys_nwb_eye_tracking as eye_tracking
 import ophys_nwb_raw as raw_nwb
 from generate_json import generate_ophys_json
@@ -147,7 +148,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
     subject_dob = datetime.strptime(subject_info['dob'][:10], '%Y-%m-%d')
     subject_date = postgres.get_o_sess_info(session_id)['date']
     subject_date = datetime.strptime(subject_date[:10], '%Y-%m-%d')
-    specimen_id = postgres.get_o_sess_spec_info(session_id)
+    specimen_id = postgres.get_o_sess_donor_info(session_id)
     duration = subject_date - subject_dob
     duration = duration.total_seconds()
     duration = divmod(duration, 86400)
@@ -205,9 +206,9 @@ if __name__ == "__main__":
     parser.add_argument('--project_id', type=str)
     parser.add_argument('--session_id', type=int)
     parser.add_argument('--experiment_id', type=int)
-    parser.add_argument('--raw', type=bool)
+    parser.add_argument('--raw', type=str)
     parser.add_argument('--val', type=int)
-    parser.add_argument('--final', type=bool)
+    parser.add_argument('--final', type=str)
     args = parser.parse_args()
     session_id = args.session_id
     experiment_id = args.experiment_id
@@ -230,7 +231,7 @@ if __name__ == "__main__":
     subprocess.check_call(command_string)
     file_path = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb'
     file_folder = file_path
-    if raw_flag:
+    if raw_flag is True:
         file_path = file_path + '/' + str(experiment_id) + 'raw_data.nwb'
     else:
         file_path = file_path + '/' + str(experiment_id) + '.nwb'
@@ -277,7 +278,11 @@ if __name__ == "__main__":
     
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
 
-    raw_flawg = True
+    if raw_flag == "True":
+        raw_flag = True
+    else:
+        raw_flag = False
+    
     if raw_flag == True:
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
@@ -287,16 +292,17 @@ if __name__ == "__main__":
             experiment_id = experiment_id,
             subject_id = subject_id,
             raw = True,
-            final = final
+            final = final,
+            dandi_set_id = val
         )
     else:
         print("Processing without RAW")
-        raw_nwb.process_suit2p(raw_params)
         slurm_job.dandi_ophys_upload(
             file = file_folder,
             session_id = session_id,
             experiment_id = experiment_id,
             subject_id = subject_id,
             raw = True,
-            final = final
+            final = final,
+            dandi_set_id = val
         )
