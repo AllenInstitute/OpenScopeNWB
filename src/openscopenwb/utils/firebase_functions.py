@@ -1,12 +1,23 @@
 from openscopenwb.utils import postgres_functions as post_gres
+from openscopenwb.utils import clean_up_functions as cuf
 
 import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import glob
-import clean_up_functions as cuf
 
+def get_creds():
+    """Gets the firebase credentials locally
+
+    Parameters
+    ----------
+    
+    Returns
+    -------
+    The credentials for firebase
+    """
+    return cuf.get_firebase_creds()
 
 def start(cred_path):
     """Starts the firebase app

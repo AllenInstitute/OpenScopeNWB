@@ -315,6 +315,25 @@ def get_sess_experiments(session_id):
     return info_list
 
 
+def get_o_targeted_struct(exp_id):
+    OPHYS_TARGET_QRY = """
+    SELECT st.acronym
+    FROM ophys_experiments oe
+        LEFT JOIN structures st ON st.id = oe.targeted_structure_id
+    WHERE oe.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = OPHYS_TARGET_QRY.format(exp_id)
+    cur.execute(lims_query)
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(session_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list[0][0]
+
+
+
 def get_e_sess_donor_info(session_id):
     EPHYS_SESSION_QRY = """
     SELECT sp.donor_id

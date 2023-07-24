@@ -1,5 +1,8 @@
-import numpy as np
 import json
+import os
+import numpy as np
+
+from glob import glob
 
 
 def get_dandi_creds():
@@ -33,7 +36,7 @@ def get_firebase_creds():
     The credentials for firebase
     """
     dir = os.path.dirname(__file__)
-    credential_file = glob.glob(os.path.join(dir, '.cred',
+    credential_file = glob(os.path.join(dir, '.cred',
                                 'firebase_backend_credentials.json'))
     cred_json = credential_file[0]
     return cred_json
