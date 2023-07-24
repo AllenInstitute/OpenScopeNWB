@@ -279,12 +279,12 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final,
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
 
-    dir = os.path.dirname(__file__)
+    current_dir = os.path.dirname(__file__)
 
+    upload_path = current_dir.replace('slurm_utils', 'dandi_utils')
+    upload_path = upload_path + "/dandi_uploads.py"
     slurm.sbatch(python_path +
-                 r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
-                 r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                 r'src/openscopenwb/utils/dandi_utils/dandi_uploads.py'
+                 upload_path +
                  ' --session_id {}'.format(session_id) +
                  ' --nwb_folder_path {}'.format(file) +
                  ' --experiment_id {}'.format(experiment_id) +
