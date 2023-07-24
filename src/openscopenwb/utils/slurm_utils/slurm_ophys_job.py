@@ -1,4 +1,4 @@
-import slurm_job
+import slurm_jobs
 import sys
 
 if __name__ == '__main__':
@@ -8,7 +8,7 @@ if __name__ == '__main__':
     ----------
     session_id: str
         The sessions's id value
-    project_d: str
+    project_id: str
         The project's name in LIMS
     experiment_id: str
         The experiment's id in LIMS
@@ -26,12 +26,12 @@ if __name__ == '__main__':
         print("SLURN OPHYS JOB")
         print("arguments")
         print(sys.argv)
-        slurm_job.generate_ophys_nwb(
+        slurm_jobs.generate_ophys_nwb(
             sys.argv[1],
             sys.argv[2],
             sys.argv[3],
-            False,
             sys.argv[4],
-            sys.argv[5])
+            sys.argv[5],
+            sys.argv[6])
     except Exception as e:
         print("An error occurred:", str(e))

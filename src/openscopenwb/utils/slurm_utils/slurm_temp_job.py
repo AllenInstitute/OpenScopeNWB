@@ -1,4 +1,4 @@
-import slurm_job
+import slurm_jobs
 import sys
 
 if __name__ == '__main__':
@@ -10,4 +10,4 @@ if __name__ == '__main__':
     Returns
     -------
     '''
-    slurm_job.add_temp_to_nwb()
+    slurm_jobs.add_temp_to_nwb()

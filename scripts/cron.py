@@ -25,7 +25,7 @@ from os.path import join
 dir = os.path.dirname(__file__) or '.'
 curr_dir = Path(__file__).parent
 
-e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball"]
+e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball", "OpenScopeTemporalBarcode"]
 o_proj_list = ["OpenScopeDendriteCoupling"]
 
 
@@ -35,6 +35,8 @@ for project in e_proj_list:
         proj_dandi_value = "000248"
     elif project == "OpenScopeGlobalLocalOddBall":
         proj_dandi_value = "000253"
+    elif project == "OpenScopeTemporalBarcode":
+        proj_dandi_value = "000563"
     
     # Compare sessions between postgres and FB
     missing_list = fire_sync.compare_sessions(project)
@@ -74,7 +76,7 @@ for project in e_proj_list:
     print(conversion_list)
     for session in conversion_list:
         cmd = dir + '/bash/ecephys.sh ' + "-s " + \
-            str(session) + " -p " + project + " -l " + "False"
+            str(session) + " -p " + project + " -l " + False
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")
@@ -85,7 +87,7 @@ for project in e_proj_list:
     print("List of Long Frame Sessions to convert: ")
     for session in long_conversion_list:
         cmd = dir + '/bash/ecephys.sh ' + "-s " + \
-            str(session) + " -p " + project + " -l " + "True"
+            str(session) + " -p " + project + " -l " + True
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")        
@@ -138,11 +140,11 @@ for project in o_proj_list:
             if experiment != exp_list[-1]:
                 cmd = dir + '/bash/ophys.sh ' + "-s " + \
                     str(session) + " -p " + project + " -e " + \
-                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "False"
+                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "False" + ' -r ' + False
             else:
                  cmd = dir + '/bash/ophys.sh ' + "-s " + \
                     str(session) + " -p " + project + " -e " + \
-                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "True"               
+                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "True" + ' -r ' + False           
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Conversion Running")
@@ -159,14 +161,12 @@ for project in o_proj_list:
         # FB info on dandi locations
         for experiment in exp_list:
             if experiment == exp_list[-1]:
-                cmd = dir + '/bash/raw_ophys.sh ' + " -p " + project   + " -s " + str(session) + " -e " + str(
-                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "False"
+                cmd = dir + '/bash/ophys.sh ' + " -p " + project   + " -s " + str(session) + " -e " + str(
+                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + False + ' -r ' + True
             else:
-                cmd = dir + '/bash/raw_ophys.sh ' +  " -p " + project + " -s " + str(session) + " -e " + str(
-                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + 'True'
+                cmd = dir + '/bash/ophys.sh ' +  " -p " + project + " -s " + str(session) + " -e " + str(
+                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + True + ' -r ' + True
             print(shlex.split(cmd))
-            fr = subprocess.run(shlex.split(cmd))
-            print("RAW")
-            print(fr)
+            subprocess.run(shlex.split(cmd))
             fb.update_session_status(
                 project, session, "Raw Conversion Running")
