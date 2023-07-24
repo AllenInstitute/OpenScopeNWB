@@ -198,22 +198,10 @@ def dandi_ephys_upload():
                  ' --project_id {}'.format('OpenScopeTemporalBarcode'))    
 
 def add_temp_to_nwb():
-    '''Generates an ophys nwb for a given session_id and project
-    
+    '''Adds image templates to an ephys nwb
+
     Parameters
     ----------
-    file: str
-        The experiment file's nwb path
-    session_id: str
-        The sessions's id value
-    experiment_id: str
-        The experiment's id in LIMS
-    subject_id: str
-        The subject's DONOR id in LIMS
-    raw: bool
-        Whether the session will have raw data
-    final: bool
-        Whether the experiment is the final of the session
 
     Returns
     -------
