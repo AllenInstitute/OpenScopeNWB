@@ -18,6 +18,7 @@ import generate_json as gen_json
 from pynwb import NWBHDF5IO
 import pynwb
 
+from openscopenwb.utils.slurm_utils import slurm_jobs as slurm_job
 from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
@@ -101,7 +102,7 @@ def convert_session(session_id, project):
     return module_params
 
 
-def write_subject_to_nwb(session_id, module_params):
+def write_subject_to_nwb(session_id, module_params, dandi_id):
     """Writes subject table information to nwb
 
     Parameters
@@ -117,7 +118,7 @@ def write_subject_to_nwb(session_id, module_params):
 
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
     fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])   
-     
+    slurm_job.upload_ephys_nwb(session_id, module_params['project'], module_params['nwb_path'], dandi_id)
 
 
 if __name__ == "__main__":
@@ -137,9 +138,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--session_id', type=str)
     parser.add_argument('--project', type=str)
+    parser.add_argument('--dandi_id', type=str)
     args = parser.parse_args()
     print(args.project)
     write_subject_to_nwb(
-        module_params=convert_session(session_id=args.session_id, project=args.project), session_id=args.session_id
+        module_params=convert_session(session_id=args.session_id, project=args.project), session_id=args.session_id, dandi_id=args.dandi_id
     )
 
