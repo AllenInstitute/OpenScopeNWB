@@ -19,7 +19,7 @@ logging.basicConfig(filename="std.log",
 dir = os.path.dirname(__file__)
 
 
-def generate_ephys_nwb(session_id, project, long):
+def generate_ephys_nwb(session_id, project, long, dandi):
     '''Generates an ephys nwb for a given session_id and project
     
     Parameters
@@ -30,6 +30,8 @@ def generate_ephys_nwb(session_id, project, long):
         The project's name in LIMS
     long: str
         Whether the session has long frames
+    dandi: str
+        The session's dandi value
 
     Returns
     -------
@@ -72,7 +74,8 @@ def generate_ephys_nwb(session_id, project, long):
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                  r'scripts/ecephys_nwb_generation.py'
                  ' --session_id {}'.format(session_id) +
-                 ' --project {}'.format(project))
+                 ' --project {}'.format(project) +
+                 ' --dandi {}'.format(dandi))
 
 
 def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
@@ -137,7 +140,7 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
                  ' --final {}'.format(final))
 
 
-def dandi_ephys_upload():
+def dandi_ephys_upload(file, project_id, session_id, val, final):
     '''Generates an ophys nwb for a given session_id and project
     
     Parameters
@@ -186,12 +189,11 @@ def dandi_ephys_upload():
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
-                 r'scripts/dandi_ephys_uploads.py'
-                 ' --sess_id {}'.format('1274061513') +
-                 ' --nwb_folder_path {}'.format(r'/allen/programs/mindscope/workgroups/openscope/openscopedata2022/1274061513/2023-06-13-13-21/nwb_path/1274061513') +
-                 ' --dandiset_id {}'.format('000563') +
-                 ' --subject_id {}'.format('688000') + 
-                 ' --project_id {}'.format('OpenScopeTemporalBarcode'))    
+                 r'scripts/dandi_ephys_uploads.py ' +
+                 ' --session_id {}'.format(session_id) +
+                 ' --project_id {}'.format(project_id) +
+                 ' --nwb_folder_path {}'.format(file) +
+                 ' --dandiset_id {}'.format(val))    
 
 def add_temp_to_nwb():
     '''Adds image templates to an ephys nwb
@@ -282,8 +284,8 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final,
     current_dir = os.path.dirname(__file__)
 
     upload_path = current_dir.replace('slurm_utils', 'dandi_utils')
-    upload_path = upload_path + "/dandi_uploads.py"
-    slurm.sbatch(python_path +
+    upload_path = upload_path + "/dandi_o_uploads.py"
+    slurm.sbatch(python_path + " " + 
                  upload_path +
                  ' --session_id {}'.format(session_id) +
                  ' --nwb_folder_path {}'.format(file) +
