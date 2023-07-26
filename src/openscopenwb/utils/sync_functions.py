@@ -4,7 +4,7 @@ import allensdk.brain_observatory.ecephys.stimulus_sync as sync
 from openscopenwb.utils import postgres_functions as postgres
 import matplotlib.pyplot as plt
 from glob import glob
-from os.path import join 
+from os.path import join
 import numpy as np
 import os
 import matplotlib
@@ -18,7 +18,7 @@ def sync_test(session_id):
     ----------
     session_id: str
         The session_id for the session
-    
+
     Returns
     -------
     long_flag: bool
@@ -28,14 +28,15 @@ def sync_test(session_id):
     sync_file = postgres.get_e_sess_sync(session_id)
     sync_exists = os.path.isfile(sync_file)
     if sync_exists:
-        try: 
+        try:
             syncdata = Dataset(sync_file)
         except:
             sync_file = postgres.get_e_sess_directory(session_id)
             print("DIRECTORY", sync_file)
-            sync_file = glob(join(sync_file, '**/**', '*.sync'), recursive=True)
+            sync_file = glob(
+                join(sync_file, '**/**', '*.sync'), recursive=True)
             print("SYNC: ", sync_file)
-            syncdata = Dataset(max(sync_file, key=os.path.getmtime))           
+            syncdata = Dataset(max(sync_file, key=os.path.getmtime))
     else:
         sync_file = postgres.get_e_sess_directory(session_id)
         print("DIRECTORY", sync_file)
@@ -44,16 +45,18 @@ def sync_test(session_id):
         syncdata = Dataset(sync_file[0])
     # Grab the stim running line that tells us when visual stimuli were on the
     # screen
-    stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),
-                                      syncdata.get_falling_edges('stim_running', 'seconds'))
+    stim_running_r, stim_running_f = (syncdata.get_rising_edges(
+                                        'stim_running', 'seconds'),
+                                      syncdata.get_falling_edges(
+                                        'stim_running', 'seconds'))
 
     # Filter out any falling edges from before the first rising
-    stim_running_f = stim_running_f[stim_running_f>stim_running_r[0]]
+    stim_running_f = stim_running_f[stim_running_f > stim_running_r[0]]
 
     # Get vsyncs that tell us when the graphics card buffer was flipped
     vsyncs = syncdata.get_falling_edges('vsync_stim', units='seconds')
     print("Syncs")
-    print (vsyncs)
+    print(vsyncs)
     vsyncs = vsyncs[(stim_running_r[0] <= vsyncs) &
                     (vsyncs < stim_running_f[0])]
     # These are the vsyncs that are associated with a diode flip
@@ -65,8 +68,10 @@ def sync_test(session_id):
         syncdata.get_rising_edges('stim_photodiode', 'seconds'),
         syncdata.get_falling_edges('stim_photodiode', 'seconds')
     ]))
-    photodiode_times = photodiode_times[(stim_running_r[0] <= photodiode_times) & (
-        photodiode_times < stim_running_f[0])]
+    photodiode_times = photodiode_times[
+        (stim_running_r[0] <= photodiode_times) &
+        (photodiode_times < stim_running_f[0])
+    ]
     # removes blinking at beginning and end of each stimulus
     photodiode_times_trimmed = sync.trim_border_pulses(
         photodiode_times, vsyncs
@@ -78,7 +83,6 @@ def sync_test(session_id):
     # fix blips in the line: THIS IS THE FUNCTION THAT GOES HAYWIRE
     photodiode_times_fixed = sync.fix_unexpected_edges(
         photodiode_times_on_off, cycle=60)
-
 
     # fix blips in the line: THIS version accounts for long times
     photodiode_times_fixed_no_long = sync.fix_unexpected_edges_no_long(
@@ -94,4 +98,4 @@ def sync_test(session_id):
         if i[0] != i[1]:
             print(i)
             long_flag = True
-    return(long_flag)
+    return (long_flag)
