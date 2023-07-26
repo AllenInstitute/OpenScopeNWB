@@ -85,8 +85,8 @@ def ecephys_gaze_mapping(module_params):
     A dictionary representing the values that will be written to the input json
     """
     try:
-        elipse_path = glob(join(module_params['base_directory'], 'eye_tracking',
-                                '*_ellipse.h5'))[0]
+        elipse_path = glob(join(module_params['base_directory'],
+                           'eye_tracking', '*_ellipse.h5'))[0]
     except IndexError:
         elipse_path = glob(join(module_params['base_directory'],
                                 '**', 'eye_tracking', '*_ellipse.h5'))[0]
@@ -220,11 +220,6 @@ def ecephys_align_timestamps(module_params):
                                         'continuous',
                                         'Neuropix*',
                                         'spike_times.npy'))[0]
-#            np.load(glob(join(alt_probe_directory,
-#                    "spike_times.npy"))[0])
-#            spike_directory = glob(join(
- #                                  alt_probe_directory,
-#                                   "spike_times.npy"))[0]
             print(alt_probe_directory)
             print(spike_directory)
             try:
@@ -305,7 +300,9 @@ def ecephys_align_timestamps(module_params):
     timestamp_files.append({
         'name': 'lfp_timestamps',
         'input_path': join(lfp_directory, 'lfp_timestamps.npy'),
-        'output_path': join(module_params['output_path'], probe_idx + '_lfp_timestamps.npy')
+        'output_path': join(module_params['output_path'],
+                            probe_idx +
+                            '_lfp_timestamps.npy')
     })
     print("File was found: " + str(file_found))
     if (file_found):
@@ -492,15 +489,18 @@ def ecephys_write_nwb(module_params):
         master_clock_path = join(output_directory, probe_idx,
                                  'spike_times_master_clock.npy')
     try:
-        elipse_path = glob(join(module_params['base_directory'], 'eye_tracking',
+        elipse_path = glob(join(module_params['base_directory'],
+                                'eye_tracking',
                                 '*_ellipse.h5'))[0]
     except IndexError:
         elipse_path = glob(join(module_params['base_directory'],
-                                '**', 'eye_tracking', '*_ellipse.h5'))[0]
+                                '**',
+                                'eye_tracking',
+                                '*_ellipse.h5'))[0]
     module_params['ellipse_path'] = elipse_path
     for idx, channel_row in channel_info.iterrows():
         structure_acronym = channel_row[region]
-        #numbers = re.findall(r'\d+', structure_acronym)
+        # numbers = re.findall(r'\d+', structure_acronym)
         logging.debug(channel_row)
 
         # if (len(numbers) > 0):
@@ -753,9 +753,15 @@ def ecephys_write_nwb(module_params):
     lfp_directory = module_params['lfp_path']
     output = module_params['nwb_path'].replace('spike_times.nwb', '')
     lfp_dict = {
-        'input_data_path': join(module_params['output_path'], probe_idx + '_lfp.dat'),
-        'input_timestamps_path': join(module_params['output_path'], probe_idx + '_timestamps.npy'),
-        'input_channels_path': join(module_params['output_path'], probe_idx + '_channels.npy'),
+        'input_data_path': join(module_params['output_path'],
+                                probe_idx +
+                                '_lfp.dat'),
+        'input_timestamps_path': join(module_params['output_path'],
+                                      probe_idx +
+                                      '_timestamps.npy'),
+        'input_channels_path': join(module_params['output_path'],
+                                    probe_idx +
+                                    '_channels.npy'),
         'output_path': join(output, probe_idx + '_lfp.nwb')
     }
     print(
@@ -920,7 +926,7 @@ def ecephys_optotagging_table(module_params):
     input_json_write_dict: dict
     A dictionary representing the values that will be written to the input json
     """
-    print (module_params['project'])
+    print(module_params['project'])
     if module_params['project'] == 'OpenScopeGlobalLocalOddball':
         print("GLO")
         conditions = {
@@ -970,7 +976,8 @@ def ecephys_optotagging_table(module_params):
             "2": {
                 "duration": .2,
                 "name": "pulse",
-                "condition": "1 second of 5Hz pulse train. Each pulse is 2 ms wide"
+                "condition": "1 second of 5Hz pulse train." +
+                             "Each pulse is 2 ms wide"
             },
             "3": {
                 "duration": .1,
@@ -990,7 +997,8 @@ def ecephys_optotagging_table(module_params):
             "6": {
                 "duration": .025,
                 "name": "fast_pulses",
-                "condition": "1 second of 40 Hz pulse train. Each pulse is 2 ms wide"
+                "condition": "1 second of 40 Hz pulse train." +
+                "Each pulse is 2 ms wide"
             },
             "7": {
                 "duration": 0.02,
@@ -1010,7 +1018,8 @@ def ecephys_optotagging_table(module_params):
             "10": {
                 "duration": .01,
                 "name": "100 hz pulse train",
-                "condition": "1 second of 100 Hz pulse train. Each pulse is 2 ms wide"
+                "condition": "1 second of 100 Hz pulse train." +
+                "Each pulse is 2 ms wide"
             },
             "11": {
                 "duration": 1.0,
@@ -1102,10 +1111,16 @@ def ecephys_lfp_subsampling(module_params):
         'name': module_params['current_probe'],
         'lfp_sampling_rate': 2500.,
         'lfp_input_file_path': join(lfp_directory, 'continuous.dat'),
-        'lfp_timestamps_input_path': join(output_path, probe_idx + '_lfp_timestamps.npy'),
+        'lfp_timestamps_input_path': join(output_path,
+                                          probe_idx +
+                                          '_lfp_timestamps.npy'),
         'lfp_data_path': join(output_path, probe_idx + '_lfp.dat'),
-        'lfp_timestamps_path': join(output_path, probe_idx + '_timestamps.npy'),
-        'lfp_channel_info_path': join(output_path, probe_idx + '_channels.npy'),
+        'lfp_timestamps_path': join(output_path,
+                                    probe_idx +
+                                    '_timestamps.npy'),
+        'lfp_channel_info_path': join(output_path,
+                                      probe_idx +
+                                      '_channels.npy'),
         'surface_channel': probe_info['surface_channel'],
         'reference_channels': [191]
     }
@@ -1126,7 +1141,7 @@ def ecephys_lfp_subsampling(module_params):
                     "probes": module_params['lfp_list'],
                 }
         else:
-           input_json_write_dict = \
+            input_json_write_dict = \
                 {
                     'lfp_subsampling': {
                         'temporal_subsampling_factor': 2,

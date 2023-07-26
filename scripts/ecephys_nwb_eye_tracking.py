@@ -1,7 +1,6 @@
 from requests import NullHandler
-from allensdk.brain_observatory.behavior.data_objects.eye_tracking.eye_tracking_table import (
-    EyeTrackingTable
-)
+from allensdk.brain_observatory.behavior.data_objects.eye_tracking \
+    .eye_tracking_table import EyeTrackingTable
 from allensdk.brain_observatory import sync_utilities
 from allensdk.brain_observatory.behavior.data_files import SyncFile
 from allensdk.brain_observatory.behavior.data_files.eye_tracking_file import \
@@ -15,7 +14,8 @@ from allensdk.brain_observatory.behavior.data_objects.base \
     NwbWritableInterface
 from allensdk.brain_observatory.behavior.eye_tracking_processing import \
     process_eye_tracking_data, determine_outliers, determine_likely_blinks, \
-    compute_elliptical_area, compute_circular_area, load_eye_tracking_hdf, EyeTrackingError
+    compute_elliptical_area, compute_circular_area, \
+    load_eye_tracking_hdf, EyeTrackingError
 from allensdk.brain_observatory.nwb.eye_tracking.ndx_ellipse_eye_tracking \
     import \
     EllipseSeries, EllipseEyeTracking
@@ -157,7 +157,7 @@ def proc_eye_tracking(eye_data, frame_times, z_threshold, dilation_frames):
 
     Returns
     -------
-    eye_data: pd.DataFrame  
+    eye_data: pd.DataFrame
     The processed eye tracking data
     """
     n_sync = len(frame_times)
@@ -201,7 +201,7 @@ def proc_eye_tracking(eye_data, frame_times, z_threshold, dilation_frames):
     eye_areas_raw = eye_areas.copy()
 
     for i in range(1, len(likely_blinks)):
-        if likely_blinks[i] == True:
+        if likely_blinks[i] is True:
             pupil_areas[i] = np.nan
             cr_areas[i] = np.nan
             eye_areas[i] = np.nan
@@ -314,11 +314,12 @@ def add_tracking_to_nwb(tracking_params):
 
 def add_tracking_to_ophys_nwb(tracking_params):
     """Adds eye tracking data file to ophys nwb
-    
+
     Parameters
     ----------
     tracking_params: List
-    List of tracking parameters, the ellipse, sync, nwb, and data json paths    
+    List of tracking parameters,
+        the ellipse, sync, nwb, and data json paths
 
     Returns
     -------

@@ -7,17 +7,19 @@ from firebase_admin import credentials
 from firebase_admin import db
 import glob
 
+
 def get_creds():
     """Gets the firebase credentials locally
 
     Parameters
     ----------
-    
+
     Returns
     -------
     The credentials for firebase
     """
     return cuf.get_firebase_creds()
+
 
 def start(cred_path):
     """Starts the firebase app
@@ -118,7 +120,6 @@ def upload_project(project_id):
         init_session(project_id, session)
 
 
-
 def upload_o_project(project_id):
     """Uploads a specific project's information
 
@@ -205,7 +206,7 @@ def init_o_session(project_id, session_id):
     meta_dict = post_gres.get_o_sess_info(session_id)
     ref.update(meta_dict)
 
-    
+
 def get_portion_of_o_sess(project_id):
     """Gets a portion of a specific session's information
 
@@ -223,16 +224,20 @@ def get_portion_of_o_sess(project_id):
     sess_list_flag_not_present = []
     sess_flags = []
     for session, value in sessions.items():
-        if value['workflow'] ==  'uploaded' and value['fails'] == ['No Flags']:
+        if value['workflow'] == 'uploaded' and value['fails'] == ['No Flags']:
             sess_list_flag_present.append(session)
     for session, value in sessions.items():
-        if value['workflow'] ==  'uploaded' and value['fails'] != ['No Flags']:
+        if value['workflow'] == 'uploaded' and value['fails'] != ['No Flags']:
             sess_list_flag_not_present.append(session)
             sess_flags.append((session, value['fails']))
     sess_len = len(sess_list_flag_present)
     sess_no_flag_len = len(sess_list_flag_not_present)
-    return "Number of sessions with no Flag:" + str(len(sess_list_flag_present)) + "Number of sessions with Flags " + str(len(sess_list_flag_not_present)) + "List of flags: " + str(sess_flags)
-    
+    return ("Number of sessions with no Flag:" +
+            str(len(sess_list_flag_present)) +
+            "Number of sessions with Flags " +
+            str(len(sess_list_flag_not_present)) +
+            "List of flags: " + str(sess_flags))
+
 
 def update_o_session(project_id, session_id):
     """Updates a specific sessions's information while keeping current status
@@ -256,7 +261,7 @@ def update_o_session(project_id, session_id):
     dandi = view_session(project_id, session_id)['dandi']
     meta_dict['status'] = status
     meta_dict['notes'] = notes
-    meta_dict['dandi'] = dandi    
+    meta_dict['dandi'] = dandi
     ref.update(meta_dict)
 
 
@@ -276,7 +281,7 @@ def update_session_dandi(project_id, session_id, path):
     -------
     """
     print(project_id, session_id, path)
-    ref = db.reference('/Sessions/' + project_id + '/' + session_id )
+    ref = db.reference('/Sessions/' + project_id + '/' + session_id)
     ref.update({"dandi": path})
 
 
@@ -302,7 +307,7 @@ def update_session(project_id, session_id):
     meta_dict['status'] = status
     meta_dict['notes'] = notes
     meta_dict['allen'] = allen_dir
-    meta_dict['dandi'] = dandi    
+    meta_dict['dandi'] = dandi
     ref.update(meta_dict)
 
 
@@ -355,8 +360,6 @@ def update_session_dir(project_id, session_id, path):
     ref = db.reference('/Sessions/' + str(project_id) + "/" + str(session_id) +
                        "/allen/")
     ref.update(path)
-
-
 
 
 def view_session(project_id, session_id):
@@ -419,7 +422,6 @@ def view_project(project_id):
 
 
 def get_experiments(project_id, session_id):
-
     """Returns all experiments of a session
 
     Parameters
@@ -483,11 +485,13 @@ def get_ecephys_upload_sessions(project_id):
     sess_list: list
     A list of all the sessions
     """
-    ref = db.reference('/Sessions/' + project_id )
+    ref = db.reference('/Sessions/' + project_id)
     sessions = ref.get()
     sess_list = []
     for session, value in sessions.items():
-        if value['allen'] != 'Not Yet Converted' and value['type'] == "Ecephys" and value['dandi'] == 'Not Yet Uploaded':
+        if (value['allen'] != 'Not Yet Converted' and
+                value['type'] == "Ecephys" and
+                value['dandi'] == 'Not Yet Uploaded'):
             sess_list.append(session)
     return sess_list
 
@@ -505,7 +509,7 @@ def get_ecephys_upload_sessions(project_id):
     sess_list: list
     A list of all the sessions
     """
-    ref = db.reference('/Sessions/' + project_id )
+    ref = db.reference('/Sessions/' + project_id)
     sessions = ref.get()
     sess_list = []
     for session, value in sessions.items():
@@ -528,14 +532,15 @@ def get_ophys_uploaded_sessions(project_id):
     sess_list: list
     A list of all the sessions
     """
-    ref = db.reference('/Sessions/' + project_id )
+    ref = db.reference('/Sessions/' + project_id)
     sessions = ref.get()
     sess_list = []
     for session, value in sessions.items():
-        if value['workflow'] == 'uploaded' and value['type'] == "Ophys" and value['dandi'] == 'Not Yet Uploaded':
+        if (value['workflow'] == 'uploaded' and
+                value['type'] == "Ophys" and
+                value['dandi'] == 'Not Yet Uploaded'):
             sess_list.append(session)
-    return sess_list    
-
+    return sess_list
 
 
 def update_queue_list(session_id):
@@ -549,7 +554,7 @@ def update_queue_list(session_id):
     -------
     """
     ref = db.reference('/Jobs')
-    sessions = ref.get()    
+    sessions = ref.get()
     sess_list = []
     if sessions is not None:
         for session in sessions:
@@ -561,7 +566,7 @@ def update_queue_list(session_id):
 
 
 def get_ophys_session_workflow(project_id, session_id):
-    """Returns the workflow status of an ophys session 
+    """Returns the workflow status of an ophys session
 
     Parameters
     ----------
@@ -577,6 +582,7 @@ def get_ophys_session_workflow(project_id, session_id):
     """
     workflow = view_session(project_id, session_id)['workflow']
     return workflow
+
 
 def update_ephys_statuses(projectID):
     """Updates all initalized statuses to converting
@@ -594,10 +600,12 @@ def update_ephys_statuses(projectID):
     sessions = ref.get()
     session_list = []
     for session, value in sessions.items():
-        if value['status']['status'] == "Initialized" and value['type'] == "Ecephys":
+        if (value['status']['status'] == "Initialized" and
+                value['type'] == "Ecephys"):
             update_session_status(projectID, session, "Converting")
     for session, value in sessions.items():
-        if value['status']['status'] == "Converting" and value['type'] == "Ecephys":
+        if (value['status']['status'] == "Converting" and
+                value['type'] == "Ecephys"):
             session_list.append(session)
     return session_list
 
@@ -618,10 +626,12 @@ def update_ophys_statuses(projectID):
     sessions = ref.get()
     session_list = []
     for session, value in sessions.items():
-        if value['status']['status'] == "Initialized" and value['type'] == "Ophys":
+        if (value['status']['status'] == "Initialized" and
+                value['type'] == "Ophys"):
             update_session_status(projectID, session, "Converting")
     for session, value in sessions.items():
-        if value['status']['status'] == "Converting" and value['type'] == "Ophys":
+        if (value['status']['status'] == "Converting" and
+                value['type'] == "Ophys"):
             session_list.append(session)
     return session_list
 
@@ -673,10 +683,12 @@ def update_ophys_RAW_statuses(projectID):
     sessions = ref.get()
     session_list = []
     for session, value in sessions.items():
-        if value['status']['status'] == "RAW_Initialized" and value['type'] == "Ophys":
+        if (value['status']['status'] == "RAW_Initialized" and
+                value['type'] == "Ophys"):
             update_session_status(projectID, session, "RAW_Converting")
     for session, value in sessions.items():
-        if value['status']['status'] == "RAW_Converting" and value['type'] == "Ophys":
+        if (value['status']['status'] == "RAW_Converting" and
+                value['type'] == "Ophys"):
             session_list.append(session)
     return session_list
 
@@ -697,6 +709,7 @@ def get_dandi_statuses(projectID):
     sessions = ref.get()
     session_list = []
     for session, value in sessions.items():
-        if value['status']['status'] == "Initializing Upload" and value['type'] == "Ecephys":
+        if (value['status']['status'] == "Initializing Upload" and
+                value['type'] == "Ecephys"):
             session_list.append(session, value['nwb_location'])
     return session_list

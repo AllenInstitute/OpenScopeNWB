@@ -24,7 +24,7 @@ from pynwb.ophys import ImagingPlane, OpticalChannel
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
-from openscopenwb.utils import firebase_functions as fb 
+from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils.slurm_utils import slurm_jobs as slurm_job
 import ecephys_nwb_eye_tracking as eye_tracking
 import ophys_nwb_raw as raw_nwb
@@ -43,7 +43,7 @@ dir = os.path.dirname(__file__)
 
 
 def gen_ophys(experiment_id, file_path):
-    """Calls functions to write ophys NWB 
+    """Calls functions to write ophys NWB
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def gen_ophys(experiment_id, file_path):
 
 
 def add_data_to_nwb(csv_path, nwb_path):
-    """Adds Stim info to an NWB 
+    """Adds Stim info to an NWB
 
     Parameters
     ----------
@@ -97,10 +97,12 @@ def add_plane_to_nwb(nwb_path):
         structure = nwbfile.surgery.split(":")
         structure = structure[1].strip()
 
-        fov_height = str(nwbfile.lab_meta_data["metadata"].field_of_view_height)
+        fov_height = str(
+            nwbfile.lab_meta_data["metadata"].field_of_view_height)
         fov_width = str(nwbfile.lab_meta_data["metadata"].field_of_view_width)
         depth = str(nwbfile.lab_meta_data["metadata"].imaging_depth)
-        description = "(" + fov_height + ", " + fov_width + ") field of view in " + structure + " at depth " + depth + " um"
+        description = "(" + fov_height + ", " + fov_width + \
+            ") field of view in " + structure + " at depth " + depth + " um"
 
         # Check if imaging_plane_1 exists
         if 'imaging_plane_1' in nwbfile.imaging_planes:
@@ -108,10 +110,10 @@ def add_plane_to_nwb(nwb_path):
         else:
             # Create Optical Channel
             optical_channel = OpticalChannel(
-            name='channel_1',
-            description='PLACEHOLDER OPTICAL CHANNEL',
-            emission_lambda=0.0)
-            
+                name='channel_1',
+                description='PLACEHOLDER OPTICAL CHANNEL',
+                emission_lambda=0.0)
+
             # Create imaging_plane_1
             imaging_plane = nwbfile.create_imaging_plane(
                 name='imaging_plane_1',
@@ -121,9 +123,8 @@ def add_plane_to_nwb(nwb_path):
                 imaging_rate=10.0,
                 indicator='GCaMP6f',
                 location=structure,
-                optical_channel= optical_channel
+                optical_channel=optical_channel
             )
-
 
             # Save the modified NWB file
             io.write(nwbfile)
@@ -132,12 +133,12 @@ def add_plane_to_nwb(nwb_path):
 
 
 def add_subject_to_nwb(session_id, experiment_id, nwb_path):
-    """Adds Stim info to an NWB 
+    """Adds Stim info to an NWB
 
     Parameters
     ----------
     session_id: str
-    The 10 digit session id 
+    The 10 digit session id
     nwb_path: str
     The current nwb's location
 
@@ -162,7 +163,7 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
         'stimulus_name': 'Ophys Dendrite',
         'species': 'Mus musculus',
         'subject_id': subject_info['name']
-     }
+    }
     with NWBHDF5IO(nwb_path, "r+", load_namespaces=True) as nwbfile:
         input_nwb = nwbfile.read()
         input_nwb.subject = Subject(
@@ -171,9 +172,13 @@ def add_subject_to_nwb(session_id, experiment_id, nwb_path):
             species='Mus musculus',
             sex=subject['sex'],
             genotype=subject['genotype'],
-            description="external: " + str(subject_info['name']) + " donor_id: " + str(subject_info['id']) + " specimen_id: " + str(specimen_id) 
+            description=("external: " + str(subject_info['name']) +
+                         " donor_id: " +
+                         str(subject_info['id']) +
+                         " specimen_id: " + str(specimen_id))
         )
-        input_nwb.surgery = " Structure: " + postgres.get_o_targeted_struct(experiment_id)
+        input_nwb.surgery = " Structure: " + \
+            postgres.get_o_targeted_struct(experiment_id)
         nwbfile.write(input_nwb)
 
 
@@ -201,7 +206,6 @@ if __name__ == "__main__":
     -------
     """
 
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--project_id', type=str)
     parser.add_argument('--session_id', type=int)
@@ -217,10 +221,12 @@ if __name__ == "__main__":
     final = args.final
     val = args.val
     json_in = generate_ophys_json(experiment_id)
-    input_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + \
-        str(experiment_id) + "_in.json"
-    output_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/' + \
-        str(experiment_id) + "_out.json"
+    input_json = (r'/allen/programs/mindscope/workgroups/openscope/' +
+                  'ahad/ophys_no_behavior_nwb/' +
+                  str(experiment_id) + "_in.json")
+    output_json = (r'/allen/programs/mindscope/workgroups/openscope/' +
+                   'ahad/ophys_no_behavior_nwb/' +
+                   str(experiment_id) + "_out.json")
     with open(input_json, "w") as outfile:
         outfile.write(json_in)
     command_string = sf.generate_module_cmd(
@@ -229,7 +235,8 @@ if __name__ == "__main__":
         output_json,
     )
     subprocess.check_call(command_string)
-    file_path = r'/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb'
+    file_path = (r'/allen/programs/mindscope/workgroups/openscope/' +
+                 'ahad/ophys_no_behavior_nwb')
     file_folder = file_path
     if raw_flag is True:
         file_path = file_path + '/' + str(experiment_id) + 'raw_data.nwb'
@@ -275,34 +282,34 @@ if __name__ == "__main__":
     slurm_id = os.environ.get('SLURM_JOBID')
     fb.start(fb.get_creds())
     fb.update_curr_job(slurm_id)
-    
+
     dandi_url = r'https://dandiarchive.org/dandiset/' + str(val)
 
     if raw_flag == "True":
         raw_flag = True
     else:
         raw_flag = False
-    
-    if raw_flag == True:
+
+    if raw_flag is True:
         print("Processing Raw")
         raw_nwb.process_suit2p(raw_params)
         slurm_job.dandi_ophys_upload(
-            file = file_folder,
-            session_id = session_id,
-            experiment_id = experiment_id,
-            subject_id = subject_id,
-            raw = True,
-            final = final,
-            dandi_set_id = val
+            file=file_folder,
+            session_id=session_id,
+            experiment_id=experiment_id,
+            subject_id=subject_id,
+            raw=True,
+            final=final,
+            dandi_set_id=val
         )
     else:
         print("Processing without RAW")
         slurm_job.dandi_ophys_upload(
-            file = file_folder,
-            session_id = session_id,
-            experiment_id = experiment_id,
-            subject_id = subject_id,
-            raw = True,
-            final = final,
-            dandi_set_id = val
+            file=file_folder,
+            session_id=session_id,
+            experiment_id=experiment_id,
+            subject_id=subject_id,
+            raw=True,
+            final=final,
+            dandi_set_id=val
         )

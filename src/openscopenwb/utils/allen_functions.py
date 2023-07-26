@@ -35,9 +35,17 @@ def ophys_tag_info(session_id):
     tag_json = requests.get(mouse_url)
     tag_json = json.loads(tag_json.text)
     if tag_json['status'] == "Session QC not completed":
-        return ["QC In Progress"], ["QC In Progress"], ["QC In Progress"],  ["QC In Progress"],  ["QC In Progress"]
+        return ["QC In Progress"],
+        ["QC In Progress"],
+        ["QC In Progress"],
+        ["QC In Progress"],
+        ["QC In Progress"]
     if tag_json['status'] == "lims_id not found":
-        return ["Not yet uploaded to LIMS"], ["Not yet uploaded to LIMS"], ["Not yet uploaded to LIMS"], ["Not yet uploaded to LIMS"], ["Not yet uploaded to LIMS"]
+        return ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"]
     flags = []
     flag_notes = []
     fails = []
@@ -51,7 +59,7 @@ def ophys_tag_info(session_id):
     for override in tag_json['overrides']:
         overrides.append(override['metric'])
         override_notes.append(override['notes'])
-    
+
     if fails == []:
         fails = ["No Flags"]
     if overrides == []:
@@ -61,6 +69,7 @@ def ophys_tag_info(session_id):
         override_notes = ["No Flags"]
 
     return flags, fails, overrides, flag_notes, override_notes
+
 
 def lims_subject_info(session_id):
     """Gets the subject info for an ephys session from LIMS

@@ -17,8 +17,10 @@ def get_dandi_creds():
     api_key: str
     The api key for dandi
     """
-    cred_file = open(
-        r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/.cred/dandi.json')
+    dir = os.path.dirname(__file__)
+    credential_file = glob(os.path.join(dir, '.cred',
+                                        'dandi.json'))
+    cred_file = open(credential_file[0])
     cred_json = json.load(cred_file)
     return cred_json['api_key']
 
@@ -36,8 +38,9 @@ def get_firebase_creds():
     The credentials for firebase
     """
     dir = os.path.dirname(__file__)
-    credential_file = glob(os.path.join(dir, '.cred',
-                                'firebase_backend_credentials.json'))
+    credential_file = glob(os.path.join(
+                           dir, '.cred',
+                           'firebase_backend_credentials.json'))
     cred_json = credential_file[0]
     return cred_json
 

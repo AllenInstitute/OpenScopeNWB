@@ -110,14 +110,15 @@ def rename_sessions(Raw, dandi_id):
         match = re.search(r'exp_(\d+)', selected_path)
         if match:
             exp_number = match.group(1)
-        
+
         # Rename session if raw
         if raw:
             session_number = session_number + "_acq-" + exp_number + "-raw"
         else:
             session_number = session_number + "_acq-" + exp_number
 
-        base_path = "/allen/programs/mindscope/workgroups/openscope/openscopedata2022/ophys"
+        base_path = ("/allen/programs/mindscope/workgroups/openscope/" +
+                     "openscopedata2022/ophys")
         directory_path = os.path.join(base_path, session_number)
         dandi_path = os.path.abspath(directory_path)
         dandi_path_set = dandi_path + "/" + dandiset_id
@@ -129,10 +130,14 @@ def rename_sessions(Raw, dandi_id):
         downloaded_files = glob(join(directory_path, "*.nwb"))[0]
         file_path = Path(downloaded_files)
         dandi_download(urls='https://dandiarchive.org/dandiset/000336/draft',
-                       output_dir=str(dandi_path), get_metadata=True, get_assets=False)
-        dandi_organize(paths=directory_path, dandiset_path=dandi_path_set)
+                       output_dir=str(dandi_path),
+                       get_metadata=True,
+                       get_assets=False)
+        dandi_organize(paths=directory_path,
+                       dandiset_path=dandi_path_set)
         dst = directory_path + '/' + "sub-" + specimen_number
-        src = directory_path + "/" + dandiset_id + "/" + "sub-" + specimen_number
+        src = (directory_path + "/" + dandiset_id +
+               "/" + "sub-" + specimen_number)
         shutil.move(src, dst)
 
         organized_files = glob(
@@ -145,7 +150,8 @@ def rename_sessions(Raw, dandi_id):
             file_path = Path(organized_nwbfile)
             if "ses" not in file_path.stem:
                 print("SESS")
-                with NWBHDF5IO(path=file_path, mode="r+", load_namespaces=True) as io:
+                with NWBHDF5IO(path=file_path, mode="r+",
+                               load_namespaces=True) as io:
                     nwbfile = io.read()
                     session_id = session_number
                 dandi_stem = file_path.stem
@@ -157,13 +163,14 @@ def rename_sessions(Raw, dandi_id):
             join(dandi_path_set,  "sub-" + specimen_number, "*.nwb"))
         print(organized_nwbfiles, flush=True)
         dandi_upload(paths=[str(x)
-                     for x in organized_nwbfiles], dandi_instance='dandi')
+                     for x in organized_nwbfiles],
+                     dandi_instance='dandi')
 
-        # The sleep is needed to prevent the dandi server from rejecting the upload
+        # The sleep is needed to prevent the dandi server
+        # from rejecting the upload
         time.sleep(600)
 
         rmtree(path=directory_path)
-
 
 if __name__ == '__main__':
     rename_sessions(True, "000336")

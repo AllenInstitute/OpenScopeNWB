@@ -1,6 +1,8 @@
 #!/usr/bin/bash
-while getopts "s:p:e:r:v:f:" arg; do
+while getopts "c:d:s:p:e:r:v:f:" arg; do
   case "$arg" in
+    c) Conda=$OPTARG;;
+    d) Directory=$OPTARG;;
     s) Session=$OPTARG;;
     p) Project=$OPTARG;;
     e) Experiment=$OPTARG;;
@@ -10,11 +12,13 @@ while getopts "s:p:e:r:v:f:" arg; do
 
   esac
 done
+echo $Conda
+echo $Directory
 echo $Session
 echo $Project
 echo $Experiment
 echo $Raw
 echo $Val
 echo $Final
-python "/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/src/openscopenwb/utils/slurm_utils/slurm_ophys_job.py" $Project $Session $Experiment $Raw $Val $Final
+$Conda $Directory $Project $Session $Experiment $Raw $Val $Final
 exit 1

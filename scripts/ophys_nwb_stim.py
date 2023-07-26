@@ -17,8 +17,8 @@ STIM_TABLE_RENAMES_MAP = {"Start": "start_time", "End": "stop_time"}
 
 
 def read_stimulus_table(path: str,
-                        column_renames_map: Dict[str, str] = None,
-                        columns_to_drop: List[str] = None) -> pd.DataFrame:
+                        column_renames_map: Dict[str, str]=None,
+                        columns_to_drop: List[str]=None) -> pd.DataFrame:
     """ Loads from a CSV on disk the stimulus table for this session.
     Optionally renames columns to match NWB epoch specifications.
     Parameters
@@ -58,7 +58,7 @@ def add_stim_to_nwb(
     stim_path,
     nwb_path
 ):
-    """Adds Stim info to an NWB 
+    """Adds Stim info to an NWB
 
     Parameters
     ----------

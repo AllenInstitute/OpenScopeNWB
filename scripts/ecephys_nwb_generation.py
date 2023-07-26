@@ -64,10 +64,10 @@ def convert_session(session_id, project):
         for module in modules:
             json_directory = ppp.get_input_json_directory(project_params)
             json_directory = os.path.join(json_directory, session)
-            input_json = os.path.join(json_directory, session + '-' + module
-                                      + '-input.json')
-            output_json = os.path.join(json_directory, session + '-' + module
-                                       + '-output.json')
+            input_json = os.path.join(json_directory, session + '-' + module +
+                                      '-input.json')
+            output_json = os.path.join(json_directory, session + '-' + module +
+                                       '-output.json')
             if module in session_modules:
                 module_params = session_params
                 module_params = osnjson.create_module_input(
@@ -117,8 +117,12 @@ def write_subject_to_nwb(session_id, module_params, dandi_id):
     """
 
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
-    fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])   
-    slurm_job.upload_ephys_nwb(session_id, module_params['project'], module_params['nwb_path'], dandi_id)
+    fb.update_session_dir(
+        module_params['project'], session_id, module_params['nwb_path'])
+    slurm_job.upload_ephys_nwb(
+        session_id, module_params['project'],
+        module_params['nwb_path'],
+        dandi_id)
 
 
 if __name__ == "__main__":
@@ -142,6 +146,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args.project)
     write_subject_to_nwb(
-        module_params=convert_session(session_id=args.session_id, project=args.project), session_id=args.session_id, dandi_id=args.dandi_id
+        module_params=convert_session(
+            session_id=args.session_id, project=args.project),
+        session_id=args.session_id,
+        dandi_id=args.dandi_id
     )
-

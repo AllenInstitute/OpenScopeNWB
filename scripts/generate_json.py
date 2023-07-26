@@ -40,10 +40,18 @@ def generate_ophys_json(experiment_id):
     )
     sync_path = postgres.get_o_sess_directory(str(sess_id.value))
     sync_path = glob(join(sync_path[0], str(sess_id.value) + "_*.h5"))[0]
+    behavior_path = ("/allen/programs/mindscope/workgroups/openscope/" +
+                     "ahad/ophys_no_behavior_nwb/")
     json_data = {
         "log_level": "INFO",
-        "output_frame_times_path": "/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/" + str(experiment_id) + "frame_times.npy",
-        "output_stimulus_table_path": "/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/" + str(experiment_id) + "allen_sdk.csv",
+        "output_frame_times_path":
+            behavior_path +
+            str(experiment_id) +
+            "frame_times.npy",
+        "output_stimulus_table_path":
+            behavior_path +
+            str(experiment_id) +
+            "allen_sdk.csv",
         "stimulus_pkl_path": stimulus_file.filepath,
         "sync_h5_path": sync_path
     }
@@ -98,7 +106,7 @@ def generate_ephys_json(session_id, project):
             probe_path = os.path.join(input_path, str(session_id), probe)
             if not os.path.exists(probe_path):
                 os.makedirs(probe_path)
-    input_ecephys_json = r'/allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/scripts/deciphering_variability/inputs/ecephys.json'
+    input_ecephys_json = output_path + '/ecephys.json'
     with open(input_ecephys_json, "w") as myfile:
         myfile.write(json_out)
     return input_ecephys_json

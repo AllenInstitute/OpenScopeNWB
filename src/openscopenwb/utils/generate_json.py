@@ -42,13 +42,18 @@ def generate_ophys_json(experiment_id):
     sync_path = glob(join(sync_path[0], str(sess_id.value) + "_*.h5"))[0]
     json_data = {
         "log_level": "INFO",
-        "output_frame_times_path": "/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/" + str(experiment_id) + "frame_times.npy",
-        "output_stimulus_table_path": "/allen/programs/mindscope/workgroups/openscope/ahad/ophys_no_behavior_nwb/" + str(experiment_id) + "allen_sdk.csv",
+        "output_frame_times_path": "/allen/programs/mindscope/workgroups/" +
+                                   "openscope/ahad/" +
+                                   "ophys_no_behavior_nwb/" +
+                                   str(experiment_id) +
+                                   "frame_times.npy",
+        "output_stimulus_table_path": "/allen/programs/mindscope/workgroups/" +
+                                      "openscope/ahad/" +
+                                      "ophys_no_behavior_nwb/" +
+                                      str(experiment_id) +
+                                      "allen_sdk.csv",
         "stimulus_pkl_path": stimulus_file.filepath,
         "sync_h5_path": sync_path,
     }
     json_out = json.dumps(json_data)
     return json_out
-
-
-

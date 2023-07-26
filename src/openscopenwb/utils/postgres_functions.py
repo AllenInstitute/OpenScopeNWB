@@ -333,7 +333,6 @@ def get_o_targeted_struct(exp_id):
     return info_list[0][0]
 
 
-
 def get_e_sess_donor_info(session_id):
     EPHYS_SESSION_QRY = """
     SELECT sp.donor_id
@@ -467,7 +466,7 @@ def get_e_sess_info(session_id):
     meta_dict = {}
     if isinstance(info_list[1], (datetime, date)):
         info_list[1] = info_list[1].isoformat()
-    
+
     subject = allen.lims_subject_info(session_id)
 
     meta_dict['name'] = info_list[0]

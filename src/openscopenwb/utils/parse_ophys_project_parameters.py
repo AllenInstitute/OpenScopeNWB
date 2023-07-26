@@ -2,7 +2,7 @@ from datetime import date, datetime
 from psycopg2 import connect
 import json
 import os
-import re 
+import re
 
 from openscopenwb.utils import allen_functions as allen
 
@@ -320,7 +320,7 @@ def get_o_exp_plane(experiment_id):
     ----------
     experiment_id: int
         The experiment's id value
-    
+
     Returns
     -------
     info_list: list
@@ -354,6 +354,7 @@ def get_o_exp_plane(experiment_id):
         res = str(info_list).strip('[]')
         return res
 
+
 def get_e_sess_spec_info(session_id):
     """Gets a specific ephys session's specimen info
 
@@ -361,7 +362,7 @@ def get_e_sess_spec_info(session_id):
     ----------
     session_id: int
         The session's id value
-    
+
     Returns
     -------
     info_list: list
@@ -371,7 +372,7 @@ def get_e_sess_spec_info(session_id):
     SELECT es.specimen_id
     FROM ecephys_sessions es
     WHERE es.id = {}
-    """    
+    """
     cur = get_psql_cursor(get_cred_location())
     lims_query = EPHYS_SESSION_QRY.format(session_id)
     cur.execute(lims_query)
@@ -384,7 +385,6 @@ def get_e_sess_spec_info(session_id):
     return info_list
 
 
-
 def get_o_sess_spec_info(session_id):
     """Gets a specific session's specimen info
 
@@ -392,7 +392,7 @@ def get_o_sess_spec_info(session_id):
     ----------
     session_id: int
         The session's id value
-    
+
     Returns
     -------
     info_list: list
@@ -402,7 +402,7 @@ def get_o_sess_spec_info(session_id):
     SELECT os.specimen_id
     FROM ophys_sessions os
     WHERE os.id = {}
-    """    
+    """
     cur = get_psql_cursor(get_cred_location())
     lims_query = OPHYS_SESSION_QRY.format(session_id)
     cur.execute(lims_query)
@@ -414,15 +414,15 @@ def get_o_sess_spec_info(session_id):
         info_list = cur.fetchall()
     return info_list
 
-def get_e_sess_donor_info(session_id):
 
+def get_e_sess_donor_info(session_id):
     """Gets a specific session's donor info
 
     Parameters
     ----------
     session_id: int
         The sessions's id value
-    
+
     Returns
     -------
     info_list: list
@@ -467,7 +467,7 @@ def get_o_sess_donor_info(session_id):
     ----------
     session_id: int
         The sessions's id value
-    
+
     Returns
     -------
     info_list: str
@@ -512,7 +512,7 @@ def get_o_sess_dff(session_id):
     ----------
     session_id: int
         The sessions's id value
-    
+
     Returns
     -------
     info_list: str
@@ -538,7 +538,7 @@ def get_o_sess_dff(session_id):
     return info_list
 
 
-def get_avg_pic(exp_id):  
+def get_avg_pic(exp_id):
     """Gets the average project image for an experiment
 
     Parameters
@@ -620,7 +620,7 @@ def get_e_sess_info(session_id):
     meta_dict = {}
     if isinstance(info_list[1], (datetime, date)):
         info_list[1] = info_list[1].isoformat()
-    
+
     subject = allen.lims_subject_info(session_id)
 
     meta_dict['name'] = info_list[0]
@@ -674,7 +674,6 @@ def get_o_exp_info(exp_id):
     return info_list
 
 
-
 def get_o_sess_info(session_id):
     """Gets a specific session's information
 
@@ -723,7 +722,8 @@ def get_o_sess_info(session_id):
     if isinstance(info_list[5], (datetime, date)):
         info_list[5] = info_list[5].isoformat()
     subject = allen.lims_o_subject_info(session_id)
-    flags, fails, overrides, flag_notes, override_notes = allen.ophys_tag_info(session_id)
+    flags, fails, overrides, flag_notes, override_notes = allen.ophys_tag_info(
+        session_id)
     meta_dict['name'] = info_list[1]
     meta_dict['date'] = info_list[5]
     meta_dict['mouse'] = info_list[2]
@@ -749,8 +749,6 @@ def get_o_sess_info(session_id):
     meta_dict['override_notes'] = override_notes
 
     return meta_dict
-
-
 
 
 def get_o_targeted_struct(exp_id):
@@ -795,7 +793,8 @@ def get_sess_specimen(dir):
     Returns
     -------
     specimen_id : str or None
-        A string representation of the specimen id, or None if no match is found.
+        A string representation of the specimen id,
+        or None if no match is found.
     """
     match = re.search(r'/specimen_(\d+)/', dir)
     if match:
@@ -847,7 +846,7 @@ def get_o_sess_sync(session_id):
     ----------
     session_id: int
         The sessions's id value
-    
+
     Returns
     -------
     info_list: str
@@ -886,7 +885,8 @@ def get_e_proj_info(project_id):
     Returns
     -------
     meta_dict: dict
-        A dictionary including all relevant metadata, currently just the sessions
+        A dictionary including all relevant metadata,
+        currently just the sessions
     """
     LIST_OF_SESSION_QRY = """
     SELECT es.id
@@ -924,7 +924,8 @@ def get_o_proj_info(project_id):
     Returns
     -------
     meta_dict: dict
-        A dictionary including all relevant metadata, currently just the sessions
+        A dictionary including all relevant metadata,
+        currently just the sessions
     """
     LIST_OF_SESSION_QRY = """
     SELECT os.id

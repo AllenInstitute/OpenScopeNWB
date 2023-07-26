@@ -40,7 +40,10 @@ def process_suit2p(raw_params):
         try:
             ts = TwoPhotonSeries(
                 name='raw_suite2p_motion_corrected',
-                imaging_plane=input_nwb.processing['ophys']['image_segmentation']['cell_specimen_table'].imaging_plane,
+                imaging_plane = (
+                 input_nwb.processing['ophys']['image_segmentation']
+                    ['cell_specimen_table'].imaging_plane
+                )
                 data=wrapped_data,
                 format='raw',
                 unit='SIunit',
@@ -56,7 +59,7 @@ def process_suit2p(raw_params):
                 name='imaging_plane',
                 optical_channel=channel,
                 description='Failed Cell Segmentation',
-                device = input_nwb.devices['MESO.2'],
+                device=input_nwb.devices['MESO.2'],
                 excitation_lambda=488.0,
                 imaging_rate=10.71,
                 indicator='GCaMP6f',
