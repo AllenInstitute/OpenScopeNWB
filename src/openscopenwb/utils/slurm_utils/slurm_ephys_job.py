@@ -12,10 +12,15 @@ if __name__ == '__main__':
         The project's name in LIMS
     long: str
         Whether the session has long frames
+    dandi: str
+        The session's dandi value
 
     Returns
     -------
     """
     print("arguments")
     print(sys.argv)
-    slurm_jobs.generate_ephys_nwb(sys.argv[1], sys.argv[2], sys.argv[3])
+    slurm_jobs.generate_ephys_nwb(sys.argv[1],
+                                  sys.argv[2],
+                                  sys.argv[3],
+                                  sys.argv[4])

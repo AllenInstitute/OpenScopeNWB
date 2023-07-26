@@ -3,7 +3,7 @@ import sys
 
 if __name__ == '__main__':
     '''Generates an ophys nwb for a given experiment
-    
+
     Parameters
     ----------
     session_id: str
@@ -26,7 +26,6 @@ if __name__ == '__main__':
         print("SLURN OPHYS JOB")
         print("arguments")
         print(sys.argv)
-
 
         slurm_jobs.generate_ophys_nwb(
             sys.argv[1],

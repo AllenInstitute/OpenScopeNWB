@@ -21,7 +21,7 @@ dir = os.path.dirname(__file__)
 
 def generate_ephys_nwb(session_id, project, long, dandi):
     '''Generates an ephys nwb for a given session_id and project
-    
+
     Parameters
     ----------
     session_id: str
@@ -80,7 +80,7 @@ def generate_ephys_nwb(session_id, project, long, dandi):
 
 def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
     '''Generates an ophys nwb for a given experiment
-    
+
     Parameters
     ----------
     session_id: str
@@ -142,7 +142,7 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
 
 def dandi_ephys_upload(file, project_id, session_id, val, final):
     '''Generates an ophys nwb for a given session_id and project
-    
+
     Parameters
     ----------
     file: str
@@ -193,7 +193,8 @@ def dandi_ephys_upload(file, project_id, session_id, val, final):
                  ' --session_id {}'.format(session_id) +
                  ' --project_id {}'.format(project_id) +
                  ' --nwb_folder_path {}'.format(file) +
-                 ' --dandiset_id {}'.format(val))    
+                 ' --dandiset_id {}'.format(val))
+
 
 def add_temp_to_nwb():
     '''Adds image templates to an ephys nwb
@@ -235,10 +236,15 @@ def add_temp_to_nwb():
                  r'scripts/ecephys_nwb_templates.py')
 
 
-
-def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final, dandi_set_id):
+def dandi_ophys_upload(file,
+                       session_id,
+                       experiment_id,
+                       subject_id,
+                       raw,
+                       final,
+                       dandi_set_id):
     '''Generates an ophys nwb for a given session_id and project
-    
+
     Parameters
     ----------
     file: str
@@ -285,14 +291,14 @@ def dandi_ophys_upload(file, session_id, experiment_id, subject_id, raw,  final,
 
     upload_path = current_dir.replace('slurm_utils', 'dandi_utils')
     upload_path = upload_path + "/dandi_o_uploads.py"
-    slurm.sbatch(python_path + " " + 
+    slurm.sbatch(python_path + " " +
                  upload_path +
                  ' --session_id {}'.format(session_id) +
                  ' --nwb_folder_path {}'.format(file) +
                  ' --experiment_id {}'.format(experiment_id) +
-                 ' --subject_id {}'.format(subject_id) + 
+                 ' --subject_id {}'.format(subject_id) +
                  ' --raw {}'.format(raw) +
-                 ' --final {}'.format(final)+
+                 ' --final {}'.format(final) +
                  ' --dandiset_id {}'.format(dandi_set_id))
 
 
@@ -322,7 +328,6 @@ def nwb_add_templates():
         'python'
     )
 
-
     slurm = Slurm(
         array=range(3, 4),
         cpus_per_task=12,
@@ -338,4 +343,3 @@ def nwb_add_templates():
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
                  r'scripts/ecephys_nwb_templates.py')
-
