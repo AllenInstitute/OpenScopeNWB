@@ -81,17 +81,17 @@ def generate_ephys_json(session_id, project):
     if not os.path.exists(output_path):
         try:
             os.makedirs(output_path)
-        except error:
+        except Exception as error:
             print(error)
     if not os.path.exists(nwb_path):
         try:
             os.makedirs(nwb_path)
-        except error:
+        except Exception as error:
             print(error)
     if not os.path.exists(json_path):
         try:
             os.makedirs(json_path)
-        except error:
+        except Exception as error:
             print(error)
 
     path_list = [output_path, json_path]
@@ -115,13 +115,13 @@ def generate_ephys_json(session_id, project):
             if not os.path.exists(probe_path):
                 try: 
                     os.makedirs(probe_path)
-                except error:
+                except Exception as error:
                     print(error)
     input_ecephys_json = output_path + '/ecephys.json'
     with open(input_ecephys_json, "w") as myfile:
         try: 
             myfile.write(json_out)
-        except error:
+        except Exception as error:
             print(error)
     json_out = json.loads(json_out)
     return input_ecephys_json, json_out
