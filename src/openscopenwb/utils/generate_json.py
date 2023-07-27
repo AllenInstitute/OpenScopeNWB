@@ -84,12 +84,12 @@ def generate_ephys_json(session_id, project):
         except error:
             print(error)
     if not os.path.exists(nwb_path):
-       try:
+        try:
             os.makedirs(nwb_path)
         except error:
             print(error)
     if not os.path.exists(json_path):
-       try:
+        try:
             os.makedirs(json_path)
         except error:
             print(error)
