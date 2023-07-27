@@ -79,11 +79,20 @@ def generate_ephys_json(session_id, project):
                 "openscopedata2022/" + str(session_id) + \
                 '/' + date + '/json'
     if not os.path.exists(output_path):
-        os.makedirs(output_path)
+        try:
+            os.makedirs(output_path)
+        except error:
+            print(error)
     if not os.path.exists(nwb_path):
-        os.makedirs(nwb_path)
+       try:
+            os.makedirs(nwb_path)
+        except error:
+            print(error)
     if not os.path.exists(json_path):
-        os.makedirs(json_path)
+       try:
+            os.makedirs(json_path)
+        except error:
+            print(error)
 
     path_list = [output_path, json_path]
 
@@ -104,10 +113,16 @@ def generate_ephys_json(session_id, project):
         for input_path in path_list:
             probe_path = os.path.join(input_path, str(session_id), probe)
             if not os.path.exists(probe_path):
-                os.makedirs(probe_path)
+                try: 
+                    os.makedirs(probe_path)
+                except error:
+                    print(error)
     input_ecephys_json = output_path + '/ecephys.json'
     with open(input_ecephys_json, "w") as myfile:
-        myfile.write(json_out)
+        try: 
+            myfile.write(json_out)
+        except error:
+            print(error)
     json_out = json.loads(json_out)
     return input_ecephys_json, json_out
 
