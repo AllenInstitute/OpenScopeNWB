@@ -27,7 +27,5 @@ def test_sess_meta(firebase_prep):
     assert session_meta['session_1_mouse'] == firebase_prep['session_1_mouse']
 
 def test_o_workflow():
-    cred_json = fb.get_creds()
-    fb.start(cred_json)
     workflow = fb.get_ophys_session_workflow("OpenScopeDendriteCoupling", 1191135783)
     assert workflow == 'uploaded'
