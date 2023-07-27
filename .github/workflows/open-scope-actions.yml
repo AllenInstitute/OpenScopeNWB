@@ -35,7 +35,7 @@ jobs:
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
       # Set the path to the credentials file as an environment variable
       - name: Set Firebase Credentials Path as Environment Variable
-        run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_EN
+        run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_ENV
       - name: Test with pytest
         run: pytest -vv --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
