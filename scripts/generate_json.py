@@ -12,7 +12,7 @@ from allensdk.brain_observatory.behavior.data_objects.metadata\
     .ophys_experiment_metadata.ophys_session_id import \
     OphysSessionId
 from allensdk.brain_observatory.behavior.data_files import \
-    StimulusFile
+    BehaviorStimulusFile
 
 
 def get_path(session_id):
