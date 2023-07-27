@@ -1,10 +1,5 @@
 name: OpenScope Actions
 on:
-  # Trigger the workflow on pull request,
-  # but only for the main branch
-  # Note that this currently uses flake8 instead of
-  # pep8 as there does not appear be actions support for pep8
-  # We do code coverage on codecov.io
   push:
     branches:
       - main
@@ -30,6 +25,14 @@ jobs:
           pip install wheel
           pip install h5py==2.10.0
           pip install allenSDK
+          
+      - name: Create Firebase Credentials File
+        run: |
+          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+      # Set the path to the credentials file as an environment variable
+      - name: Set Firebase Credentials Path as Environment Variable
+        run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_ENV
+
       env:
         DBNAME: ${{ secrets.DBNAME }}
         FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
@@ -38,13 +41,7 @@ jobs:
         PORT: ${{ secrets.PORT }}
         USER: ${{ secrets.USER }}
         DANDI_API_KEY: ${{ secrets.DANDI_API_KEY }}
-        
-      - name: Create Firebase Credentials File
-        run: |
-          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
-      # Set the path to the credentials file as an environment variable
-      - name: Set Firebase Credentials Path as Environment Variable
-        run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_ENV
+
       - name: Test with pytest
         run: pytest -vv --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
@@ -58,6 +55,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           verbose: true
+
   Lint:
     name: Lint
     runs-on: "ubuntu-latest"
