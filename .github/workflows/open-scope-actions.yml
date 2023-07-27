@@ -30,6 +30,15 @@ jobs:
           pip install wheel
           pip install h5py==2.10.0
           pip install allenSDK
+      env:
+        DBNAME: ${{ secrets.DBNAME }}
+        FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+        HOST: ${{ secrets.HOST }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        PORT: ${{ secrets.PORT }}
+        USER: ${{ secrets.USER }}
+        DANDI_API_KEY: ${{ secrets.DANDI_API_KEY }}
+        
       - name: Create Firebase Credentials File
         run: |
           echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
