@@ -56,4 +56,58 @@ def generate_ophys_json(experiment_id):
         "sync_h5_path": sync_path,
     }
     json_out = json.dumps(json_data)
-    return json_out
+    return json_out, json_data
+
+def generate_ephys_json(session_id, project):
+    date = datetime.today().strftime('%Y-%m-%d-%H-%M')
+    json_data = {}
+    json_data['modules'] = [
+        "allensdk.brain_observatory.ecephys.align_timestamps",
+        "allensdk.brain_observatory.ecephys.stimulus_table",
+        "allensdk.brain_observatory.extract_running_speed",
+        'allensdk.brain_observatory.ecephys.lfp_subsampling',
+        'allensdk.brain_observatory.ecephys.optotagging_table',
+        "allensdk.brain_observatory.ecephys.write_nwb"
+    ]
+    output_path = r"/allen/programs/mindscope/workgroups/openscope/" + \
+                  "openscopedata2022/" + \
+                  str(session_id) + '/' + date + '/outputs'
+    nwb_path = r"/allen/programs/mindscope/workgroups/openscope/" + \
+               "openscopedata2022/" + str(session_id) + '/' + date + \
+               '/nwb_path'
+    json_path = r"/allen/programs/mindscope/workgroups/openscope/" + \
+                "openscopedata2022/" + str(session_id) + \
+                '/' + date + '/json'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    if not os.path.exists(nwb_path):
+        os.makedirs(nwb_path)
+    if not os.path.exists(json_path):
+        os.makedirs(json_path)
+
+    path_list = [output_path, json_path]
+
+    json_data['output_path'] = output_path
+    json_data['nwb_path'] = nwb_path
+    json_data['input_json'] = json_path
+    json_data['output_json'] = json_path
+    json_data['trim_discontiguous_frame_times'] = False
+    json_data['last_unit_id'] = 0
+    json_data['project'] = project
+    json_data['lims'] = True
+    json_data['probes'] = {session_id: postgres.get_sess_probes(session_id)}
+    json_data['sessions'] = {session_id: postgres.get_e_sess_directory(
+                             session_id)}
+    json_out = json.dumps(json_data)
+    probe_list = postgres.get_sess_probes(session_id)
+    for probe in probe_list:
+        for input_path in path_list:
+            probe_path = os.path.join(input_path, str(session_id), probe)
+            if not os.path.exists(probe_path):
+                os.makedirs(probe_path)
+    input_ecephys_json = output_path + '/ecephys.json'
+    with open(input_ecephys_json, "w") as myfile:
+        myfile.write(json_out)
+    json_out = json.loads(json_out)
+    return input_ecephys_json, json_out
+
