@@ -32,81 +32,7 @@ o_proj_list = ["OpenScopeDendriteCoupling"]
 
 fb.start(fb.get_creds())
 
-for project in o_proj_list:
-    current_dir = os.path.abspath(__file__)
-    current_dir = current_dir.replace('scripts/cron.py', '')
-    utils_dir = str(current_dir) + 'src/openscopenwb/utils/slurm_utils/slurm_ophys_job.py'
-    conda_environment = 'ophys_nwb'
 
-    python_path = os.path.join(
-        '/allen',
-        'programs',
-        'mindscope',
-        'workgroups',
-        'openscope',
-        'ahad',
-        'Conda_env',
-        conda_environment,
-        'bin',
-        'python',
-    )
-    if project == 'OpenScopeDendriteCoupling':
-        proj_dandi_value = '000336'
-    sess_list = ['1208665817', '1210324046', '1211188419'] 
-    for session in sess_list:
-        exp_list = fb.get_experiments(project, session)
-        for experiment in exp_list:
-            if experiment != exp_list[-1]:
-                cmd = dir + '/bash/ophys.sh ' + "-s " + \
-                    str(session) + " -p " + project + " -e " + \
-                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -c ' + python_path + ' -f ' + "False" + ' -r ' + "True" + ' -d ' + utils_dir
-            else:
-                 cmd = dir + '/bash/ophys.sh ' + "-s " + \
-                    str(session) + " -p " + project + " -e " + \
-                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -c ' + python_path + ' -f ' + "True" + ' -r ' + "True" + ' -d ' + utils_dir
-            subprocess.call(shlex.split(cmd))
-
-
-'''
-for project in e_proj_list:
-    current_dir = os.path.abspath(__file__)
-    current_dir = current_dir.replace('scripts/cron.py', '')
-    utils_dir = str(current_dir) + 'src/openscopenwb/utils/slurm_utils/slurm_ephys_job.py'
-    conda_environment = 'openscopenwb'
-    python_path = os.path.join(
-        '/allen',
-        'programs',
-        'mindscope',
-        'workgroups',
-        'openscope',
-        'ahad',
-        'Conda_env',
-        conda_environment,
-        'bin',
-        'python',
-    )
-    if project == "OpenScopeIllusion":
-        proj_dandi_value = "000248"
-    elif project == "OpenScopeGlobalLocalOddBall":
-        proj_dandi_value = "000253"
-        break
-    elif project == "OpenScopeTemporalBarcode":
-        break
-        proj_dandi_value = "000563"
-    sess_list = ['1181330601'] 
-
-    for session in sess_list:
-        if project != "OpenScopeIllusion":
-            print("Skipping")
-        else:
-
-            cmd = dir + '/bash/ecephys.sh ' + "-s " + \
-                str(session) + " -p " + project + " -l " + "False" + " -c " + python_path + " -d " + utils_dir + " -v " + proj_dandi_value 
-            print(shlex.split(cmd))
-            subprocess.call(shlex.split(cmd))
-            fb.update_session_status(project, session, "Conversion Running")
-'''
-'''
 for project in e_proj_list:
     current_dir = os.path.abspath(__file__)
     current_dir = current_dir.replace('scripts/cron.py', '')
@@ -273,4 +199,3 @@ for project in o_proj_list:
             subprocess.run(shlex.split(cmd))
             fb.update_session_status(
                 project, session, "Raw Conversion Running")
-'''

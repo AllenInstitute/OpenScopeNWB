@@ -46,7 +46,7 @@ def convert_session(session_id, project):
 
     warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
-    project_csv_json = gen_json.generate_ephys_json(session_id, project)
+    project_csv_json, _ = gen_json.generate_ephys_json(session_id, project)
     project_params = ppp.parse_json(project_csv_json)
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)

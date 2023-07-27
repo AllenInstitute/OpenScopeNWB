@@ -43,7 +43,7 @@ def process_suit2p(raw_params):
                 imaging_plane = (
                  input_nwb.processing['ophys']['image_segmentation']
                     ['cell_specimen_table'].imaging_plane
-                )
+                ),
                 data=wrapped_data,
                 format='raw',
                 unit='SIunit',
