@@ -29,7 +29,6 @@ jobs:
           pip install pytest-cov
           pip install wheel
           pip install h5py==2.10.0
-          pip install git+https://github.com/jsiegle/AllenSDK.git@ecephys-updates
       - name: Test with pytest
         run: pytest -vv --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
