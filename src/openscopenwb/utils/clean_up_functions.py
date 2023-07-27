@@ -41,7 +41,10 @@ def get_firebase_creds():
     credential_file = glob(os.path.join(
                            dir, '.cred',
                            'firebase_backend_credentials.json'))
-    cred_json = credential_file[0]
+    try:
+        cred_json = credential_file[0]
+    except IndexError:
+        return os.environ.get('FIREBASE_CREDENTIALS_PATH')
     return cred_json
 
 

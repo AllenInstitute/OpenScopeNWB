@@ -48,14 +48,24 @@ def get_psql_cursor(cred_json):
     A connection to the postgres database
     """
     print(cred_json)
-    cred_file = open(cred_json)
-    cred_info = json.load(cred_file)
-    cred_file.close()
-    dbname = cred_info['dbname']
-    user = cred_info['user']
-    host = cred_info['host']
-    password = cred_info['password']
-    port = cred_info['port']
+    try: 
+        cred_file = open(cred_json)
+        cred_info = json.load(cred_file)
+        cred_file.close()
+        dbname = cred_info['dbname']
+        user = cred_info['user']
+        host = cred_info['host']
+        password = cred_info['password']
+        port = cred_info['port']
+    except FileNotFoundError:
+        dbname = os.environ['DBNAME']
+        user = os.environ['USER']
+        host = os.environ['HOST']
+        password = os.environ['PASSWORD']
+        port = os.environ['PORT']
+        
+
+
     con = connect(dbname=dbname, user=user, host=host, password=password,
                   port=port)
     con.set_session(readonly=True, autocommit=True)

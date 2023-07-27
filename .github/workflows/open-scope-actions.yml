@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7.12
+      - name: Set up Python 3.7.17
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7.12
+          python-version: 3.7.17
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -29,7 +29,13 @@ jobs:
           pip install pytest-cov
           pip install wheel
           pip install h5py==2.10.0
-          pip install git+https://github.com/jsiegle/AllenSDK.git@ecephys-updates
+          pip install allenSDK
+      - name: Create Firebase Credentials File
+        run: |
+          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+      # Set the path to the credentials file as an environment variable
+      - name: Set Firebase Credentials Path as Environment Variable
+        run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_EN
       - name: Test with pytest
         run: pytest -vv --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov

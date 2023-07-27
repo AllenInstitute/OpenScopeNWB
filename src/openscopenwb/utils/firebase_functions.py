@@ -18,7 +18,11 @@ def get_creds():
     -------
     The credentials for firebase
     """
-    return cuf.get_firebase_creds()
+    if cuf.get_firebase_creds() is not None:
+        return cuf.get_firebase_creds()
+    else:
+        return None
+
 
 
 def start(cred_path):
@@ -33,6 +37,7 @@ def start(cred_path):
     -------
     """
     cred = credentials.Certificate(cred_path)
+        
     app = firebase_admin.initialize_app(cred, {
         'databaseURL':
             'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
