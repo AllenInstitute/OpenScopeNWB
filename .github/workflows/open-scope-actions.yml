@@ -7,6 +7,15 @@ on:
     branches:
       - main
 
+env:  # Define environment variables for the entire job
+  DBNAME: ${{ secrets.DBNAME }}
+  FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+  HOST: ${{ secrets.HOST }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+  PORT: ${{ secrets.PORT }}
+  USER: ${{ secrets.USER }}
+  DANDI_API_KEY: ${{ secrets.DANDI_API_KEY }}
+
 jobs:
   Test:
     name: Test
@@ -32,15 +41,6 @@ jobs:
       # Set the path to the credentials file as an environment variable
       - name: Set Firebase Credentials Path as Environment Variable
         run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_ENV
-
-      env:
-        DBNAME: ${{ secrets.DBNAME }}
-        FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
-        HOST: ${{ secrets.HOST }}
-        PASSWORD: ${{ secrets.PASSWORD }}
-        PORT: ${{ secrets.PORT }}
-        USER: ${{ secrets.USER }}
-        DANDI_API_KEY: ${{ secrets.DANDI_API_KEY }}
 
       - name: Test with pytest
         run: pytest -vv --cov=./ --cov-report=xml
