@@ -6,7 +6,8 @@ import os
 @pytest.fixture
 def session_param_prep(tmpdir):
     session_parameters = {
-        'base_directory': tmpdir
+        'base_directory': tmpdir,
+        'project': 'OpenScopeIllusion'
     }
 
     session_parameters['output_path'] = tmpdir
@@ -26,7 +27,7 @@ def session_param_prep(tmpdir):
                                 "test.sync")
     stim_table_path = os.path.join(
                         session_parameters['base_directory'],
-                        "stim_table_allensdk.csv")
+                        "test.stim_table_allensdk.csv")
     stim_frame_times_path = os.path.join(
                         session_parameters['base_directory'],
                         "frame_times.npy")
@@ -48,7 +49,7 @@ def test_ecephys_optotagging(session_param_prep, tmpdir):
     assert test_json['opto_pickle_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      'test.opto.pkl')
-    assert test_json['sync_h5_path'] == \
+    assert test_json['sync_h5_path']== \
         os.path.join(session_param_prep['base_directory'],
                      'test.sync')
     assert test_json['output_opto_table_path'] == \
@@ -56,11 +57,12 @@ def test_ecephys_optotagging(session_param_prep, tmpdir):
                      'optotagging_table.csv')
 
 
+
 def test_ecephys_stim_table(session_param_prep, tmpdir):
     params, test_json = ecephys_mod.stimulus_table(session_param_prep)
     assert test_json['stimulus_pkl_path'] == \
         os.path.join(session_param_prep['base_directory'],
-                     "stim.pkl")
+                     "test.stim.pkl")
     assert test_json['sync_h5_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      "test.sync")
@@ -76,7 +78,7 @@ def test_running_speed(session_param_prep, tmpdir):
     params, test_json = ecephys_mod.extract_running_speed(session_param_prep)
     assert test_json['stimulus_pkl_path'] == \
         os.path.join(session_param_prep['base_directory'],
-                     "stim.pkl")
+                     "test.stim.pkl")
     assert test_json['sync_h5_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      "test.sync")

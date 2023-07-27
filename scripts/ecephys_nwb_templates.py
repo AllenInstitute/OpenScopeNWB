@@ -19,7 +19,9 @@ if __name__ == "__main__":
     directory = (r'/allen/programs/mindscope/' +
                  'workgroups/openscope/tiff_stim_files/' +
                  'illusion')
-    nwb_path = (r'/allen/programs/mindscope/workgroups/openscope/openscopedata2022/1194644312/2023-05-24-20-16/nwb_path/1194644312/copy/spike_times.nwb')
+    nwb_path = (r'/allen/programs/mindscope/workgroups/openscope/' +
+                'openscopedata2022/1194644312/2023-05-24-20-16/' +
+                'nwb_path/1194644312/copy/spike_times.nwb')
     with NWBHDF5IO(path=nwb_path, mode="r+", load_namespaces=True) as io:
         nwb_file = io.read()
         intervals = nwb_file.intervals
@@ -32,11 +34,14 @@ if __name__ == "__main__":
                     # Loop through each file in the folder
                     image_list = []
                     idx = 0
-                    for filename in os.listdir(os.path.join(directory, folder)):
+                    for filename in os.listdir(os.path.join(
+                                               directory, folder)):
                         rgb_image = False
                         # Check if the file is a TIFF image
-                        if filename.endswith(".tif") or filename.endswith(".tiff"):
-                            # If so, load the image using numpy and append the pixel values to the image list
+                        if (filename.endswith(".tif") or
+                                filename.endswith(".tiff")):
+                            # If so, load the image using numpy
+                            # and append the pixel values to the image list
                             image = np.array(Image.open(
                                 os.path.join(directory, folder, filename)))
                             if len(image.shape) == 2:
@@ -81,9 +86,10 @@ if __name__ == "__main__":
                             )
                         frame_list.append(image)
 
-                        if filename == os.listdir(os.path.join(directory, folder)[-1]:
+                        if filename == os.listdir(os.path.join(
+                                                  directory, folder))[-1]:
                             movies = Images(
-                                name=stim ,
+                                name=stim,
                                 images=frame_list,
                                 description="movie"
                             )
