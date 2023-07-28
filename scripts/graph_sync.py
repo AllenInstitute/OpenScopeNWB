@@ -5,15 +5,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
 matplotlib.use('WebAgg')
+
 # Get sync dataset object for one of the bad sessions
 syncdata = Dataset(
-    r'/allen/programs/mindscope/production/openscope/prod0/specimen_1194090570/ecephys_session_1208667752/1208964113/1208667752_637484_20220908.sync')
-# syncdata = Dataset(r'/allen/programs/mindscope/workgroups/np-exp/1213341633_637908_20220922/1213341633_637908_20220922.sync')
+    r'/allen/programs/mindscope/production/openscope/prod0/' +
+    'specimen_1194090570/ecephys_session_1208667752/1208964113/' +
+    '1208667752_637484_20220908.sync')
+
 # Grab the stim running line that tells us when visual stimuli were on the
 # screen
-stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 'seconds'),
-                                  syncdata.get_falling_edges('stim_running', 'seconds'))
-stim_running_f = stim_running_f[stim_running_f>stim_running_r[0]]
+stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 
+                                                            'seconds'),
+                                  syncdata.get_falling_edges('stim_running', 
+                                                             'seconds'))
+stim_running_f = stim_running_f[stim_running_f > stim_running_r[0]]
 # Get vsyncs that tell us when the graphics card buffer was flipped
 vsyncs = syncdata.get_falling_edges('vsync_stim', units='seconds')
 vsyncs = vsyncs[(stim_running_r[0] <= vsyncs) & (vsyncs < stim_running_f[0])]

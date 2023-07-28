@@ -56,14 +56,11 @@ def test_parsing(json_prep, tmpdir):
 
 def test_get_module_types_with_some_modules():
     # Test with some modules
-    project_dict = {'modules': ['module1', 
-                                'module2', 
+    project_dict = {'modules': ['module1',
+                                'module2',
                                 'allensdk.brain_observatory' +
                                 '.extract_running_speed']}
     session_modules, probe_modules = ppp.get_module_types(project_dict)
     assert session_modules == ['allensdk.brain_observatory' +
                                '.extract_running_speed']
     assert probe_modules == ['module1', 'module2']
-
-
-

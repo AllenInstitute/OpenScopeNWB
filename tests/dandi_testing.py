@@ -14,7 +14,7 @@ def dandi_prep():
                         os.path.dirname(__file__),
                         "../samples/test_dandi_download/"),
         "dandiset_id": '000150',
-        "session_id": '000150',  
+        "session_id": '000150',
         "project_id": 'test',
         'subject_id': 'test'
     }
@@ -22,7 +22,7 @@ def dandi_prep():
 
 
 def test_dandi_download(dandi_prep):
-    """Tests the dandi download function and 
+    """Tests the dandi download function and
     verifies the outputs directory exists
 
     Parameters
@@ -45,13 +45,13 @@ def test_dandi_download(dandi_prep):
 
 
 def test_dandi_upload(dandi_prep):
-    """Tests the dandi upload function and verifies the 
+    """Tests the dandi upload function and verifies the
     sub-{subject} directory exists
 
     Parameters
     ----------
     dandi_prep: dict
-    A dictionary containing the dandiset_id, session_id, 
+    A dictionary containing the dandiset_id, session_id,
     project_id, and subject_id
 
     Returns
@@ -66,5 +66,6 @@ def test_dandi_upload(dandi_prep):
           dandi_prep['project_id'] + \
           " --subject_id " + dandi_prep['subject_id']
     subprocess.run(shlex.split(cmd))
-    assert os.path.exists(dandi_prep['file_path'] + dandi_prep['session_id'] + "/" +
+    assert os.path.exists(dandi_prep['file_path'] + 
+                          dandi_prep['session_id'] + "/" +
                           dandi_prep['dandiset_id'] + "sub-{subject_id}}")
