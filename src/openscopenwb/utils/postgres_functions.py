@@ -48,7 +48,7 @@ def get_psql_cursor(cred_json):
     A connection to the postgres database
     """
     print(cred_json)
-    try: 
+    try:
         cred_file = open(cred_json)
         cred_info = json.load(cred_file)
         cred_file.close()

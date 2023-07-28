@@ -57,7 +57,6 @@ def test_ecephys_optotagging(session_param_prep, tmpdir):
                      'optotagging_table.csv')
 
 
-
 def test_ecephys_stim_table(session_param_prep, tmpdir):
     params, test_json = ecephys_mod.stimulus_table(session_param_prep)
     assert test_json['stimulus_pkl_path'] == \

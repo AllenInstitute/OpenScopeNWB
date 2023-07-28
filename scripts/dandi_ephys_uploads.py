@@ -14,7 +14,6 @@ from dandi.organize import organize as dandi_organize
 from dandi.download import download as dandi_download
 from dandi.upload import upload as dandi_upload
 from pathlib import Path
-from pynwb import NWBHDF5IO
 
 
 if __name__ == "__main__":

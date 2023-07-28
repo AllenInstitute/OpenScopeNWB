@@ -239,7 +239,7 @@ def get_portion_of_o_sess(project_id):
             str(sess_len) +
             "Number of sessions with Flags " +
             str(sess_no_flag_len)) +
-            "List of flags: " + str(sess_flags))
+            "List of flags: " + str(sess_flags)
 
 
 def update_o_session(project_id, session_id):

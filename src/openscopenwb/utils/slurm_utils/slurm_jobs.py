@@ -4,8 +4,6 @@ import warnings
 import logging
 import sys
 from openscopenwb.utils import firebase_functions as fb
-from openscopenwb.utils import postgres_functions as postgres
-
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
@@ -181,7 +179,6 @@ def dandi_ephys_upload(file, project_id, session_id, val, final):
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
 
-    dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
