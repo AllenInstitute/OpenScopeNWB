@@ -4,33 +4,30 @@ import os
 import warnings
 import logging
 import sys
-import subprocess
 import json
 import subprocess
 import sys
-import shlex
+import ecephys_nwb_eye_tracking as eye_tracking
+import ophys_nwb_raw as raw_nwb
+import ophys_nwb_stim as stim
+
 
 from datetime import datetime
 from os.path import join
 from glob import glob
 
-# import openscopenwb.create_module_input_json as osnjson
-# from openscopenwb.utils import script_functions as sf
-import ophys_nwb_stim as stim
 from allensdk.brain_observatory.behavior.ophys_experiment import \
     OphysExperiment as ophys
 from pynwb import NWBHDF5IO
-from pynwb.ophys import ImagingPlane, OpticalChannel
+from pynwb.file import Subject
+from pynwb.ophys import OpticalChannel
+
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils.slurm_utils import slurm_jobs as slurm_job
 from openscopenwb.utils.generate_json import generate_ophys_json
-import ecephys_nwb_eye_tracking as eye_tracking
-import ophys_nwb_raw as raw_nwb
-from pynwb.file import Subject
-import numpy as np
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
@@ -126,6 +123,7 @@ def add_plane_to_nwb(nwb_path):
                 optical_channel=optical_channel
             )
 
+            print(imaging_plane)
             # Save the modified NWB file
             io.write(nwbfile)
 

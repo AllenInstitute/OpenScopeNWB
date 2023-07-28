@@ -53,7 +53,7 @@ def set_env():
     os.environ['DANDI_API_KEY'] = get_creds()
 
 
-def rename_sessions(probe=False, dandi_id):
+def rename_sessions(dandi_id, probe=False):
     """Downloads, renames, and reuploads sessions on dandi
 
     Parameters

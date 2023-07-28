@@ -1,18 +1,12 @@
 import h5py
-
-import requests
-import pandas as pd
 import numpy as np
 import os
-from pathlib import Path, PurePath
-from typing import Any, Dict, List, Tuple
+
 from PIL import Image
 from pynwb import NWBHDF5IO
-from pynwb.image import ImageSeries, IndexSeries, \
+from pynwb.image import ImageSeries, \
      Images, GrayscaleImage, RGBImage
-from allensdk.brain_observatory.behavior.data_objects.stimuli.presentations \
-    import \
-    Presentations
+
 
 
 if __name__ == "__main__":
@@ -34,6 +28,7 @@ if __name__ == "__main__":
                     # Loop through each file in the folder
                     image_list = []
                     idx = 0
+                    frame_list = []
                     for filename in os.listdir(os.path.join(
                                                directory, folder)):
                         rgb_image = False

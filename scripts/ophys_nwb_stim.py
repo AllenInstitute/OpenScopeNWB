@@ -1,6 +1,3 @@
-import h5py
-
-import requests
 import pandas as pd
 import numpy as np
 from pathlib import Path, PurePath

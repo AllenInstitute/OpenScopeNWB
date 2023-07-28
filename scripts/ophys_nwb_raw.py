@@ -1,20 +1,12 @@
-from pathlib import Path
-import json
-import pandas as pd
-import numpy as np
-# from openscopenwb.utils import clean_up_functions as cuf
-# from os.path import join
-import pynwb
 import h5py
-from pynwb import NWBFile
-from pynwb.file import TimeSeries
-from pynwb.ophys import TwoPhotonSeries, ImagingPlane, OpticalChannel
+
+from pynwb.ophys import TwoPhotonSeries, OpticalChannel
 from pynwb import NWBHDF5IO
 from hdmf.backends.hdf5.h5_utils import H5DataIO
 
 
 def process_suit2p(raw_params):
-    """Adds RAW info to an NWB 
+    """Adds RAW info to an NWB
 
     Parameters
     ----------
@@ -40,8 +32,8 @@ def process_suit2p(raw_params):
         try:
             ts = TwoPhotonSeries(
                 name='raw_suite2p_motion_corrected',
-                imaging_plane = (
-                 input_nwb.processing['ophys']['image_segmentation']
+                imaging_plane=(
+                    input_nwb.processing['ophys']['image_segmentation']
                     ['cell_specimen_table'].imaging_plane
                 ),
                 data=wrapped_data,
