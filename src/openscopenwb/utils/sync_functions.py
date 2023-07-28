@@ -62,6 +62,7 @@ def sync_test(session_id):
     flip_vsyncs = vsyncs[::60]
     print("VSYNCS")
     print(vsyncs)
+    print(flip_vsyncs)
     # Get diode edges
     photodiode_times = np.sort(np.concatenate([
         syncdata.get_rising_edges('stim_photodiode', 'seconds'),
