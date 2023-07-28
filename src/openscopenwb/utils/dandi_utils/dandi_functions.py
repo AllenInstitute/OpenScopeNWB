@@ -83,6 +83,22 @@ def find_dandiset_sessions(project, dandi_id):
         check_sess_info(project, dandi_id, path)
 
 def generate_exp_list(project, dandi_id):
+    """Generate a list of experiments on dandi
+       for a project
+
+    Parameters
+    ----------
+    project : str
+        The project id
+    dandi_id : str
+        The dandi id
+    
+    Returns
+    -------
+    exp_list : list
+        A list of experiments on dandi 
+    """
+
     os.environ['DANDI_API_KEY'] = cuf.get_creds()
     dandi_api_key = os.environ['DANDI_API_KEY']    
     my_dandiset = dandiapi.DandiAPIClient(token=dandi_api_key).get_dandiset(dandi_id)
