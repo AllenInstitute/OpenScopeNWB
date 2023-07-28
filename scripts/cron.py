@@ -108,7 +108,10 @@ for project in e_proj_list:
             str(session) + " -p " + project + " -l " + True + " -c " + python_path + " -d " + utils_dir + " -v " + proj_dandi_value
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
-        fb.update_session_status(project, session, "Conversion Running")        
+        fb.update_session_status(project, session, "Conversion Running")   
+        
+    # Update the dandi locations for the project
+    dandi.find_dandiset_sessions(project, proj_dandi_value)     
 
 
 
@@ -197,3 +200,7 @@ for project in o_proj_list:
             subprocess.run(shlex.split(cmd))
             fb.update_session_status(
                 project, session, "Raw Conversion Running")
+        
+    # Update the dandi locations for the project
+    dandi.find_dandiset_sessions(project, proj_dandi_value)     
+
