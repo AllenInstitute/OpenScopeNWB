@@ -10,7 +10,6 @@ from openscopenwb.utils.dandi_utils import dandi_functions as dandi
 from pathlib import Path
 
 
-
 dir = os.path.dirname(__file__) or '.'
 curr_dir = Path(__file__).parent
 

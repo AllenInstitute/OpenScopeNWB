@@ -1,4 +1,3 @@
-import h5py
 import numpy as np
 import os
 
@@ -6,7 +5,6 @@ from PIL import Image
 from pynwb import NWBHDF5IO
 from pynwb.image import ImageSeries, \
      Images, GrayscaleImage, RGBImage
-
 
 
 if __name__ == "__main__":

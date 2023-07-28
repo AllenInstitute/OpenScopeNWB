@@ -206,7 +206,8 @@ def proc_eye_tracking(eye_data, frame_times, z_threshold, dilation_frames):
 
 
 def from_o_data_file(ellipse_file, sync_file, data_json_path):
-    """Creates an ophys eye tracking table from the ellipse, sync, and data json
+    """Creates an ophys eye tracking table from the ellipse, sync,
+    and data json
 
     Parameters
     ----------
