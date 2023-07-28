@@ -27,11 +27,10 @@ curr_dir = Path(__file__).parent
 
 
 e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball", "OpenScopeTemporalBarcode"]
-o_proj_list = ["OpenScopeDendriteCoupling"]
+o_proj_list = ["OpenScopeSequenceLearning"]
 
 
 fb.start(fb.get_creds())
-
 
 for project in e_proj_list:
     current_dir = os.path.abspath(__file__)
@@ -110,7 +109,6 @@ for project in e_proj_list:
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")        
-
 
 
 
