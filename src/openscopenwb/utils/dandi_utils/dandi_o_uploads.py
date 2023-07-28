@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import dandi
 from dandi.dandiapi import DandiAPIClient as dandi
 from dandi import validate as validate
 from dandi.organize import organize as dandi_organize
@@ -11,7 +10,6 @@ from pynwb import NWBHDF5IO
 
 import argparse
 import os
-import json
 
 from os.path import join
 from glob import glob
@@ -63,7 +61,6 @@ def automatic_dandi_upload(
     """
     dandiset_id = "000" + dandiset_id
     set_env()
-    dandiset_path = nwb_folder_path
     assert os.getenv("DANDI_API_KEY"), (
         "Unable to find environment variable 'DANDI_API_KEY'. "
         "Please retrieve your token from DANDI and "
@@ -99,7 +96,6 @@ def automatic_dandi_upload(
         if "ses" not in file_path.stem:
             with NWBHDF5IO(path=file_path, mode="r",
                            load_namespaces=True) as io:
-                nwbfile = io.read()
                 session_id = session_id
             dandi_stem = file_path.stem
             dandi_stem_split = dandi_stem.split("_")

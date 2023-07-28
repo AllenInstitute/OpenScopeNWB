@@ -1,28 +1,10 @@
 import os
 import re
 
-import fsspec
-import h5py
-import pandas as pd
-import json
-import shutil
-import time
-
-
-from pathlib import Path
 from dandi import dandiapi
-from fsspec.implementations.cached import CachingFileSystem
-from pynwb import NWBHDF5IO
-from pynwb.base import Images
-from glob import glob
-from os.path import join
-from shutil import rmtree
 
 from openscopenwb.utils import clean_up_functions as cuf
 from openscopenwb.utils import firebase_functions as fb
-
-
-from dandi.dandiapi import DandiAPIClient as dandi
 
 
 def check_sess_info(project, dandi_id, path):
