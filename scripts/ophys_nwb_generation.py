@@ -3,10 +3,8 @@ import argparse
 import os
 import warnings
 import logging
-import sys
 import json
 import subprocess
-import sys
 import ecephys_nwb_eye_tracking as eye_tracking
 import ophys_nwb_raw as raw_nwb
 import ophys_nwb_stim as stim
