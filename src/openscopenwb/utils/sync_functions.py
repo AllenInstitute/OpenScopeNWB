@@ -86,8 +86,6 @@ def sync_test(session_id):
     # fix blips in the line: THIS version accounts for long times
     photodiode_times_fixed_no_long = sync.fix_unexpected_edges_no_long(
         photodiode_times_on_off, cycle=60)
-    # find the first diode edges after each flip_vsync
-    nearest_diode_edges = np.searchsorted(photodiode_times_on_off, flip_vsyncs)
 
     diode_list = list(zip(photodiode_times_fixed,
                       photodiode_times_fixed_no_long))

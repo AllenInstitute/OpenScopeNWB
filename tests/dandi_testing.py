@@ -66,6 +66,6 @@ def test_dandi_upload(dandi_prep):
           dandi_prep['project_id'] + \
           " --subject_id " + dandi_prep['subject_id']
     subprocess.run(shlex.split(cmd))
-    assert os.path.exists(dandi_prep['file_path'] + 
+    assert os.path.exists(dandi_prep['file_path'] +
                           dandi_prep['session_id'] + "/" +
                           dandi_prep['dandiset_id'] + "sub-{subject_id}}")

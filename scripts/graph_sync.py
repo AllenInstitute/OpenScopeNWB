@@ -14,9 +14,9 @@ syncdata = Dataset(
 
 # Grab the stim running line that tells us when visual stimuli were on the
 # screen
-stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running', 
+stim_running_r, stim_running_f = (syncdata.get_rising_edges('stim_running',
                                                             'seconds'),
-                                  syncdata.get_falling_edges('stim_running', 
+                                  syncdata.get_falling_edges('stim_running',
                                                              'seconds'))
 stim_running_f = stim_running_f[stim_running_f > stim_running_r[0]]
 # Get vsyncs that tell us when the graphics card buffer was flipped

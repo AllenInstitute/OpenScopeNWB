@@ -1,7 +1,6 @@
 from openscopenwb.utils import postgres_functions as post_gres
 from openscopenwb.utils import clean_up_functions as cuf
 
-import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -35,7 +34,7 @@ def start(cred_path):
     -------
     """
     cred = credentials.Certificate(cred_path)
-   
+
     app = firebase_admin.initialize_app(cred, {
         'databaseURL':
             'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
@@ -476,7 +475,7 @@ def get_sessions(project_id):
 
 
 def get_ecephys_upload_sessions(project_id):
-    """Returns all converted but not 
+    """Returns all converted but not
     uploaded sessions of a project
 
     Parameters
