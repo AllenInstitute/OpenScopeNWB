@@ -82,7 +82,7 @@ def find_dandiset_sessions(project, dandi_id):
     Returns
     -------
     """
-    os.environ['DANDI_API_KEY'] = cuf.get_creds()
+    os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
     dandi_api_key = os.environ['DANDI_API_KEY']
     my_dandiset = dandiapi.DandiAPIClient(
         token=dandi_api_key).get_dandiset(dandi_id)
@@ -108,7 +108,7 @@ def generate_exp_list(project, dandi_id):
         A list of experiments on dandi
     """
 
-    os.environ['DANDI_API_KEY'] = cuf.get_creds()
+    os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
     dandi_api_key = os.environ['DANDI_API_KEY']
     my_dandiset = dandiapi.DandiAPIClient(
         token=dandi_api_key).get_dandiset(dandi_id)
