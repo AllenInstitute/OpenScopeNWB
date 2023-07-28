@@ -249,7 +249,11 @@ if __name__ == "__main__":
     ellipse_path = glob(join(main_dir, "eye_tracking", "*_ellipse.h5"))[0]
 
     data_json_path = glob(join(main_dir, "*_Behavior_*.json"))[0]
-    sync_path = glob(join(main_dir, "*.h5"))[0]
+    sync_path = glob(join(main_dir, "*.h5"))
+    if 'full_field' in sync_path[0]:
+        sync_path = sync_path[1]
+    else:
+        sync_path = sync_path[0]
     motion_path = glob(
         join(
             main_dir,
