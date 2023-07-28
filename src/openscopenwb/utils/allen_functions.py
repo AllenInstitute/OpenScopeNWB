@@ -252,6 +252,7 @@ def sanity_check(allen_path, session_id):
 
             except FileNotFoundError:
                 print(' Spikes not found for ' + queue_directory)
+                print(alt_spike_directory)
                 file_found = False
                 file_in_queue_folder = False
 

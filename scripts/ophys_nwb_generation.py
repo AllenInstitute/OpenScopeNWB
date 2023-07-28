@@ -217,7 +217,7 @@ if __name__ == "__main__":
     raw_flag = args.raw
     final = args.final
     val = args.val
-    json_in = generate_ophys_json(experiment_id)
+    json_in, _ = generate_ophys_json(experiment_id)
     input_json = (r'/allen/programs/mindscope/workgroups/openscope/' +
                   'ahad/ophys_no_behavior_nwb/' +
                   str(experiment_id) + "_in.json")

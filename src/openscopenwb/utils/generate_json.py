@@ -62,6 +62,7 @@ def generate_ophys_json(experiment_id):
     json_out = json.dumps(json_data)
     return json_out, json_data
 
+
 def generate_ephys_json(session_id, project):
     date = datetime.today().strftime('%Y-%m-%d-%H-%M')
     json_data = {}
@@ -117,16 +118,15 @@ def generate_ephys_json(session_id, project):
         for input_path in path_list:
             probe_path = os.path.join(input_path, str(session_id), probe)
             if not os.path.exists(probe_path):
-                try: 
+                try:
                     os.makedirs(probe_path)
                 except Exception as error:
                     print(error)
     input_ecephys_json = output_path + '/ecephys.json'
     with open(input_ecephys_json, "w") as myfile:
-        try: 
+        try:
             myfile.write(json_out)
         except Exception as error:
             print(error)
     json_out = json.loads(json_out)
     return input_ecephys_json, json_out
-

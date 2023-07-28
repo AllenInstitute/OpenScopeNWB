@@ -528,7 +528,6 @@ def ecephys_write_nwb(module_params):
     print(current_metric)
     unit_info = pd.read_csv(current_metric, index_col=0)
 
-
     quality_check = glob(join(module_params['base_directory'],
                               "**",
                               'cluster_group.tsv'), recursive=True)

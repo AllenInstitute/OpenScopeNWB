@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from dandi.dandiapi import DandiAPIClient as dandi
-from dandi import validate as validate
 from dandi.organize import organize as dandi_organize
 from dandi.download import download as dandi_download
 from dandi.upload import upload as dandi_upload
@@ -94,9 +92,6 @@ def automatic_dandi_upload(
     for organized_nwbfile in organized_nwbfiles:
         file_path = Path(organized_nwbfile)
         if "ses" not in file_path.stem:
-            with NWBHDF5IO(path=file_path, mode="r",
-                           load_namespaces=True) as io:
-                session_id = session_id
             dandi_stem = file_path.stem
             dandi_stem_split = dandi_stem.split("_")
             if raw == "True":

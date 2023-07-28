@@ -5,7 +5,6 @@ import os
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-import glob
 
 
 def get_creds():
@@ -24,7 +23,6 @@ def get_creds():
         return None
 
 
-
 def start(cred_path):
     """Starts the firebase app
 
@@ -37,7 +35,7 @@ def start(cred_path):
     -------
     """
     cred = credentials.Certificate(cred_path)
-        
+   
     app = firebase_admin.initialize_app(cred, {
         'databaseURL':
             'https://openscopetest-d7614-default-rtdb.firebaseio.com/'
@@ -238,9 +236,9 @@ def get_portion_of_o_sess(project_id):
     sess_len = len(sess_list_flag_present)
     sess_no_flag_len = len(sess_list_flag_not_present)
     return ("Number of sessions with no Flag:" +
-            str(len(sess_list_flag_present)) +
+            str(sess_len) +
             "Number of sessions with Flags " +
-            str(len(sess_list_flag_not_present)) +
+            str(sess_no_flag_len)) +
             "List of flags: " + str(sess_flags))
 
 
@@ -478,7 +476,8 @@ def get_sessions(project_id):
 
 
 def get_ecephys_upload_sessions(project_id):
-    """Returns all converted but not uploaded sessions of a project
+    """Returns all converted but not 
+    uploaded sessions of a project
 
     Parameters
     ----------
@@ -497,29 +496,6 @@ def get_ecephys_upload_sessions(project_id):
         if (value['allen'] != 'Not Yet Converted' and
                 value['type'] == "Ecephys" and
                 value['dandi'] == 'Not Yet Uploaded'):
-            sess_list.append(session)
-    return sess_list
-
-
-def get_ecephys_upload_sessions(project_id):
-    """Reconverts all uploaded sessions of a project
-
-    Parameters
-    ----------
-    project_id: int
-    The project's id value
-
-    Returns
-    -------
-    sess_list: list
-    A list of all the sessions
-    """
-    ref = db.reference('/Sessions/' + project_id)
-    sessions = ref.get()
-    sess_list = []
-    for session, value in sessions.items():
-        if value['allen'] == 'Uploaded' and value['type'] == "Ecephys":
-            update_session_status(project_id, session, "Converting")
             sess_list.append(session)
     return sess_list
 
