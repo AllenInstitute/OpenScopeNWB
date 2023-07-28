@@ -27,7 +27,7 @@ curr_dir = Path(__file__).parent
 
 
 e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball", "OpenScopeTemporalBarcode"]
-o_proj_list = ["OpenScopeSequenceLearning"]
+o_proj_list = ["OpenScopeDendriteCoupling"]
 
 
 fb.start(fb.get_creds())
