@@ -1,19 +1,15 @@
 #!/usr/bin/env python
-from dandi.dandiapi import DandiAPIClient as dandi
-from dandi.files import LocalAsset as dandi_file
-from dandi import validate as validate
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import clean_up_functions as cuf
 from glob import glob
 from os.path import join
-from os.path import dirname
+
 import argparse
 import os
-import json
 import shutil
-import dandi
+
+
 from dandi.dandiapi import DandiAPIClient as dandi
-from dandi import validate as validate
 from dandi.organize import organize as dandi_organize
 from dandi.download import download as dandi_download
 from dandi.upload import upload as dandi_upload

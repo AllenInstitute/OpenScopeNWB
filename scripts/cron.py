@@ -1,26 +1,14 @@
 import os
 import subprocess
 import shlex
-import h5py
-import matplotlib.pyplot as plt
-import re
 
-from requests import post
 from openscopenwb.utils import firebase_sync as fire_sync
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import postgres_functions as postgres
-from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import sync_functions as sync
 from openscopenwb.utils.dandi_utils import dandi_functions as dandi
 from pathlib import Path
-from ecephys_nwb_generation import write_subject_to_nwb
 
-from datetime import date, datetime
-import pynwb
-from pynwb import NWBFile, TimeSeries
-from pynwb import NWBHDF5IO
-from glob import glob
-from os.path import join
 
 
 dir = os.path.dirname(__file__) or '.'

@@ -1,19 +1,8 @@
-from requests import NullHandler
 from allensdk.brain_observatory.behavior.data_objects.eye_tracking \
     .eye_tracking_table import EyeTrackingTable
 from allensdk.brain_observatory import sync_utilities
-from allensdk.brain_observatory.behavior.data_files import SyncFile
-from allensdk.brain_observatory.behavior.data_files.eye_tracking_file import \
-    EyeTrackingFile
-from allensdk.brain_observatory.behavior.data_objects import DataObject
-from allensdk.brain_observatory.behavior.data_objects.base \
-    .readable_interfaces import \
-    NwbReadableInterface, DataFileReadableInterface
-from allensdk.brain_observatory.behavior.data_objects.base \
-    .writable_interfaces import \
-    NwbWritableInterface
 from allensdk.brain_observatory.behavior.eye_tracking_processing import \
-    process_eye_tracking_data, determine_outliers, determine_likely_blinks, \
+    determine_outliers, determine_likely_blinks, \
     compute_elliptical_area, compute_circular_area, \
     load_eye_tracking_hdf, EyeTrackingError
 from allensdk.brain_observatory.nwb.eye_tracking.ndx_ellipse_eye_tracking \
@@ -24,10 +13,8 @@ from pathlib import Path
 import json
 import pandas as pd
 import numpy as np
-# from openscopenwb.utils import clean_up_functions as cuf
-# from os.path import join
-import pynwb
-from pynwb import NWBFile, TimeSeries
+
+from pynwb import TimeSeries
 from pynwb import NWBHDF5IO
 
 
