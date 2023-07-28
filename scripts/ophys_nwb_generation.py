@@ -4,6 +4,7 @@ import os
 import warnings
 import logging
 import json
+import sys
 import subprocess
 import ecephys_nwb_eye_tracking as eye_tracking
 import ophys_nwb_raw as raw_nwb

@@ -1,7 +1,6 @@
 import pandas as pd
-import numpy as np
-from pathlib import Path, PurePath
-from typing import Any, Dict, List, Tuple
+from pathlib import PurePath
+from typing import Dict, List
 from pynwb import NWBHDF5IO
 from allensdk.brain_observatory.behavior.data_objects.stimuli.presentations \
     import \
@@ -14,8 +13,8 @@ STIM_TABLE_RENAMES_MAP = {"Start": "start_time", "End": "stop_time"}
 
 
 def read_stimulus_table(path: str,
-                        column_renames_map: Dict[str, str]=None,
-                        columns_to_drop: List[str]=None) -> pd.DataFrame:
+                        column_renames_map: Dict[str, str] = None,
+                        columns_to_drop: List[str] = None) -> pd.DataFrame:
     """ Loads from a CSV on disk the stimulus table for this session.
     Optionally renames columns to match NWB epoch specifications.
     Parameters

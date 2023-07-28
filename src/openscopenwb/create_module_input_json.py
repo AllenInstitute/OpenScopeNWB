@@ -1,6 +1,5 @@
 import io
 import json
-import os
 import openscopenwb.ecephys_modules as ephys_mod
 
 
