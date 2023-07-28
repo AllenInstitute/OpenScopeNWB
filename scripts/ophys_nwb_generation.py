@@ -26,9 +26,9 @@ from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import postgres_functions as postgres
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils.slurm_utils import slurm_jobs as slurm_job
+from openscopenwb.utils.generate_json import generate_ophys_json
 import ecephys_nwb_eye_tracking as eye_tracking
 import ophys_nwb_raw as raw_nwb
-from generate_json import generate_ophys_json
 from pynwb.file import Subject
 import numpy as np
 

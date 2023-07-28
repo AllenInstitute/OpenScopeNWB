@@ -12,8 +12,6 @@ from os.path import join
 
 from requests import session
 
-import openscopenwb.create_module_input_json as osnjson
-import generate_json as gen_json
 
 from pynwb import NWBHDF5IO
 import pynwb
@@ -23,6 +21,8 @@ from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
 from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import firebase_functions as fb
+from openscopenwb.utils import generate_json as gen_json
+import openscopenwb.create_module_input_json as osnjson
 
 
 from datetime import datetime

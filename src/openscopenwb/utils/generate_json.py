@@ -12,7 +12,7 @@ from allensdk.brain_observatory.behavior.data_objects.metadata\
     .ophys_experiment_metadata.ophys_session_id import \
     OphysSessionId
 from allensdk.brain_observatory.behavior.data_files import \
-    BehaviorStimulusFile
+    StimulusFile
 
 
 def get_path(session_id):
@@ -39,7 +39,11 @@ def generate_ophys_json(experiment_id):
         behavior_session_id=sess_id.value, db=lims_db
     )
     sync_path = postgres.get_o_sess_directory(str(sess_id.value))
-    sync_path = glob(join(sync_path[0], str(sess_id.value) + "_*.h5"))[0]
+    sync_path = glob(join(sync_path[0], str(sess_id.value) + "_*.h5"))
+    if 'full_field' in sync_path[0]:
+        sync_path = sync_path[1]
+    else:
+        sync_path = sync_path[0]
     json_data = {
         "log_level": "INFO",
         "output_frame_times_path": "/allen/programs/mindscope/workgroups/" +
