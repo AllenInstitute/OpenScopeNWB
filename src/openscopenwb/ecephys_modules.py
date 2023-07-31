@@ -1,18 +1,15 @@
 import datetime
 import pandas as pd
 import numpy as np
-import re
 import os
 import json
 import logging
-import pickle
 from openscopenwb.utils import clean_up_functions as cuf
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import allen_functions as allen
 
 from os.path import join
 from glob import glob
-from datetime import datetime
 
 
 logging.basicConfig(filename="std.log",
@@ -255,6 +252,7 @@ def ecephys_align_timestamps(module_params):
 
         except FileNotFoundError:
             logging.debug(' Spikes not found for ' + queue_directory)
+            logging.debug(alt_spike_directory)
             file_found = False
             file_in_queue_folder = False
 
@@ -530,16 +528,12 @@ def ecephys_write_nwb(module_params):
     print(current_metric)
     unit_info = pd.read_csv(current_metric, index_col=0)
 
-#    unit_info = pd.read_csv(join(probe_directory,
-#                                 'metrics.csv'),
-#                            index_col=0)
-
     quality_check = glob(join(module_params['base_directory'],
                               "**",
                               'cluster_group.tsv'), recursive=True)
     tmp_index = 0
     if quality_check != []:
-        for index, quality in enumerate(quality_info):
+        for index, quality in enumerate(quality_check):
             if probe_idx in quality:
                 tmp_index = index
         quality_info = pd.read_csv(join(quality_check[index],
@@ -750,7 +744,6 @@ def ecephys_write_nwb(module_params):
 
                 units.append(unit_dict)
                 module_params['last_unit_id'] += 1
-    lfp_directory = module_params['lfp_path']
     output = module_params['nwb_path'].replace('spike_times.nwb', '')
     lfp_dict = {
         'input_data_path': join(module_params['output_path'],
@@ -830,8 +823,8 @@ def ecephys_write_nwb(module_params):
     input_json_write_dict = probe_dict
     new_date = False
     session_id = module_params['session_id']
-    nwb_path = module_params['nwb_path']
     subject_info = allen.lims_subject_info(session_id)
+
     if probe_idx == module_params['first_probe']:
         fb.start(fb.get_creds())
     session_date = fb.view_session(module_params['project'], session_id)

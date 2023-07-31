@@ -49,13 +49,12 @@ def test_ecephys_optotagging(session_param_prep, tmpdir):
     assert test_json['opto_pickle_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      'test.opto.pkl')
-    assert test_json['sync_h5_path']== \
+    assert test_json['sync_h5_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      'test.sync')
     assert test_json['output_opto_table_path'] == \
         os.path.join(session_param_prep['base_directory'],
                      'optotagging_table.csv')
-
 
 
 def test_ecephys_stim_table(session_param_prep, tmpdir):

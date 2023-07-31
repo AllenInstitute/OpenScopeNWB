@@ -8,6 +8,7 @@ def cuf_prep():
     test_list = [-2, 7, np.nan]
     yield test_list
 
+
 def test_clean_up(cuf_prep):
     assert cuf.clean_up_nan_and_inf(cuf_prep[0]) == -2
     assert cuf.clean_up_nan_and_inf(cuf_prep[1]) == 7

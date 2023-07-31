@@ -48,7 +48,7 @@ def get_psql_cursor(cred_json):
     A connection to the postgres database
     """
     print(cred_json)
-    try: 
+    try:
         cred_file = open(cred_json)
         cred_info = json.load(cred_file)
         cred_file.close()
@@ -63,8 +63,6 @@ def get_psql_cursor(cred_json):
         host = os.environ['HOST']
         password = os.environ['PASSWORD']
         port = os.environ['PORT']
-        
-
 
     con = connect(dbname=dbname, user=user, host=host, password=password,
                   port=port)
@@ -337,7 +335,7 @@ def get_o_targeted_struct(exp_id):
     cur.execute(lims_query)
     info_list = []
     if cur.rowcount == 0:
-        raise Exception("No data was found for ID {}".format(session_id))
+        raise Exception("No data was found for ID {}".format(exp_id))
     elif cur.rowcount != 0:
         info_list = cur.fetchall()
     return info_list[0][0]

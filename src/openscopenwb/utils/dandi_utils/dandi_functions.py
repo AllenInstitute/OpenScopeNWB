@@ -1,28 +1,10 @@
 import os
 import re
 
-import fsspec
-import h5py
-import pandas as pd
-import json
-import shutil
-import time
-
-
-from pathlib import Path
 from dandi import dandiapi
-from fsspec.implementations.cached import CachingFileSystem
-from pynwb import NWBHDF5IO
-from pynwb.base import Images
-from glob import glob
-from os.path import join
-from shutil import rmtree
 
 from openscopenwb.utils import clean_up_functions as cuf
 from openscopenwb.utils import firebase_functions as fb
-
-
-from dandi.dandiapi import DandiAPIClient as dandi
 
 
 def check_sess_info(project, dandi_id, path):
@@ -61,11 +43,11 @@ def check_sess_info(project, dandi_id, path):
             sub_id = match.group(1)
             print(sub_id)
             fb.update_session_dandi(
-                project, sess_id,
-                r'https://dandiarchive.org/dandiset/000336/' +
-                'draft/files?location=' +
-                "sub-" +
-                sub_id)
+                project,
+                sess_id,
+                r'https://dandiarchive.org/dandiset/000336/draft/files?' +
+                'location=' +
+                "sub-" + sub_id)
         return None
 
 
@@ -82,7 +64,7 @@ def find_dandiset_sessions(project, dandi_id):
     Returns
     -------
     """
-    os.environ['DANDI_API_KEY'] = cuf.get_creds()
+    os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
     dandi_api_key = os.environ['DANDI_API_KEY']
     my_dandiset = dandiapi.DandiAPIClient(
         token=dandi_api_key).get_dandiset(dandi_id)
@@ -92,7 +74,23 @@ def find_dandiset_sessions(project, dandi_id):
 
 
 def generate_exp_list(project, dandi_id):
-    os.environ['DANDI_API_KEY'] = cuf.get_creds()
+    """Generate a list of experiments on dandi
+       for a project
+
+    Parameters
+    ----------
+    project : str
+        The project id
+    dandi_id : str
+        The dandi id
+
+    Returns
+    -------
+    exp_list : list
+        A list of experiments on dandi
+    """
+
+    os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
     dandi_api_key = os.environ['DANDI_API_KEY']
     my_dandiset = dandiapi.DandiAPIClient(
         token=dandi_api_key).get_dandiset(dandi_id)
@@ -117,26 +115,9 @@ def generate_exp_list(project, dandi_id):
         if sess_id not in session_experiments:
             # Create an empty list for a new session
             session_experiments[sess_id] = []
-        # Check if the experiment ID is not already present
         if exp_id not in session_experiments[sess_id]:
+            # Check if the experiment ID is not already present
             session_experiments[sess_id].append(exp_id)
     for i in session_experiments:
         session_experiments[i].append(len(session_experiments[i]))
     return session_experiments
-
-
-def save_as_json(session_experiments, filename):
-    with open(filename, 'w') as file:
-        json.dump(session_experiments, file)
-
-
-if __name__ == "__main__":
-    project = "OpenScopeDendriteCoupling"
-    dandi = "000336"
-    fb.start(fb.get_creds())
-    exp_list = generate_exp_list(project, dandi)
-    save_as_json(
-        exp_list,
-        r'/allen/programs/mindscope/workgroups/' +
-        'openscope/ahad/test_tiff/exp_list.json')
-    # find_dandiset_sessions(project, dandi)

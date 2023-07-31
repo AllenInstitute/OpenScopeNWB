@@ -1,13 +1,9 @@
 from simple_slurm import Slurm
 import os
-from time import time
 import warnings
 import logging
 import sys
-import inspect
 from openscopenwb.utils import firebase_functions as fb
-from openscopenwb.utils import postgres_functions as postgres
-
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
@@ -114,7 +110,6 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         'bin',
         'python'
     )
-    experiments = postgres.get_sess_experiments(session_id)
     fb.start(fb.get_creds())
     slurm_id_old = fb.get_curr_job()['id']
     slurm = Slurm(
@@ -127,7 +122,6 @@ def generate_ophys_nwb(project_id, session_id, experiment_id, raw, val, final):
         time="01:50:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
-    dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -185,7 +179,6 @@ def dandi_ephys_upload(file, project_id, session_id, val, final):
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
 
-    dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -229,7 +222,6 @@ def add_temp_to_nwb():
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
 
-    dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +
@@ -338,7 +330,6 @@ def nwb_add_templates():
         time="60:00:00",
         output=f'{Slurm.JOB_ARRAY_MASTER_ID}_{Slurm.JOB_ARRAY_ID}.out'
     )
-    dir = os.path.dirname(__file__)
     slurm.sbatch(python_path +
                  r' /allen/programs/mindscope/workgroups/openscope/ahad/' +
                  r'test_cron/OpenScopeNWB-feature-firebase_testing/' +

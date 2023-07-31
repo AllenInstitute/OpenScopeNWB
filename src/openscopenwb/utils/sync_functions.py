@@ -2,7 +2,6 @@ from allensdk.brain_observatory.sync_dataset import \
     Dataset
 import allensdk.brain_observatory.ecephys.stimulus_sync as sync
 from openscopenwb.utils import postgres_functions as postgres
-import matplotlib.pyplot as plt
 from glob import glob
 from os.path import join
 import numpy as np
@@ -30,7 +29,7 @@ def sync_test(session_id):
     if sync_exists:
         try:
             syncdata = Dataset(sync_file)
-        except:
+        except Exception:
             sync_file = postgres.get_e_sess_directory(session_id)
             print("DIRECTORY", sync_file)
             sync_file = glob(
@@ -63,6 +62,7 @@ def sync_test(session_id):
     flip_vsyncs = vsyncs[::60]
     print("VSYNCS")
     print(vsyncs)
+    print(flip_vsyncs)
     # Get diode edges
     photodiode_times = np.sort(np.concatenate([
         syncdata.get_rising_edges('stim_photodiode', 'seconds'),
@@ -87,10 +87,6 @@ def sync_test(session_id):
     # fix blips in the line: THIS version accounts for long times
     photodiode_times_fixed_no_long = sync.fix_unexpected_edges_no_long(
         photodiode_times_on_off, cycle=60)
-    # find the first diode edges after each flip_vsync
-    nearest_diode_edges = np.searchsorted(photodiode_times_on_off, flip_vsyncs)
-    # get the monitor lag between the vsync and the diode edge
-    lags = photodiode_times_on_off[nearest_diode_edges] - flip_vsyncs
 
     diode_list = list(zip(photodiode_times_fixed,
                       photodiode_times_fixed_no_long))

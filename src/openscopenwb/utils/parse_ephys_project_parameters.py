@@ -216,7 +216,7 @@ def get_module_types(project_dict):
         if (module == 'allensdk.brain_observatory.extract_running_speed' or
                 module ==
                 'allensdk.brain_observatory.ecephys.optotagging_table'):
-                session_modules.append(module)
+            session_modules.append(module)
         else:
             probe_modules.append(module)
     return session_modules, probe_modules

@@ -1,5 +1,4 @@
 import pytest
-import os
 from openscopenwb.utils import firebase_functions as fb
 
 
@@ -26,6 +25,8 @@ def test_sess_meta(firebase_prep):
         firebase_prep['session_1_stimulus_type']
     assert session_meta['session_1_mouse'] == firebase_prep['session_1_mouse']
 
+
 def test_o_workflow():
-    workflow = fb.get_ophys_session_workflow("OpenScopeDendriteCoupling", 1191135783)
+    workflow = fb.get_ophys_session_workflow("OpenScopeDendriteCoupling",
+                                             1191135783)
     assert workflow == 'uploaded'
