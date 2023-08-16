@@ -4,33 +4,35 @@ import os
 import subprocess
 import warnings
 import argparse
-# import ecephys_nwb_trials
 import ecephys_nwb_eye_tracking
-import dandi_ephys_uploads as dandi
 
-from os.path import join
-
-from requests import session
-
-import openscopenwb.create_module_input_json as osnjson
-import generate_json as gen_json
-
-from pynwb import NWBHDF5IO
-import pynwb
-
+from openscopenwb.utils.slurm_utils import slurm_jobs as slurm_job
 from openscopenwb.utils import parse_ephys_project_parameters as ppp
 from openscopenwb.utils import script_functions as sf
-from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import firebase_functions as fb
-
-
-from datetime import datetime
+from openscopenwb.utils import generate_json as gen_json
+import openscopenwb.create_module_input_json as osnjson
 
 
 def convert_session(session_id, project):
+    """Calls functions to write ephys NWB session
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+    project: str
+    The project's LIMS ID
+
+    Returns
+    -------
+    module_params: dict
+    Session unique information, used by each module
+    """
+
     warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 
-    project_csv_json = gen_json.generate_ephys_json(session_id, project)
+    project_csv_json, _ = gen_json.generate_ephys_json(session_id, project)
     project_params = ppp.parse_json(project_csv_json)
     session_param_list = ppp.generate_all_session_params(project_params)
     modules = ppp.get_modules(project_params)
@@ -48,10 +50,10 @@ def convert_session(session_id, project):
         for module in modules:
             json_directory = ppp.get_input_json_directory(project_params)
             json_directory = os.path.join(json_directory, session)
-            input_json = os.path.join(json_directory, session + '-' + module
-                                      + '-input.json')
-            output_json = os.path.join(json_directory, session + '-' + module
-                                       + '-output.json')
+            input_json = os.path.join(json_directory, session + '-' + module +
+                                      '-input.json')
+            output_json = os.path.join(json_directory, session + '-' + module +
+                                       '-output.json')
             if module in session_modules:
                 module_params = session_params
                 module_params = osnjson.create_module_input(
@@ -86,19 +88,52 @@ def convert_session(session_id, project):
     return module_params
 
 
-def write_subject_to_nwb(session_id, module_params):
+def write_subject_to_nwb(session_id, module_params, dandi_id):
+    """Writes subject table information to nwb
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+    module_params: dict
+    Session unique information, used by each module
+
+    Returns
+    -------
+    """
+
     ecephys_nwb_eye_tracking.add_tracking_to_nwb(module_params)
-    fb.update_session_dir(module_params['project'], session_id, module_params['nwb_path'])   
-     
+    fb.update_session_dir(
+        module_params['project'], session_id, module_params['nwb_path'])
+    slurm_job.upload_ephys_nwb(
+        session_id, module_params['project'],
+        module_params['nwb_path'],
+        dandi_id)
 
 
 if __name__ == "__main__":
+    """Calls functions to write ephys NWB session
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+    project: str
+    The project's LIMS ID
+
+    Returns
+    -------
+    """
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--session_id', type=int)
+    parser.add_argument('--session_id', type=str)
     parser.add_argument('--project', type=str)
+    parser.add_argument('--dandi_id', type=str)
     args = parser.parse_args()
     print(args.project)
     write_subject_to_nwb(
-        module_params=convert_session(session_id=args.session_id, project=args.project), session_id=args.session_id
+        module_params=convert_session(
+            session_id=args.session_id, project=args.project),
+        session_id=args.session_id,
+        dandi_id=args.dandi_id
     )
-

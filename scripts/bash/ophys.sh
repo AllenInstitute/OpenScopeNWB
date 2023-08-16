@@ -1,16 +1,24 @@
 #!/usr/bin/bash
-while getopts "s:p:e:v:f:" arg; do
+while getopts "c:d:s:p:e:r:v:f:" arg; do
   case "$arg" in
+    c) Conda=$OPTARG;;
+    d) Directory=$OPTARG;;
     s) Session=$OPTARG;;
     p) Project=$OPTARG;;
     e) Experiment=$OPTARG;;
+    r) Raw=$OPTARG;;
     v) Val=$OPTARG;;
     f) Final=$OPTARG;;
+
   esac
 done
+echo $Conda
+echo $Directory
 echo $Session
 echo $Project
 echo $Experiment
+echo $Raw
 echo $Val
-ssh ahad.bawany@hpc-login "/allen/programs/mindscope/workgroups/openscope/ahad/Conda_env/openscopenwb/bin/python /allen/programs/mindscope/workgroups/openscope/ahad/test_cron/OpenScopeNWB-feature-firebase_testing/scripts/slurm_ophys_job.py" $Project $Session $Experiment $Val $Final
+echo $Final
+$Conda $Directory $Project $Session $Experiment $Raw $Val $Final
 exit 1

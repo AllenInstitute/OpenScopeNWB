@@ -1,42 +1,51 @@
 import os
 import subprocess
 import shlex
-import h5py
-import matplotlib.pyplot as plt
-import re
 
-from requests import post
 from openscopenwb.utils import firebase_sync as fire_sync
 from openscopenwb.utils import firebase_functions as fb
 from openscopenwb.utils import postgres_functions as postgres
-from openscopenwb.utils import allen_functions as allen
 from openscopenwb.utils import sync_functions as sync
-from openscopenwb.utils import dandi_functions as dandi
+from openscopenwb.utils.dandi_utils import dandi_functions as dandi
 from pathlib import Path
-from ecephys_nwb_generation import write_subject_to_nwb
-
-from datetime import date, datetime
-import pynwb
-from pynwb import NWBFile, TimeSeries
-from pynwb import NWBHDF5IO
-from glob import glob
-from os.path import join
 
 
 dir = os.path.dirname(__file__) or '.'
 curr_dir = Path(__file__).parent
 
-e_proj_list = ["OpenScopeIllusion", "OpenScopeGlobalLocalOddball"]
+
+e_proj_list = ["OpenScopeIllusion",
+               "OpenScopeGlobalLocalOddball", "OpenScopeTemporalBarcode"]
 o_proj_list = ["OpenScopeDendriteCoupling"]
 
 
 fb.start(fb.get_creds())
+
 for project in e_proj_list:
+    current_dir = os.path.abspath(__file__)
+    current_dir = current_dir.replace('scripts/cron.py', '')
+    utils_dir = str(current_dir) + \
+        'src/openscopenwb/utils/slurm_utils/slurm_ephys_job.py'
+    conda_environment = 'openscopenwb'
+    python_path = os.path.join(
+        '/allen',
+        'programs',
+        'mindscope',
+        'workgroups',
+        'openscope',
+        'ahad',
+        'Conda_env',
+        conda_environment,
+        'bin',
+        'python',
+    )
     if project == "OpenScopeIllusion":
         proj_dandi_value = "000248"
     elif project == "OpenScopeGlobalLocalOddBall":
         proj_dandi_value = "000253"
-    
+    elif project == "OpenScopeTemporalBarcode":
+        proj_dandi_value = "000563"
+
     # Compare sessions between postgres and FB
     missing_list = fire_sync.compare_sessions(project)
     print("List of sessions to upload: ")
@@ -58,7 +67,7 @@ for project in e_proj_list:
     for session in update_list:
         fb.update_session(project, session)
     conversion_list = fb.update_ephys_statuses(project)
-    
+
     # Run our sync check for timings
     print("List of pre-sanity checked sessions: ")
     for session in conversion_list:
@@ -69,24 +78,26 @@ for project in e_proj_list:
             long_conversion_list.append(session)
             conversion_list.remove(session)
     print(conversion_list)
-    
+
     # Trigger Normal Conversions
     print("List of Sessions to convert: ")
     print(conversion_list)
     for session in conversion_list:
         cmd = dir + '/bash/ecephys.sh ' + "-s " + \
-            str(session) + " -p " + project + " -l " + "False"
+            str(session) + " -p " + project + " -l " + False + " -c " + \
+            python_path + " -d " + utils_dir + " -v " + proj_dandi_value
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")
     dandi_list = fb.get_ecephys_upload_sessions(project)
     print(dandi_list)
-    
-    # Trigger conversions for sessions with sync issues 
+
+    # Trigger conversions for sessions with sync issues
     print("List of Long Frame Sessions to convert: ")
     for session in long_conversion_list:
         cmd = dir + '/bash/ecephys.sh ' + "-s " + \
-            str(session) + " -p " + project + " -l " + "True"
+            str(session) + " -p " + project + " -l " + True + " -c " + \
+            python_path + " -d " + utils_dir + " -v " + proj_dandi_value
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
         fb.update_session_status(project, session, "Conversion Running")        
@@ -103,11 +114,35 @@ for project in e_proj_list:
             code = compile(upload.read(), "dandi_ephys_uploads.py", "exec")
             exec(code, {"dandi_val": proj_dandi_value, "sess_id":session, "dandi_file": dandi_file, "subject_id": specimen_number})
     dandi.find_dandiset_sessions(project, proj_dandi_value)
+        fb.update_session_status(project, session, "Conversion Running")
+
+    # Update the dandi locations for the project
+    dandi.find_dandiset_sessions(project, proj_dandi_value)
+
+
 
 for project in o_proj_list:
+    current_dir = os.path.abspath(__file__)
+    current_dir = current_dir.replace('scripts/cron.py', '')
+    utils_dir = str(current_dir) + \
+        'src/openscopenwb/utils/slurm_utils/slurm_ophys_job.py'
+    conda_environment = 'ophys_nwb'
+
+    python_path = os.path.join(
+        '/allen',
+        'programs',
+        'mindscope',
+        'workgroups',
+        'openscope',
+        'ahad',
+        'Conda_env',
+        conda_environment,
+        'bin',
+        'python',
+    )
     if project == 'OpenScopeDendriteCoupling':
         proj_dandi_value = '000336'
-     
+
     # Find sessions on postgres but not FB
     missing_list = fire_sync.compare_o_sessions(project)
     print("List of sessions to upload: ")
@@ -115,7 +150,7 @@ for project in o_proj_list:
     for session in missing_list:
         fb.init_o_session(project, session)
     update_list = []
-    
+
     # Find sessions where postgres info has been updated
     tmp_update_list = postgres.get_o_proj_info(project)['sessions']
     for sess in tmp_update_list:
@@ -127,10 +162,7 @@ for project in o_proj_list:
     for session in update_list:
         fb.update_o_session(project, session)
 
-
-    
-        
-    # Find and convert sessions which are ready 
+    # Find and convert sessions which are ready
     conversion_list = fb.update_ophys_statuses(project)
     print("List of Sessions to convert: ")
     print(conversion_list)
@@ -138,38 +170,53 @@ for project in o_proj_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
             if experiment != exp_list[-1]:
-                cmd = dir + '/bash/ophys.sh ' + "-s " + \
-                    str(session) + " -p " + project + " -e " + \
-                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "False"
+                cmd = (dir + '/bash/ophys.sh ' + "-s " +
+                       str(session) + " -p " + project + " -e " +
+                       str(experiment) + ' -v ' +
+                       str(proj_dandi_value) + ' -c ' +
+                       python_path + ' -f ' + "False" +
+                       ' -r ' + "False" +
+                       ' -d ' + utils_dir)
             else:
-                 cmd = dir + '/bash/ophys.sh ' + "-s " + \
-                    str(session) + " -p " + project + " -e " + \
-                    str(experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "True"               
+                cmd = (dir + '/bash/ophys.sh ' + "-s " +
+                       str(session) + " -p " + project + " -e " +
+                       str(experiment) + ' -v ' +
+                       str(proj_dandi_value) + ' -c ' +
+                       python_path + ' -f ' + "True" +
+                       ' -r ' + "False" + ' -d ' + utils_dir)
             print(shlex.split(cmd))
             subprocess.call(shlex.split(cmd))
             fb.update_session_status(project, session, "Conversion Running")
-     
-    # Find and convert sessions for RAW which are ready 
+
+    # Find and convert sessions for RAW which are ready
     raw_conversion_list = fb.update_ophys_RAW_statuses(project)
     print("List of RAW Sessions to convert: ")
     print(raw_conversion_list)
     for session in raw_conversion_list:
         print(session)
         exp_list = fb.get_experiments(project, session)
-        
+
         # We check for the final plane to update the
         # FB info on dandi locations
         for experiment in exp_list:
             if experiment == exp_list[-1]:
-                cmd = dir + '/bash/raw_ophys.sh ' + " -p " + project   + " -s " + str(session) + " -e " + str(
-                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + "False"
+                cmd = (dir + '/bash/ophys.sh ' + "-s " +
+                       str(session) + " -p " +
+                       project + " -e " +
+                       str(experiment) + ' -v ' +
+                       str(proj_dandi_value) + ' -c ' +
+                       python_path + ' -f ' + "False" +
+                       ' -r ' + "True" + ' -d ' + utils_dir)
             else:
-                cmd = dir + '/bash/raw_ophys.sh ' +  " -p " + project + " -s " + str(session) + " -e " + str(
-                    experiment) + ' -v ' + str(proj_dandi_value) + ' -f ' + 'True'
+                cmd = (dir + '/bash/ophys.sh ' + "-s " +
+                       str(session) + " -p " +
+                       project + " -e " +
+                       str(experiment) + ' -v ' +
+                       str(proj_dandi_value) + ' -c ' +
+                       python_path + ' -f ' + "True" +
+                       ' -r ' + "True" + ' -d ' + utils_dir)
             print(shlex.split(cmd))
-            fr = subprocess.run(shlex.split(cmd))
-            print("RAW")
-            print(fr)
+            subprocess.run(shlex.split(cmd))
             fb.update_session_status(
                 project, session, "Raw Conversion Running")
     dandi.find_dandiset_sessions(project, proj_dandi_value)

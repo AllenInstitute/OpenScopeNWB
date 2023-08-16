@@ -1,10 +1,6 @@
-import h5py
-
-import requests
 import pandas as pd
-import numpy as np
-from pathlib import Path, PurePath
-from typing import Any, Dict, List, Tuple
+from pathlib import PurePath
+from typing import Dict, List
 from pynwb import NWBHDF5IO
 from allensdk.brain_observatory.behavior.data_objects.stimuli.presentations \
     import \
@@ -58,7 +54,7 @@ def add_stim_to_nwb(
     stim_path,
     nwb_path
 ):
-    """Adds Stim info to an NWB 
+    """Adds Stim info to an NWB
 
     Parameters
     ----------

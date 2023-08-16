@@ -7,7 +7,83 @@ import requests
 import json
 
 
+def ophys_tag_info(session_id):
+    """Gets the QC info for an ophys session
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+
+    Returns
+    -------
+    flags: list
+    The flags for the session
+    fails: list
+    The fails for the session
+    overrides: list
+    The overrides for the session
+    flag_notes: list
+    The notes for the flags
+    override_notes: list
+    The notes for the overrides
+    """
+    fails = ""
+    overrides = ""
+    mouse_url = "http://mouse-seeks/qc/ophys_session/logs/" + session_id
+    print(session_id)
+    tag_json = requests.get(mouse_url)
+    tag_json = json.loads(tag_json.text)
+    if tag_json['status'] == "Session QC not completed":
+        return ["QC In Progress"],
+        ["QC In Progress"],
+        ["QC In Progress"],
+        ["QC In Progress"],
+        ["QC In Progress"]
+    if tag_json['status'] == "lims_id not found":
+        return ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"],
+        ["Not yet uploaded to LIMS"]
+    flags = []
+    flag_notes = []
+    fails = []
+    override_notes = []
+    overrides = []
+    for flag in tag_json['flags']:
+        flags.append(flag['metric'])
+        flag_notes.append(flag['notes'])
+    for fail in tag_json['fails']:
+        fails.append(fail)
+    for override in tag_json['overrides']:
+        overrides.append(override['metric'])
+        override_notes.append(override['notes'])
+
+    if fails == []:
+        fails = ["No Flags"]
+    if overrides == []:
+        overrides = ["No Flags"]
+        override_notes = ["No Flags"]
+    if overrides == ["No Flags"]:
+        override_notes = ["No Flags"]
+
+    return flags, fails, overrides, flag_notes, override_notes
+
+
 def lims_subject_info(session_id):
+    """Gets the subject info for an ephys session from LIMS
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+
+    Returns
+    -------
+    info: dict
+    The subject info for the session
+    """
     gender = ""
     genotype = ""
     dob = ""
@@ -35,6 +111,18 @@ def lims_subject_info(session_id):
 
 
 def lims_o_subject_info(session_id):
+    """Gets the subject info for an ophys session from LIMS
+
+    Parameters
+    ----------
+    session_id: str
+    The session_id for the session
+
+    Returns
+    -------
+    info: dict
+    The subject info for the session
+    """
     gender = ""
     genotype = ""
     dob = ""
@@ -62,6 +150,18 @@ def lims_o_subject_info(session_id):
 
 
 def sanity_check(allen_path, session_id):
+    """Checks if the session has a spike file
+
+    Parameters
+    ----------
+    allen_path: str
+    The path to the session's data in the Allen Directory
+    session_id: str
+    The session_id for the session
+
+    Returns
+    -------
+    """
     probes = post_gres.get_sess_probes(session_id)
     for current_probe in probes:
         file_in_base_folder = False
@@ -152,6 +252,7 @@ def sanity_check(allen_path, session_id):
 
             except FileNotFoundError:
                 print(' Spikes not found for ' + queue_directory)
+                print(alt_spike_directory)
                 file_found = False
                 file_in_queue_folder = False
 

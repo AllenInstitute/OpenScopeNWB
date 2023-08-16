@@ -31,7 +31,8 @@ def compare_o_session(project_id, session_id):
 
 
 def compare_o_sessions(project_id):
-    """Compares which sessions are associated with a project postgres and firebase
+    """Compares which sessions are associated with a project's
+    postgres and firebase
 
     Parameters
     ----------
@@ -82,7 +83,8 @@ def compare_session(project_id, session_id):
 
 
 def compare_sessions(project_id):
-    """Compares which sessions are associated with a project postgres and firebase
+    """Compares which sessions are associated with a project's
+    postgres and firebase
 
     Parameters
     ----------

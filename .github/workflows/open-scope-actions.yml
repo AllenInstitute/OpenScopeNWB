@@ -1,10 +1,5 @@
 name: OpenScope Actions
 on:
-  # Trigger the workflow on pull request,
-  # but only for the main branch
-  # Note that this currently uses flake8 instead of
-  # pep8 as there does not appear be actions support for pep8
-  # We do code coverage on codecov.io
   push:
     branches:
       - main
@@ -12,16 +7,25 @@ on:
     branches:
       - main
 
+env:  # Define environment variables for the entire job
+  DBNAME: ${{ secrets.DBNAME }}
+  FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+  HOST: ${{ secrets.HOST }}
+  PASSWORD: ${{ secrets.PASSWORD }}
+  PORT: ${{ secrets.PORT }}
+  USER: ${{ secrets.USER }}
+  DANDI_API_KEY: ${{ secrets.DANDI_API_KEY }}
+
 jobs:
   Test:
     name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.7.12
+      - name: Set up Python 3.7.17
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7.12
+          python-version: 3.7.17
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -29,7 +33,15 @@ jobs:
           pip install pytest-cov
           pip install wheel
           pip install h5py==2.10.0
-          pip install git+https://github.com/jsiegle/AllenSDK.git@ecephys-updates
+          pip install allenSDK
+          
+      - name: Create Firebase Credentials File
+        run: |
+          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+      # Set the path to the credentials file as an environment variable
+      - name: Set Firebase Credentials Path as Environment Variable
+        run: echo "FIREBASE_CREDENTIALS_PATH=$(pwd)/firebase_credentials.json" >> $GITHUB_ENV
+
       - name: Test with pytest
         run: pytest -vv --cov=./ --cov-report=xml
       - name: Upload coverage to Codecov
@@ -43,6 +55,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           verbose: true
+
   Lint:
     name: Lint
     runs-on: "ubuntu-latest"

@@ -48,14 +48,22 @@ def get_psql_cursor(cred_json):
     A connection to the postgres database
     """
     print(cred_json)
-    cred_file = open(cred_json)
-    cred_info = json.load(cred_file)
-    cred_file.close()
-    dbname = cred_info['dbname']
-    user = cred_info['user']
-    host = cred_info['host']
-    password = cred_info['password']
-    port = cred_info['port']
+    try:
+        cred_file = open(cred_json)
+        cred_info = json.load(cred_file)
+        cred_file.close()
+        dbname = cred_info['dbname']
+        user = cred_info['user']
+        host = cred_info['host']
+        password = cred_info['password']
+        port = cred_info['port']
+    except FileNotFoundError:
+        dbname = os.environ['DBNAME']
+        user = os.environ['USER']
+        host = os.environ['HOST']
+        password = os.environ['PASSWORD']
+        port = os.environ['PORT']
+
     con = connect(dbname=dbname, user=user, host=host, password=password,
                   port=port)
     con.set_session(readonly=True, autocommit=True)
@@ -315,6 +323,24 @@ def get_sess_experiments(session_id):
     return info_list
 
 
+def get_o_targeted_struct(exp_id):
+    OPHYS_TARGET_QRY = """
+    SELECT st.acronym
+    FROM ophys_experiments oe
+        LEFT JOIN structures st ON st.id = oe.targeted_structure_id
+    WHERE oe.id = {}
+    """
+    cur = get_psql_cursor(get_cred_location())
+    lims_query = OPHYS_TARGET_QRY.format(exp_id)
+    cur.execute(lims_query)
+    info_list = []
+    if cur.rowcount == 0:
+        raise Exception("No data was found for ID {}".format(exp_id))
+    elif cur.rowcount != 0:
+        info_list = cur.fetchall()
+    return info_list[0][0]
+
+
 def get_e_sess_donor_info(session_id):
     EPHYS_SESSION_QRY = """
     SELECT sp.donor_id
@@ -448,7 +474,7 @@ def get_e_sess_info(session_id):
     meta_dict = {}
     if isinstance(info_list[1], (datetime, date)):
         info_list[1] = info_list[1].isoformat()
-    
+
     subject = allen.lims_subject_info(session_id)
 
     meta_dict['name'] = info_list[0]

@@ -1,6 +1,5 @@
 import io
 import json
-import os
 import openscopenwb.ecephys_modules as ephys_mod
 
 
@@ -72,4 +71,7 @@ def write_module_dict(module, module_params):
     if module == 'allensdk.brain_observatory.ecephys.stimulus_table':
         module_params, input_json_write_dict = \
             ephys_mod.stimulus_table(module_params)
+    if module == 'allensdk.brain_observatory.gaze_mapping':
+        module_params, input_json_write_dict = \
+            ephys_mod.ecephys_gaze_mapping(module_params)
     return module_params, input_json_write_dict
