@@ -166,6 +166,13 @@ for project in o_proj_list:
     conversion_list = fb.update_ophys_statuses(project)
     print("List of Sessions to convert: ")
     print(conversion_list)
+    missing_normal_list, \
+    missing_raw_list, \
+    missing_all_list = dandi.find_files_with_missing_raw(project, proj_dandi_value)
+    for i in missing_normal_list:
+        conversion_list.append(i)
+    for i in missing_all_list:
+        conversion_list.append(i)
     for session in conversion_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
@@ -192,6 +199,10 @@ for project in o_proj_list:
     raw_conversion_list = fb.update_ophys_RAW_statuses(project)
     print("List of RAW Sessions to convert: ")
     print(raw_conversion_list)
+    for i in missing_raw_list:
+        raw_conversion_list.append(i)
+    for i in missing_all_list:
+        raw_conversion_list.append(i)
     for session in raw_conversion_list:
         print(session)
         exp_list = fb.get_experiments(project, session)
