@@ -145,11 +145,9 @@ def find_files_with_raw_status(project, dandi_id):
     acq_status_dict = {}
     acq_sess_dict = {}
 
-    files = []
     for file_path in all_files:
         # Extract the acq value
         parts = file_path.split("acq-")
-        sess_parts = file_path.split("ses-")
         if len(parts) > 1:
             acq_value = ''.join(filter(str.isdigit, parts[1].split("_")[0]))
             sess_id_match = re.search(r'ses-(\d+)', file_path)
