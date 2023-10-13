@@ -305,9 +305,13 @@ def ecephys_align_timestamps(module_params):
     print("File was found: " + str(file_found))
     if (file_found):
         channel_states_path = glob(join(module_params['base_directory'],
-                                        '**/**' + probe_idx, '**/**', "*channel_states.npy"), recursive=True)[0]
+                                        '**/**' + probe_idx, '**/**',
+                                        "*channel_states.npy"),
+                                   recursive=True)[0]
         timestamp_path = glob(join(module_params['base_directory'],
-                                        '**/**' + probe_idx, '**/**', "*stamps.npy"), recursive=True)[0]
+                                   '**/**' + probe_idx, '**/**',
+                                   "*stamps.npy"),
+                              recursive=True)[0]
         probe_dict = {
             'name': probe_idx,
             'sampling_rate': 30000.,
