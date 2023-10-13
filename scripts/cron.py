@@ -1,6 +1,7 @@
 import os
 import subprocess
 import shlex
+import re
 
 from openscopenwb.utils import firebase_sync as fire_sync
 from openscopenwb.utils import firebase_functions as fb
