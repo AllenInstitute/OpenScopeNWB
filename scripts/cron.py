@@ -114,7 +114,7 @@ for project in e_proj_list:
             code = compile(upload.read(), "dandi_ephys_uploads.py", "exec")
             exec(code, {"dandi_val": proj_dandi_value, "sess_id":session, "dandi_file": dandi_file, "subject_id": specimen_number})
     dandi.find_dandiset_sessions(project, proj_dandi_value)
-        fb.update_session_status(project, session, "Conversion Running")
+    fb.update_session_status(project, session, "Conversion Running")
 
     # Update the dandi locations for the project
     dandi.find_dandiset_sessions(project, proj_dandi_value)
