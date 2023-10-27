@@ -83,48 +83,6 @@ def extract_session_number(file_path):
         return None
 
 
-def find_files_with_missing_raw(project, dandi_id):
-    # Set DANDI API key
-    os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
-    dandi_api_key = os.environ['DANDI_API_KEY']
-
-    # Initialize DANDI client
-    my_dandiset = dandiapi.DandiAPIClient(
-        token=dandi_api_key).get_dandiset(dandi_id)
-
-    # Create an array to store all file paths
-    all_files = []
-
-    for file in my_dandiset.get_assets():
-        path = file.path
-        all_files.append(path)
-
-    # Create a dictionary to store pairs of raw and non-raw file paths
-    file_pairs = {}
-
-    for file_path in all_files:
-        # Check if "raw" is present in the path
-        if 'raw' not in file_path:
-            # Remove "raw" and store in the dictionary
-            path_without_raw = file_path
-            file_pairs[path_without_raw] = file_path
-        elif 'raw' in file_path:
-            file_pairs[file_path] = file_path
-
-    # Create a list to store file paths where raw is missing
-    missing_raw_files = []
-
-    for path_without_raw, path_with_raw in file_pairs.items():
-        if path_with_raw not in all_files:
-            print(path_with_raw)
-            missing_raw_files.append(path_with_raw)
-
-    session_numbers = [extract_session_number(
-        file_path) for file_path in missing_raw_files]
-
-    return session_numbers
-
-
 def find_files_with_raw_status(project, dandi_id):
     # Set DANDI API key
     os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
@@ -150,10 +108,6 @@ def find_files_with_raw_status(project, dandi_id):
         parts = file_path.split("acq-")
         if len(parts) > 1:
             acq_value = ''.join(filter(str.isdigit, parts[1].split("_")[0]))
-            sess_id_match = re.search(r'ses-(\d+)', file_path)
-            if sess_id_match:
-                sess_id = sess_id_match.group(1)
-            acq_sess_dict[acq_value] = sess_id
 
             # Check if "raw" or non-raw version exists
             raw_exists = False
