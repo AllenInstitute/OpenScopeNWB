@@ -113,7 +113,7 @@ def find_files_with_raw_status(project, dandi_id):
             raw_exists = False
             non_raw_exists = False
 
-            if "raw_ophys.nwb" in file_path:
+            if "raw-movies_ophys.nwb" in file_path:
                 raw_exists = True
             elif "ophys.nwb" in file_path:
                 non_raw_exists = True
