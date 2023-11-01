@@ -73,6 +73,86 @@ def find_dandiset_sessions(project, dandi_id):
         check_sess_info(project, dandi_id, path)
 
 
+def extract_session_number(file_path):
+    # Extract the number after "ses-"
+    parts = file_path.split("ses-")
+    if len(parts) > 1:
+        session_number = parts[1].split("-")[0]
+        return session_number
+    else:
+        return None
+
+
+def find_files_with_raw_status(project, dandi_id):
+    # Set DANDI API key
+    os.environ['DANDI_API_KEY'] = cuf.get_dandi_creds()
+    dandi_api_key = os.environ['DANDI_API_KEY']
+
+    # Initialize DANDI client
+    my_dandiset = dandiapi.DandiAPIClient(
+        token=dandi_api_key).get_dandiset(dandi_id)
+
+    # Create an array to store all file paths
+    all_files = []
+
+    for file in my_dandiset.get_assets():
+        path = file.path
+        all_files.append(path)
+
+    # Create a dictionary to store acq values and their corresponding status
+    acq_status_dict = {}
+    acq_sess_dict = {}
+
+    for file_path in all_files:
+        # Extract the acq value
+        parts = file_path.split("acq-")
+        if len(parts) > 1:
+            acq_value = ''.join(filter(str.isdigit, parts[1].split("_")[0]))
+
+            # Check if "raw" or non-raw version exists
+            raw_exists = False
+            non_raw_exists = False
+
+            if "raw-movies_ophys.nwb" in file_path:
+                raw_exists = True
+            elif "ophys.nwb" in file_path:
+                non_raw_exists = True
+
+            # Update the dictionary
+            if acq_value in acq_status_dict:
+                existing_raw, existing_non_raw = acq_status_dict[acq_value]
+                acq_status_dict[acq_value] = (
+                    existing_raw or raw_exists,
+                    existing_non_raw or non_raw_exists)
+            else:
+                acq_status_dict[acq_value] = (raw_exists, non_raw_exists)
+
+    # Filter and return only the values where both raw
+    # and non-raw files do not exist
+    filtered_raw_result = dict(
+        (key, value)
+        for key, value in acq_status_dict.items()
+        if value == (True, False))
+    filtered_non_raw_result = dict(
+        (key, value)
+        for key, value in acq_status_dict.items()
+        if value == (False, True))
+    filtered_missing_result = dict(
+        (key, value)
+        for key, value in acq_status_dict.items()
+        if value == (False, False))
+    raw_acqs = []
+    non_raw_acqs = []
+    missing_acqs = []
+    for i in filtered_raw_result:
+        raw_acqs.append(i)
+    for i in filtered_non_raw_result:
+        non_raw_acqs.append(i)
+    for i in filtered_missing_result:
+        missing_acqs.append(i)
+    return raw_acqs, non_raw_acqs, missing_acqs
+
+
 def generate_exp_list(project, dandi_id):
     """Generate a list of experiments on dandi
        for a project

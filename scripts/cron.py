@@ -1,6 +1,7 @@
 import os
 import subprocess
 import shlex
+import re
 
 from openscopenwb.utils import firebase_sync as fire_sync
 from openscopenwb.utils import firebase_functions as fb
@@ -100,25 +101,26 @@ for project in e_proj_list:
             python_path + " -d " + utils_dir + " -v " + proj_dandi_value
         print(shlex.split(cmd))
         subprocess.call(shlex.split(cmd))
-        fb.update_session_status(project, session, "Conversion Running")        
+        fb.update_session_status(project, session, "Conversion Running")
 
     # Trigger uploads for sessions with upload status
     print("List of sessions to upload")
     upload_list = fb.get_dandi_statuses()
     for session in upload_list:
         dandi_file = fb.view_session(project, sess)['allen']
-        match = re.search(r'specimen_(\d+)', fb.view_session(project, sess)['path'])
+        match = re.search(r'specimen_(\d+)',
+                          fb.view_session(project, sess)['path'])
         if match:
             specimen_number = match.group(1)
         with open("dandi_ephys_uploads.py") as upload:
             code = compile(upload.read(), "dandi_ephys_uploads.py", "exec")
-            exec(code, {"dandi_val": proj_dandi_value, "sess_id":session, "dandi_file": dandi_file, "subject_id": specimen_number})
+            exec(code, {"dandi_val": proj_dandi_value, "sess_id": session,
+                 "dandi_file": dandi_file, "subject_id": specimen_number})
     dandi.find_dandiset_sessions(project, proj_dandi_value)
-        fb.update_session_status(project, session, "Conversion Running")
+    fb.update_session_status(project, session, "Conversion Running")
 
     # Update the dandi locations for the project
     dandi.find_dandiset_sessions(project, proj_dandi_value)
-
 
 
 for project in o_proj_list:
@@ -166,6 +168,14 @@ for project in o_proj_list:
     conversion_list = fb.update_ophys_statuses(project)
     print("List of Sessions to convert: ")
     print(conversion_list)
+    missing_normal_list, \
+        missing_raw_list, \
+        missing_all_list = dandi.find_files_with_missing_raw(
+            project, proj_dandi_value)
+    for i in missing_normal_list:
+        conversion_list.append(i)
+    for i in missing_all_list:
+        conversion_list.append(i)
     for session in conversion_list:
         exp_list = fb.get_experiments(project, session)
         for experiment in exp_list:
@@ -192,6 +202,10 @@ for project in o_proj_list:
     raw_conversion_list = fb.update_ophys_RAW_statuses(project)
     print("List of RAW Sessions to convert: ")
     print(raw_conversion_list)
+    for i in missing_raw_list:
+        raw_conversion_list.append(i)
+    for i in missing_all_list:
+        raw_conversion_list.append(i)
     for session in raw_conversion_list:
         print(session)
         exp_list = fb.get_experiments(project, session)
